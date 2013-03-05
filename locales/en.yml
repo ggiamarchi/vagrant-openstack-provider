@@ -1,0 +1,67 @@
+en:
+  vagrant_rackspace:
+    already_created: |-
+      The server is already created.
+    deleting_server: |-
+      Deleting server...
+    finding_flavor: |-
+      Finding flavor for server...
+    finding_image: |-
+      Finding image for server...
+    launching_server: |-
+      Launching a server with the following settings...
+    not_created: |-
+      The server hasn't been created yet. Run `vagrant up` first.
+    ready: |-
+      The server is ready!
+    rsync_folder: |-
+      Rsyncing folder: %{hostpath} => %{guestpath}
+    waiting_for_build: |-
+      Waiting for the server to be built...
+    waiting_for_ssh: |-
+      Waiting for SSH to become available...
+    warn_networks: |-
+      Warning! The Rackspace provider doesn't support any of the Vagrant
+      high-level network configurations (`config.vm.network`). They
+      will be silently ignored.
+
+    errors:
+      create_bad_state: |-
+        While creating the server, it transitioned to an unexpected
+        state: '%{state}', instead of properly booting. Run `vagrant status`
+        to find out what can be done about this state, or `vagrant destroy`
+        if you want to start over.
+      no_matching_flavor: |-
+        No matching flavor was found! Please check your flavor setting
+        to make sure you have a valid flavor chosen.
+      no_matching_image: |-
+        No matching image was found! Please check your image setting to
+        make sure you have a valid image chosen.
+      rsync_error: |-
+        There was an error when attemping to rsync a share folder.
+        Please inspect the error message below for more info.
+
+        Host path: %{hostpath}
+        Guest path: %{guestpath}
+        Error: %{stderr}
+
+    states:
+      short_active: |-
+        active
+      long_active: |-
+        The server is up and running. Run `vagrant ssh` to access it.
+      short_build: |-
+        building
+      long_build: |-
+        The server is currently being built. You must wait for this to
+        complete before you can access it. You can delete the server, however,
+        by running `vagrant destroy`.
+      short_error: |-
+        error
+      long_error: |-
+        The server is in an erroneous state. Contact RackSpace support
+        or destroy the machine with `vagrant destroy`.
+      short_not_created: |-
+        not created
+      long_not_created: |-
+        The server is not created. Run `vagrant up` to create it.
