@@ -28,6 +28,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :public_key_path
 
+      # The name of the server. This defaults to the name of the machine
+      # defined by Vagrant (via `config.vm.define`), but can be overriden
+      # here.
+      attr_accessor :server_name
+
       # The username to access RackSpace.
       #
       # @return [String]
@@ -39,6 +44,7 @@ module VagrantPlugins
         @flavor   = UNSET_VALUE
         @image    = UNSET_VALUE
         @public_key_path = UNSET_VALUE
+        @server_name = UNSET_VALUE
         @username = UNSET_VALUE
       end
 
@@ -47,6 +53,7 @@ module VagrantPlugins
         @endpoint = nil if @endpoint == UNSET_VALUE
         @flavor   = /512MB/ if @flavor == UNSET_VALUE
         @image    = /Ubuntu/ if @image == UNSET_VALUE
+        @server_name = nil if @server_name == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
 
         if @public_key_path == UNSET_VALUE

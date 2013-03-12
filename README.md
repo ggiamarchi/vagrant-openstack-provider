@@ -92,6 +92,9 @@ This provider exposes quite a few provider-specific configuration options:
 * `public_key_path` - The path to a public key to initialize with the remote
   server. This should be the matching pair for the private key configured
   with `config.ssh.private_key_path` on Vagrant.
+* `server_name` - The name of the server within RackSpace Cloud. This
+  defaults to the name of the Vagrant machine (via `config.vm.define`), but
+  can be overridden with this.
 * `username` - The username with which to access Rackspace.
 
 These can be set like typical provider-specific configuration:

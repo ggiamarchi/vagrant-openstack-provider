@@ -29,16 +29,20 @@ module VagrantPlugins
           image = find_matching(env[:rackspace_compute].images.all, config.image)
           raise Errors::NoMatchingImage if !image
 
+          # Figure out the name for the server
+          server_name = config.server_name || env[:machine].name
+
           # Output the settings we're going to use to the user
           env[:ui].info(I18n.t("vagrant_rackspace.launching_server"))
           env[:ui].info(" -- Flavor: #{flavor.name}")
           env[:ui].info(" -- Image: #{image.name}")
+          env[:ui].info(" -- Name: #{server_name}")
 
           # Build the options for launching...
           options = {
             :flavor_id   => flavor.id,
             :image_id    => image.id,
-            :name        => env[:machine].name,
+            :name        => server_name,
             :personality => [
               {
                 :path     => "/root/.ssh/authorized_keys",
