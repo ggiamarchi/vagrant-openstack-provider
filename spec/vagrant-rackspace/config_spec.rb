@@ -12,8 +12,8 @@ describe VagrantPlugins::Rackspace::Config do
 
     its(:api_key)  { should be_nil }
     its(:endpoint) { should be_nil }
-    its(:flavor)   { should be_nil }
-    its(:image)    { should be_nil }
+    its(:flavor)   { should eq(/512MB/) }
+    its(:image)    { should eq(/Ubuntu/) }
     its(:public_key_path) { should eql(vagrant_public_key) }
     its(:username) { should be_nil }
   end

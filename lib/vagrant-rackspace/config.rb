@@ -45,8 +45,8 @@ module VagrantPlugins
       def finalize!
         @api_key  = nil if @api_key == UNSET_VALUE
         @endpoint = nil if @endpoint == UNSET_VALUE
-        @flavor   = nil if @flavor == UNSET_VALUE
-        @image    = nil if @image == UNSET_VALUE
+        @flavor   = /512MB/ if @flavor == UNSET_VALUE
+        @image    = /Ubuntu/ if @image == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
 
         if @public_key_path == UNSET_VALUE
