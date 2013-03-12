@@ -26,9 +26,13 @@ en:
       will be silently ignored.
 
     config:
+      api_key_required: |-
+        An API key is required.
       public_key_not_found: |-
         The public key file could not be found. Please make sure
         you specified a valid path.
+      username_required: |-
+        A username is required.
 
     errors:
       create_bad_state: |-

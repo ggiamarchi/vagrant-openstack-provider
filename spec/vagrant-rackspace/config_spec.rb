@@ -46,10 +46,18 @@ describe VagrantPlugins::Rackspace::Config do
       it "should validate"
     end
 
+    context "the API key" do
+      it "should error if not given"
+    end
+
     context "the public key path" do
       it "should have errors if the key doesn't exist"
       it "should not have errors if the key exists with an absolute path"
       it "should not have errors if the key exists with a relative path"
+    end
+
+    context "the username" do
+      it "should error if not given"
     end
   end
 end

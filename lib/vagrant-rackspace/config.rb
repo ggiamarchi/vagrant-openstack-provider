@@ -57,6 +57,9 @@ module VagrantPlugins
       def validate(machine)
         errors = []
 
+        errors << I18n.t("vagrant_rackspace.config.api_key_required") if !@api_key
+        errors << I18n.t("vagrant_rackspace.config.username_required") if !@username
+
         public_key_path = File.expand_path(@public_key_path, machine.env.root_path)
         if !File.file?(public_key_path)
           errors << I18n.t("vagrant_rackspace.config.public_key_not_found")
