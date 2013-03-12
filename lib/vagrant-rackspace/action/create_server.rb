@@ -61,7 +61,6 @@ module VagrantPlugins
 
           # Create the server
           server = env[:rackspace_compute].servers.create(options)
-          p server.password
 
           # Store the ID right away so we can track it
           env[:machine].id = server.id
