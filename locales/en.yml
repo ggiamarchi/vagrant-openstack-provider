@@ -20,6 +20,12 @@ en:
       Waiting for the server to be built...
     waiting_for_ssh: |-
       Waiting for SSH to become available...
+    warn_insecure_ssh: |-
+      Warning! By not specifying a custom public/private keypair,
+      Vagrant is defaulting to use the insecure keypair that ships with
+      Vagrant. While this isn't much of a big deal for local development,
+      this is quite insecure for remote servers. Please specify a custom
+      public/private keypair.
     warn_networks: |-
       Warning! The Rackspace provider doesn't support any of the Vagrant
       high-level network configurations (`config.vm.network`). They

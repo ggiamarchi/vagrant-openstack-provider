@@ -32,6 +32,14 @@ module VagrantPlugins
           # Figure out the name for the server
           server_name = config.server_name || env[:machine].name
 
+          # If we're using the default keypair, then show a warning
+          default_key_path = Vagrant.source_root.join("keys/vagrant.pub").to_s
+          public_key_path  = File.expand_path(config.public_key_path, env[:root_path])
+
+          if default_key_path == public_key_path
+            env[:ui].warn(I18n.t("vagrant_rackspace.warn_insecure_ssh"))
+          end
+
           # Output the settings we're going to use to the user
           env[:ui].info(I18n.t("vagrant_rackspace.launching_server"))
           env[:ui].info(" -- Flavor: #{flavor.name}")
@@ -46,7 +54,7 @@ module VagrantPlugins
             :personality => [
               {
                 :path     => "/root/.ssh/authorized_keys",
-                :contents => Base64.encode64(File.read(config.public_key_path))
+                :contents => Base64.encode64(File.read(public_key_path))
               }
             ]
           }
