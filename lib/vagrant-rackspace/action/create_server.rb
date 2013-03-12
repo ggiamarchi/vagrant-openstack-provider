@@ -42,7 +42,7 @@ module VagrantPlugins
             :personality => [
               {
                 :path     => "/root/.ssh/authorized_keys",
-                :contents => Base64.encode64(Vagrant.source_root.join("keys/vagrant.pub").read)
+                :contents => Base64.encode64(File.read(config.public_key_path))
               }
             ]
           }
