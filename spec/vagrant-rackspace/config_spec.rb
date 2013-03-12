@@ -32,4 +32,24 @@ describe VagrantPlugins::Rackspace::Config do
       end
     end
   end
+
+  describe "validation" do
+    let(:machine) { double("machine") }
+
+    subject do
+      super().tap do |o|
+        o.finalize!
+      end
+    end
+
+    context "with good values" do
+      it "should validate"
+    end
+
+    context "the public key path" do
+      it "should have errors if the key doesn't exist"
+      it "should not have errors if the key exists with an absolute path"
+      it "should not have errors if the key exists with a relative path"
+    end
+  end
 end

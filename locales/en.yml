@@ -25,6 +25,11 @@ en:
       high-level network configurations (`config.vm.network`). They
       will be silently ignored.
 
+    config:
+      public_key_not_found: |-
+        The public key file could not be found. Please make sure
+        you specified a valid path.
+
     errors:
       create_bad_state: |-
         While creating the server, it transitioned to an unexpected

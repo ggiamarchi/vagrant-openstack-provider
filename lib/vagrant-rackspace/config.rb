@@ -53,6 +53,17 @@ module VagrantPlugins
           @public_key_path = Vagrant.source_root.join("keys/vagrant.pub")
         end
       end
+
+      def validate(machine)
+        errors = []
+
+        public_key_path = File.expand_path(@public_key_path, machine.env.root_path)
+        if !File.file?(public_key_path)
+          errors << I18n.t("vagrant_rackspace.config.public_key_not_found")
+        end
+
+        { "RackSpace Provider" => errors }
+      end
     end
   end
 end
