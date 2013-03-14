@@ -5,6 +5,8 @@ This is a [Vagrant](http://www.vagrantup.com) 1.1+ plugin that adds a
 allowing Vagrant to control and provision machines within RackSpace
 cloud.
 
+**Note:** This plugin requires Vagrant 1.1+.
+
 ## Features
 
 * Boot Rackspace Cloud instances.
