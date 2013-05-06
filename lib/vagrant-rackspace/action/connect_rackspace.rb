@@ -17,7 +17,7 @@ module VagrantPlugins
           # Get the configs
           config   = env[:machine].provider_config
           api_key  = config.api_key
-          endpoint = config.endpoint
+          rackspace_region = config.rackspace_region
           username = config.username
 
           @logger.info("Connecting to Rackspace...")
@@ -25,7 +25,7 @@ module VagrantPlugins
             :provider => :rackspace,
             :version  => :v2,
             :rackspace_api_key => api_key,
-            :rackspace_endpoint => endpoint,
+            :rackspace_region => rackspace_region,
             :rackspace_username => username
           })
 

@@ -90,7 +90,7 @@ This provider exposes quite a few provider-specific configuration options:
 * `image` - The server image to boot. This can be a string matching the
   exact ID or name of the image, or this can be a regular expression to
   partially match some image.
-* `endpoint` - The endpoint to hit. By default this is DFW.
+* `rackspace_region` - The region to hit. By default this is :dfw. Valid options are: :dfw, :ord, :lon
 * `public_key_path` - The path to a public key to initialize with the remote
   server. This should be the matching pair for the private key configured
   with `config.ssh.private_key_path` on Vagrant.

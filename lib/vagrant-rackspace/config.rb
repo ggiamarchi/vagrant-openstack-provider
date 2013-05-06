@@ -8,11 +8,13 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :api_key
 
-      # The endpoint to access RackSpace. If nil, it will default
+      # The region to access RackSpace. If nil, it will default
       # to DFW.
+      # (formerly know as 'endpoint')
       #
-      # @return [String]
-      attr_accessor :endpoint
+      # expected to be a symbol - :dfw (default), :ord, :lon
+      #
+      attr_accessor :rackspace_region
 
       # The flavor of server to launch, either the ID or name. This
       # can also be a regular expression to partially match a name.
@@ -40,7 +42,7 @@ module VagrantPlugins
 
       def initialize
         @api_key  = UNSET_VALUE
-        @endpoint = UNSET_VALUE
+        @rackspace_region = UNSET_VALUE
         @flavor   = UNSET_VALUE
         @image    = UNSET_VALUE
         @public_key_path = UNSET_VALUE
@@ -50,7 +52,7 @@ module VagrantPlugins
 
       def finalize!
         @api_key  = nil if @api_key == UNSET_VALUE
-        @endpoint = nil if @endpoint == UNSET_VALUE
+        @rackspace_region = nil if @rackspace_region == UNSET_VALUE
         @flavor   = /512MB/ if @flavor == UNSET_VALUE
         @image    = /Ubuntu/ if @image == UNSET_VALUE
         @server_name = nil if @server_name == UNSET_VALUE
