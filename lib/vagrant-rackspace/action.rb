@@ -24,6 +24,22 @@ module VagrantPlugins
         end
       end
 
+      # This action is called when `vagrant provision` is called.
+      def self.action_provision
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use ConfigValidate
+          b.use Call, IsCreated do |env, b2|
+            if !env[:result]
+              b2.use MessageNotCreated
+              next
+            end
+
+            b2.use Provision
+            b2.use SyncFolders
+          end
+        end
+      end
+
       # This action is called to read the SSH info of the machine. The
       # resulting state is expected to be put into the `:machine_ssh_info`
       # key.
