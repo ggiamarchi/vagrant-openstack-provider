@@ -90,6 +90,20 @@ module VagrantPlugins
             # Clear the line one more time so the progress is removed
             env[:ui].clear_line
 
+            # Wait for RackConnect to complete
+            if ( config.rackconnect )
+              env[:ui].info(I18n.t("vagrant_rackspace.waiting_for_rackconnect"))
+              while true
+                status = server.metadata.all["rackconnect_automation_status"]
+                if ( !status.nil? )
+                  env[:ui].info( status )
+                end
+                break if env[:interrupted]
+                break if (status.to_s =~ /deployed/i)
+                sleep 10
+              end
+            end
+
             # Wait for SSH to become available
             env[:ui].info(I18n.t("vagrant_rackspace.waiting_for_ssh"))
             while true
