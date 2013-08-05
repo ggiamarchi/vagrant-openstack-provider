@@ -11,7 +11,8 @@ describe VagrantPlugins::Rackspace::Config do
     end
 
     its(:api_key)  { should be_nil }
-    its(:endpoint) { should be_nil }
+    its(:rackspace_region) { should be_nil }
+    its(:rackspace_compute_url) { should be_nil }
     its(:flavor)   { should eq(/512MB/) }
     its(:image)    { should eq(/Ubuntu/) }
     its(:public_key_path) { should eql(vagrant_public_key) }
@@ -21,7 +22,8 @@ describe VagrantPlugins::Rackspace::Config do
 
   describe "overriding defaults" do
     [:api_key,
-      :endpoint,
+      :rackspace_region,
+      :rackspace_compute_url,
       :flavor,
       :image,
       :public_key_path,
