@@ -16,6 +16,7 @@ describe VagrantPlugins::Rackspace::Config do
     its(:flavor)   { should eq(/512MB/) }
     its(:image)    { should eq(/Ubuntu/) }
     its(:public_key_path) { should eql(vagrant_public_key) }
+    its(:rackconnect) { should be_nil }
     its(:server_name) { should be_nil }
     its(:username) { should be_nil }
   end
@@ -27,6 +28,7 @@ describe VagrantPlugins::Rackspace::Config do
       :flavor,
       :image,
       :public_key_path,
+      :rackconnect,
       :server_name,
       :username].each do |attribute|
       it "should not default #{attribute} if overridden" do
