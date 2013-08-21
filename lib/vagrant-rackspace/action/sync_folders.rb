@@ -1,5 +1,5 @@
 require "log4r"
-
+require 'rbconfig'
 require "vagrant/util/subprocess"
 
 module VagrantPlugins
@@ -11,6 +11,7 @@ module VagrantPlugins
         def initialize(app, env)
           @app    = app
           @logger = Log4r::Logger.new("vagrant_rackspace::action::sync_folders")
+          @host_os = RbConfig::CONFIG['host_os']
         end
 
         def call(env)
@@ -25,6 +26,11 @@ module VagrantPlugins
             # Make sure there is a trailing slash on the host path to
             # avoid creating an additional directory with rsync
             hostpath = "#{hostpath}/" if hostpath !~ /\/$/
+            
+            # If on Windows, modify the path to work with cygwin rsync
+            if @host_os =~ /mswin|mingw|cygwin/
+              hostpath = hostpath.sub(/^([A-Za-z]):\//, "/cygdrive/#{$1.downcase}/")
+            end
 
             env[:ui].info(I18n.t("vagrant_rackspace.rsync_folder",
                                 :hostpath => hostpath,
