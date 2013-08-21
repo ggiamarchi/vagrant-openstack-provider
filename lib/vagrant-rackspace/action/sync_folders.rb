@@ -29,7 +29,7 @@ module VagrantPlugins
             
             # If on Windows, modify the path to work with cygwin rsync
             if @host_os =~ /mswin|mingw|cygwin/
-              hostpath = hostpath.sub("C:/", "/cygdrive/c/")
+              hostpath = hostpath.sub(/^([A-Za-z]):\//, "/cygdrive/#{$1.downcase}/")
             end
 
             env[:ui].info(I18n.t("vagrant_rackspace.rsync_folder",
