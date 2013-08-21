@@ -33,14 +33,28 @@ module VagrantPlugins
             # Create the guest path
             env[:machine].communicate.sudo("mkdir -p '#{guestpath}'")
             env[:machine].communicate.sudo(
-              "chown #{ssh_info[:username]} '#{guestpath}'")
+              "chown -R #{ssh_info[:username]} '#{guestpath}'")
 
-            # Rsync over to the guest path using the SSH info
+            # Rsync over to the guest path using the SSH info. add
+            # .hg/ to exclude list as that isn't covered in
+            # --cvs-exclude
             command = [
               "rsync", "--verbose", "--archive", "-z",
+              "--cvs-exclude", 
+              "--exclude", ".hg/",
               "-e", "ssh -p #{ssh_info[:port]} -i '#{ssh_info[:private_key_path]}' -o StrictHostKeyChecking=no",
               hostpath,
               "#{ssh_info[:username]}@#{ssh_info[:host]}:#{guestpath}"]
+
+            # during rsync, ignore files specified in .hgignore and
+            # .gitignore traditional .gitignore or .hgignore files
+            ignore_files = [".hgignore", ".gitignore"]
+            ignore_files.each do |ignore_file|
+              abs_ignore_file = env[:root_path].to_s + "/" + ignore_file
+              if File.exist?(abs_ignore_file)
+                command = command + ["--exclude-from", abs_ignore_file]
+              end
+            end
 
             r = Vagrant::Util::Subprocess.execute(*command)
             if r.exit_code != 0

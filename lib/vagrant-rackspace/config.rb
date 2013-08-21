@@ -8,11 +8,31 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :api_key
 
-      # The endpoint to access RackSpace. If nil, it will default
+      # The region to access RackSpace. If nil, it will default
       # to DFW.
+      # (formerly know as 'endpoint')
       #
-      # @return [String]
-      attr_accessor :endpoint
+      # expected to be a symbol - :dfw (default), :ord, :lon
+      #
+      # use this OR rackspace_compute_url
+      attr_accessor :rackspace_region
+
+      # The compute_url to access RackSpace. If nil, it will default
+      # to DFW.
+      # (formerly know as 'endpoint')
+      #
+      # expected to be a string url - 
+      # 'https://dfw.servers.api.rackspacecloud.com/v2'
+      # 'https://ord.servers.api.rackspacecloud.com/v2'
+      # 'https://lon.servers.api.rackspacecloud.com/v2'
+      #
+      # alternatively, can use constants if you require 'fog/rackspace' in your Vagrantfile
+      # Fog::Compute::RackspaceV2::DFW_ENDPOINT
+      # Fog::Compute::RackspaceV2::ORD_ENDPOINT
+      # Fog::Compute::RackspaceV2::LON_ENDPOINT
+      #
+      # use this OR rackspace_region
+      attr_accessor :rackspace_compute_url
 
       # The flavor of server to launch, either the ID or name. This
       # can also be a regular expression to partially match a name.
@@ -28,6 +48,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :public_key_path
 
+      # The option that indicates RackConnect usage or not.
+      #
+      # @return [Boolean]
+      attr_accessor :rackconnect
+
       # The name of the server. This defaults to the name of the machine
       # defined by Vagrant (via `config.vm.define`), but can be overriden
       # here.
@@ -40,19 +65,23 @@ module VagrantPlugins
 
       def initialize
         @api_key  = UNSET_VALUE
-        @endpoint = UNSET_VALUE
+        @rackspace_region = UNSET_VALUE
+        @rackspace_compute_url = UNSET_VALUE
         @flavor   = UNSET_VALUE
         @image    = UNSET_VALUE
         @public_key_path = UNSET_VALUE
+        @rackconnect = UNSET_VALUE
         @server_name = UNSET_VALUE
         @username = UNSET_VALUE
       end
 
       def finalize!
         @api_key  = nil if @api_key == UNSET_VALUE
-        @endpoint = nil if @endpoint == UNSET_VALUE
+        @rackspace_region = nil if @rackspace_region == UNSET_VALUE
+        @rackspace_compute_url = nil if @rackspace_compute_url == UNSET_VALUE
         @flavor   = /512MB/ if @flavor == UNSET_VALUE
         @image    = /Ubuntu/ if @image == UNSET_VALUE
+        @rackconnect = false if @rackconnect == UNSET_VALUE
         @server_name = nil if @server_name == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
 
