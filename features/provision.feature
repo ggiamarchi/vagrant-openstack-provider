@@ -33,4 +33,4 @@ Feature: vagrant-rackspace fog tests
     When I successfully run `bundle exec vagrant up --provider rackspace`
     # I want to capture the ID like I do in tests for other tools, but Vagrant doesn't print it!
     # And I get the server from "Instance ID:"
-    Then the server "vagrant-single-server" should be active
+    Then the server "vagrant-provisioned-server" should be active
