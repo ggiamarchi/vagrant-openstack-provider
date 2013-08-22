@@ -1,3 +1,18 @@
+# 0.1.2 (August 22, 2013)
+
+FEATURES:
+
+- Add provision support [GH-16]
+  
+IMPROVEMENTS:
+  
+  - Adds option to allow provisioning after RackConnect scripts complete. [GH-18]
+  - Remove Fog deprecation warnings [GH-11]
+  - Bypass rsync's StrictHostKeyCheck [GH-5]
+  - Make chown'ing of synced folder perms recursive (for ssh user) [GH-24]
+  - Use /cygdrive when rsyncing on Windows [GH-17]
+  
+  
 # 0.1.1 (March 18, 2013)
 
 * Up fog dependency for Vagrant 1.1.1
