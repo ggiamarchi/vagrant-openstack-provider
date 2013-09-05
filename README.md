@@ -91,9 +91,11 @@ This provider exposes quite a few provider-specific configuration options:
   exact ID or name of the image, or this can be a regular expression to
   partially match some image.
 * `rackspace_region` - The region to hit. By default this is :dfw. Valid options are: 
-:dfw, :ord, :lon.  User this OR rackspace_compute_url
+:dfw, :ord, :lon, :iad, :syd.  Users should preference using this setting over `rackspace_compute_url` setting.
 * `rackspace_compute_url` - The compute_url to hit. This is good for custom endpoints. 
-Use this OR rackspace_region.
+* `rackspace_auth_url` - The endpoint to authentication against. By default, vagrant will use the global
+rackspace authentication endpoint for all regions with the exception of :lon. IF :lon region is specified
+vagrant will authenticate against the UK authentication endpoint.
 * `public_key_path` - The path to a public key to initialize with the remote
   server. This should be the matching pair for the private key configured
   with `config.ssh.private_key_path` on Vagrant.

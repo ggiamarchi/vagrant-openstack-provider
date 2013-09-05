@@ -19,25 +19,23 @@ module VagrantPlugins
           api_key  = config.api_key
           username = config.username
 
-	  if config.rackspace_compute_url.nil? then
-	    @logger.info("Connecting to Rackspace region...")
-	    env[:rackspace_compute] = Fog::Compute.new({
-	      :provider => :rackspace,
-	      :version  => :v2,
-	      :rackspace_api_key => api_key,
-	      :rackspace_region => config.rackspace_region,
-	      :rackspace_username => username
-	    })
+          params = {
+            :provider => :rackspace,
+            :version  => :v2,
+            :rackspace_api_key => api_key,
+            :rackspace_username => username,
+            :rackspace_auth_url => config.rackspace_auth_url
+          }
+
+          if config.rackspace_compute_url
+            @logger.info("Connecting to Rackspace compute_url...")
+            params[:rackspace_compute_url] = config.rackspace_compute_url
           else
-	    @logger.info("Connecting to Rackspace compute_url...")
-	    env[:rackspace_compute] = Fog::Compute.new({
-	      :provider => :rackspace,
-	      :version  => :v2,
-	      :rackspace_api_key => api_key,
-	      :rackspace_compute_url => config.rackspace_compute_url,
-	      :rackspace_username => username
-	    })
-	  end
+            @logger.info("Connecting to Rackspace region...")
+            params[:rackspace_region] = config.rackspace_region
+          end
+
+          env[:rackspace_compute] = Fog::Compute.new params
 
           @app.call(env)
         end
