@@ -1,3 +1,11 @@
+# 0.1.3 (September 6, 2013)
+
+
+IMPROVEMENTS:
+
+  - Adds ability to specify authentication endpoint; Support for UK Cloud! [GH-32]
+  - Adds ability to specify disk configuration (disk_conf) [GH-33]
+
 # 0.1.2 (August 22, 2013)
 
 FEATURES:
