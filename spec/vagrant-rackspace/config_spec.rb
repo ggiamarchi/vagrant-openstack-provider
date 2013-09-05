@@ -1,4 +1,5 @@
 require "vagrant-rackspace/config"
+require 'fog'
 
 describe VagrantPlugins::Rackspace::Config do
   describe "defaults" do
@@ -13,6 +14,7 @@ describe VagrantPlugins::Rackspace::Config do
     its(:api_key)  { should be_nil }
     its(:rackspace_region) { should be_nil }
     its(:rackspace_compute_url) { should be_nil }
+    its(:rackspace_auth_url) { should be_nil }
     its(:flavor)   { should eq(/512MB/) }
     its(:image)    { should eq(/Ubuntu/) }
     its(:public_key_path) { should eql(vagrant_public_key) }
@@ -25,6 +27,7 @@ describe VagrantPlugins::Rackspace::Config do
     [:api_key,
       :rackspace_region,
       :rackspace_compute_url,
+      :rackspace_auth_url,
       :flavor,
       :image,
       :public_key_path,
@@ -64,6 +67,55 @@ describe VagrantPlugins::Rackspace::Config do
 
     context "the username" do
       it "should error if not given"
+    end
+  end
+
+  describe "rackspace_auth_url" do
+    it "should return UNSET_VALUE if rackspace_auth_url and rackspace_region are UNSET" do
+      subject.rackspace_auth_url.should == VagrantPlugins::Rackspace::Config::UNSET_VALUE
+    end
+    it "should return UNSET_VALUE if rackspace_auth_url is UNSET and rackspace_region is :ord" do
+      subject.rackspace_region = :ord
+      subject.rackspace_auth_url.should == VagrantPlugins::Rackspace::Config::UNSET_VALUE
+    end
+    it "should return UK Authentication endpoint if rackspace_auth_url is UNSET and rackspace_region is :lon" do
+      subject.rackspace_region = :lon
+      subject.rackspace_auth_url.should == Fog::Rackspace::UK_AUTH_ENDPOINT
+    end
+    it "should return custom endpoint if supplied and rackspace_region is :lon" do
+      my_endpoint = 'http://custom-endpoint.com'
+      subject.rackspace_region = :lon
+      subject.rackspace_auth_url = my_endpoint
+      subject.rackspace_auth_url.should == my_endpoint
+    end
+    it "should return custom endpoint if supplied and rackspace_region is UNSET" do
+      my_endpoint = 'http://custom-endpoint.com'
+      subject.rackspace_auth_url = my_endpoint
+      subject.rackspace_auth_url.should == my_endpoint
+    end
+  end
+
+
+  describe "lon_region?" do
+    it "should return false if rackspace_region is UNSET_VALUE" do
+      subject.rackspace_region = VagrantPlugins::Rackspace::Config::UNSET_VALUE
+      subject.send(:lon_region?).should be_false
+    end
+    it "should return false if rackspace_region is nil" do
+      subject.rackspace_region = nil
+      subject.send(:lon_region?).should be_false
+    end
+    it "should return false if rackspace_region is :ord" do
+      subject.rackspace_region = :ord
+      subject.send(:lon_region?).should be_false
+    end
+    it "should return true if rackspace_region is 'lon'" do
+      subject.rackspace_region = 'lon'
+      subject.send(:lon_region?).should be_true
+    end
+    it "should return true if rackspace_Region is :lon" do
+      subject.rackspace_region = :lon
+      subject.send(:lon_region?).should be_true
     end
   end
 end

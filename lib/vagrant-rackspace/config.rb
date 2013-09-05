@@ -1,4 +1,5 @@
 require "vagrant"
+require "fog"
 
 module VagrantPlugins
   module Rackspace
@@ -14,7 +15,7 @@ module VagrantPlugins
       #
       # expected to be a symbol - :dfw (default), :ord, :lon
       #
-      # use this OR rackspace_compute_url
+      # Users should preference the rackspace_region setting over rackspace_compute_url
       attr_accessor :rackspace_region
 
       # The compute_url to access RackSpace. If nil, it will default
@@ -31,8 +32,13 @@ module VagrantPlugins
       # Fog::Compute::RackspaceV2::ORD_ENDPOINT
       # Fog::Compute::RackspaceV2::LON_ENDPOINT
       #
-      # use this OR rackspace_region
+      # Users should preference the rackspace_region setting over rackspace_compute_url
       attr_accessor :rackspace_compute_url
+
+      # The authenication endpoint. This defaults to Rackspace's global authentication endpoint.
+      # Users of the London data center should specify the following:
+      # https://lon.identity.api.rackspacecloud.com/v2.0
+      attr_writer :rackspace_auth_url
 
       # The flavor of server to launch, either the ID or name. This
       # can also be a regular expression to partially match a name.
@@ -67,6 +73,7 @@ module VagrantPlugins
         @api_key  = UNSET_VALUE
         @rackspace_region = UNSET_VALUE
         @rackspace_compute_url = UNSET_VALUE
+        @rackspace_auth_url = UNSET_VALUE
         @flavor   = UNSET_VALUE
         @image    = UNSET_VALUE
         @public_key_path = UNSET_VALUE
@@ -79,14 +86,25 @@ module VagrantPlugins
         @api_key  = nil if @api_key == UNSET_VALUE
         @rackspace_region = nil if @rackspace_region == UNSET_VALUE
         @rackspace_compute_url = nil if @rackspace_compute_url == UNSET_VALUE
+        @rackspace_auth_url = nil if @rackspace_auth_url == UNSET_VALUE
         @flavor   = /512MB/ if @flavor == UNSET_VALUE
         @image    = /Ubuntu/ if @image == UNSET_VALUE
-        @rackconnect = false if @rackconnect == UNSET_VALUE
+        @rackconnect = nil if @rackconnect == UNSET_VALUE
         @server_name = nil if @server_name == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
 
         if @public_key_path == UNSET_VALUE
           @public_key_path = Vagrant.source_root.join("keys/vagrant.pub")
+        end
+      end
+
+      # @note Currently, you must authenticate against the UK authenication endpoint to access the London Data center.
+      #     Hopefully this method makes the experience more seemless for users of the UK cloud.
+      def rackspace_auth_url
+        if (@rackspace_auth_url.nil? || @rackspace_auth_url == UNSET_VALUE) && lon_region?
+          Fog::Rackspace::UK_AUTH_ENDPOINT
+        else
+          @rackspace_auth_url
         end
       end
 
@@ -102,6 +120,12 @@ module VagrantPlugins
         end
 
         { "RackSpace Provider" => errors }
+      end
+
+      private
+
+      def lon_region?
+        rackspace_region && rackspace_region != UNSET_VALUE && rackspace_region.to_sym == :lon
       end
     end
   end
