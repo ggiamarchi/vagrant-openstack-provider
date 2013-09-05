@@ -103,6 +103,7 @@ vagrant will authenticate against the UK authentication endpoint.
   defaults to the name of the Vagrant machine (via `config.vm.define`), but
   can be overridden with this.
 * `username` - The username with which to access Rackspace.
+* `disk_config` - Disk Configuration  'AUTO' or 'MANUAL'
 
 These can be set like typical provider-specific configuration:
 

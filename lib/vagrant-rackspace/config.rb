@@ -69,6 +69,18 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :username
 
+       # The disk configuration value.
+       #   * AUTO -   The server is built with a single partition the size of the target flavor disk. The file system is automatically adjusted to fit the entire partition.
+       #              This keeps things simple and automated. AUTO is valid only for images and servers with a single partition that use the EXT3 file system.
+       #              This is the default setting for applicable Rackspace base images.
+       #
+       #   * MANUAL - The server is built using whatever partition scheme and file system is in the source image. If the target flavor disk is larger,
+       #              the remaining disk space is left unpartitioned. This enables images to have non-EXT3 file systems, multiple partitions,
+       #              and so on, and enables you to manage the disk configuration.
+       #
+       # This defaults to MANUAL
+      attr_accessor :disk_config
+
       def initialize
         @api_key  = UNSET_VALUE
         @rackspace_region = UNSET_VALUE
@@ -80,6 +92,7 @@ module VagrantPlugins
         @rackconnect = UNSET_VALUE
         @server_name = UNSET_VALUE
         @username = UNSET_VALUE
+        @disk_config = UNSET_VALUE
       end
 
       def finalize!
@@ -92,6 +105,7 @@ module VagrantPlugins
         @rackconnect = nil if @rackconnect == UNSET_VALUE
         @server_name = nil if @server_name == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
+        @disk_config = nil if @disk_config == UNSET_VALUE
 
         if @public_key_path == UNSET_VALUE
           @public_key_path = Vagrant.source_root.join("keys/vagrant.pub")

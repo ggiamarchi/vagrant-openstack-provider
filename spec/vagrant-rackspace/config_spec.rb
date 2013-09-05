@@ -21,6 +21,7 @@ describe VagrantPlugins::Rackspace::Config do
     its(:rackconnect) { should be_nil }
     its(:server_name) { should be_nil }
     its(:username) { should be_nil }
+    its(:disk_config) { should be_nil }
   end
 
   describe "overriding defaults" do
@@ -33,6 +34,7 @@ describe VagrantPlugins::Rackspace::Config do
       :public_key_path,
       :rackconnect,
       :server_name,
+      :disk_config,
       :username].each do |attribute|
       it "should not default #{attribute} if overridden" do
         subject.send("#{attribute}=".to_sym, "foo")
