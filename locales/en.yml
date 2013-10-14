@@ -41,6 +41,8 @@ en:
         you specified a valid path.
       username_required: |-
         A username is required.
+      invalid_uri: |-
+        The value for %{key} is not a valid URI: %{uri}
 
     errors:
       create_bad_state: |-

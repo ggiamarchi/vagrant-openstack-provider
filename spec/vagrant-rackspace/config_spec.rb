@@ -46,6 +46,14 @@ describe VagrantPlugins::Rackspace::Config do
 
   describe "validation" do
     let(:machine) { double("machine") }
+    let(:validation_errors) { subject.validate(machine)['RackSpace Provider'] }
+    let(:error_message) { double("error message") }
+
+    before(:each) do
+      machine.stub_chain(:env, :root_path).and_return '/'
+      subject.username = 'foo'
+      subject.api_key = 'bar'
+    end
 
     subject do
       super().tap do |o|
@@ -54,21 +62,52 @@ describe VagrantPlugins::Rackspace::Config do
     end
 
     context "with good values" do
-      it "should validate"
+      it "should validate" do
+        validation_errors.should be_empty
+      end
     end
 
     context "the API key" do
-      it "should error if not given"
+      it "should error if not given" do
+        subject.api_key = nil
+        I18n.should_receive(:t).with('vagrant_rackspace.config.api_key_required').and_return error_message
+        validation_errors.first.should == error_message
+      end
     end
 
     context "the public key path" do
-      it "should have errors if the key doesn't exist"
-      it "should not have errors if the key exists with an absolute path"
-      it "should not have errors if the key exists with a relative path"
+      it "should have errors if the key doesn't exist" do
+        subject.public_key_path = 'missing'
+        I18n.should_receive(:t).with('vagrant_rackspace.config.public_key_not_found').and_return error_message
+        validation_errors.first.should == error_message
+      end
+      it "should not have errors if the key exists with an absolute path" do
+        subject.public_key_path = File.expand_path 'locales/en.yml', Dir.pwd
+        validation_errors.should be_empty
+      end
+      it "should not have errors if the key exists with a relative path" do
+        machine.stub_chain(:env, :root_path).and_return '.'
+        subject.public_key_path = 'locales/en.yml'
+        validation_errors.should be_empty
+      end
     end
 
     context "the username" do
-      it "should error if not given"
+      it "should error if not given" do
+        subject.username = nil
+        I18n.should_receive(:t).with('vagrant_rackspace.config.username_required').and_return error_message
+        validation_errors.first.should == error_message
+      end
+    end
+
+    [:rackspace_compute_url, :rackspace_auth_url].each do |url|
+      context "the #{url}" do
+        it "should not validate if the URL is invalid" do
+          subject.send "#{url}=", 'baz'
+          I18n.should_receive(:t).with('vagrant_rackspace.config.invalid_uri', {:key => url, :uri => 'baz'}).and_return error_message
+          validation_errors.first.should == error_message
+        end
+      end
     end
   end
 
