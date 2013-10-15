@@ -1,5 +1,13 @@
-# 0.1.3 (September 6, 2013)
+# 0.1.4 (October 15, 2013)
 
+IMPROVEMENTS:
+
+  - Adds endpoint validation (rackspace_compute_url, rackspace_auth_url) [GH-39]
+  
+FEATURES:
+  - Adds ability to configure networks [GH-37]
+
+# 0.1.3 (September 6, 2013)
 
 IMPROVEMENTS:
 
