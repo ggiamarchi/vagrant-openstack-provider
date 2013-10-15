@@ -22,6 +22,7 @@ describe VagrantPlugins::Rackspace::Config do
     its(:server_name) { should be_nil }
     its(:username) { should be_nil }
     its(:disk_config) { should be_nil }
+    its(:networks) { should be_nil }
   end
 
   describe "overriding defaults" do
@@ -41,6 +42,15 @@ describe VagrantPlugins::Rackspace::Config do
         subject.finalize!
         subject.send(attribute).should == "foo"
       end
+    end
+
+    it "should not default networks if overridden" do
+      net_id = "deadbeef-0000-0000-0000-000000000000"
+      subject.send(:network, net_id)
+      subject.finalize!
+      subject.send(:networks).should include(net_id)
+      subject.send(:networks).should include(VagrantPlugins::Rackspace::Config::PUBLIC_NET_ID)
+      subject.send(:networks).should include(VagrantPlugins::Rackspace::Config::SERVICE_NET_ID)
     end
   end
 
@@ -157,6 +167,20 @@ describe VagrantPlugins::Rackspace::Config do
     it "should return true if rackspace_Region is :lon" do
       subject.rackspace_region = :lon
       subject.send(:lon_region?).should be_true
+    end
+  end
+
+  describe "network" do
+    it "should remove SERVICE_NET_ID if :service_net is detached" do
+      subject.send(:network, :service_net, :attach => false)
+      subject.send(:networks).should_not include(VagrantPlugins::Rackspace::Config::SERVICE_NET_ID)
+    end
+
+    it "should not allow duplicate networks" do
+      net_id = "deadbeef-0000-0000-0000-000000000000"
+      subject.send(:network, net_id)
+      subject.send(:network, net_id)
+      subject.send(:networks).count(net_id).should == 1
     end
   end
 end

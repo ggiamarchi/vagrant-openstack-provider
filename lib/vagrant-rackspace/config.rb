@@ -81,6 +81,15 @@ module VagrantPlugins
        # This defaults to MANUAL
       attr_accessor :disk_config
 
+      # Cloud Networks to attach to the server
+      #
+      # @return [Array]
+      attr_accessor :networks
+
+      # Default Rackspace Cloud Network IDs
+      SERVICE_NET_ID = '11111111-1111-1111-1111-111111111111'
+      PUBLIC_NET_ID = '00000000-0000-0000-0000-000000000000'
+
       def initialize
         @api_key  = UNSET_VALUE
         @rackspace_region = UNSET_VALUE
@@ -93,6 +102,7 @@ module VagrantPlugins
         @server_name = UNSET_VALUE
         @username = UNSET_VALUE
         @disk_config = UNSET_VALUE
+        @networks = []
       end
 
       def finalize!
@@ -106,6 +116,7 @@ module VagrantPlugins
         @server_name = nil if @server_name == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
         @disk_config = nil if @disk_config == UNSET_VALUE
+        @networks = nil if @networks.empty?
 
         if @public_key_path == UNSET_VALUE
           @public_key_path = Vagrant.source_root.join("keys/vagrant.pub")
@@ -119,6 +130,26 @@ module VagrantPlugins
           Fog::Rackspace::UK_AUTH_ENDPOINT
         else
           @rackspace_auth_url
+        end
+      end
+
+      def network(net_id, options={})
+        # Eventually, this should accept options for network configuration,
+        # primarily the IP address, but at the time of writing these
+        # options are unsupported by Cloud Networks.
+        options = {:attached => true}.merge(options)
+
+        # Add the default Public and ServiceNet networks
+        if @networks.empty?
+          @networks = [PUBLIC_NET_ID, SERVICE_NET_ID]
+        end
+
+        net_id = SERVICE_NET_ID if net_id == :service_net
+
+        if options[:attached]
+          @networks << net_id unless @networks.include? net_id
+        else
+          @networks.delete net_id
         end
       end
 

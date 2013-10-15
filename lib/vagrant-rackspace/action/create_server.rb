@@ -45,6 +45,7 @@ module VagrantPlugins
           env[:ui].info(" -- Flavor: #{flavor.name}")
           env[:ui].info(" -- Image: #{image.name}")
           env[:ui].info(" -- Disk Config: #{config.disk_config}") if config.disk_config
+          env[:ui].info(" -- Networks: #{config.networks}") if config.networks
           env[:ui].info(" -- Name: #{server_name}")
 
           # Build the options for launching...
@@ -60,6 +61,7 @@ module VagrantPlugins
             ]
           }
           options[:disk_config] = config.disk_config if config.disk_config
+          options[:networks] = config.networks if config.networks
 
           # Create the server
           server = env[:rackspace_compute].servers.create(options)

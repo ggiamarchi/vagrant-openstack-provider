@@ -125,6 +125,18 @@ supported with `vagrant-rackspace`, currently. If any of these are
 specified, Vagrant will emit a warning, but will otherwise boot
 the Rackspace server.
 
+However, you may attach a VM to an isolated [Cloud Network](http://www.rackspace.com/knowledge_center/article/getting-started-with-cloud-networks) (or Networks) using the `network` configuration option. Here's an example which adds two Cloud Networks and disables ServiceNet with the `:attach => false` option:
+
+```ruby
+config.vm.provider :rackspace do |rs|
+  rs.username = "mitchellh"
+  rs.api_key  = "foobarbaz"
+  rs.network '443aff42-be57-effb-ad30-c097c1e4503f'
+  rs.network '5e738e11-def2-4a75-ad1e-05bbe3b49efe'
+  rs.network :service_net, :attached => false
+end
+```
+
 ## Synced Folders
 
 There is minimal support for synced folders. Upon `vagrant up`,
