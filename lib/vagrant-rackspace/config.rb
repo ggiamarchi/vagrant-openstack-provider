@@ -133,20 +133,23 @@ module VagrantPlugins
         end
       end
 
-      def network(net_id)
+      def network(net_id, options={})
         # Eventually, this should accept options for network configuration,
         # primarily the IP address, but at the time of writing these
         # options are unsupported by Cloud Networks.
+        options = {:attached => true}.merge(options)
 
         # Add the default Public and ServiceNet networks
         if @networks.empty?
           @networks = [PUBLIC_NET_ID, SERVICE_NET_ID]
         end
 
-        if net_id == :no_servicenet
-          @networks.delete SERVICE_NET_ID
+        net_id = SERVICE_NET_ID if net_id == :service_net
+
+        if options[:attached]
+          @networks << net_id unless @networks.include? net_id
         else
-          @networks << net_id
+          @networks.delete net_id
         end
       end
 

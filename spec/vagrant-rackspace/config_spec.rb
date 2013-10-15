@@ -132,9 +132,16 @@ describe VagrantPlugins::Rackspace::Config do
   end
 
   describe "network" do
-    it "should remove SERVICE_NET_ID if supplied :no_servicenet" do
-      subject.send(:network, :no_servicenet)
+    it "should remove SERVICE_NET_ID if :service_net is detached" do
+      subject.send(:network, :service_net, :attach => false)
       subject.send(:networks).should_not include(VagrantPlugins::Rackspace::Config::SERVICE_NET_ID)
+    end
+
+    it "should not allow duplicate networks" do
+      net_id = "deadbeef-0000-0000-0000-000000000000"
+      subject.send(:network, net_id)
+      subject.send(:network, net_id)
+      subject.send(:networks).count(net_id).should == 1
     end
   end
 end
