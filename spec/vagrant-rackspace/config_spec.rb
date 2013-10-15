@@ -172,7 +172,7 @@ describe VagrantPlugins::Rackspace::Config do
 
   describe "network" do
     it "should remove SERVICE_NET_ID if :service_net is detached" do
-      subject.send(:network, :service_net, :attach => false)
+      subject.send(:network, :service_net, :attached => false)
       subject.send(:networks).should_not include(VagrantPlugins::Rackspace::Config::SERVICE_NET_ID)
     end
 
