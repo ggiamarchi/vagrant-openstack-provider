@@ -81,6 +81,16 @@ describe VagrantPlugins::Rackspace::Config do
       end
     end
 
+    context "with invalid key" do
+      it "should raise an error" do
+        subject.nonsense1 = true
+        subject.nonsense2 = false
+        I18n.should_receive(:t).with('vagrant.config.common.bad_field',
+          { :fields => 'nonsense1, nonsense2' })
+        .and_return error_message
+        validation_errors.first.should == error_message
+      end
+    end
     context "with good values" do
       it "should validate" do
         validation_errors.should be_empty

@@ -154,7 +154,7 @@ module VagrantPlugins
       end
 
       def validate(machine)
-        errors = []
+        errors = _detected_errors
 
         errors << I18n.t("vagrant_rackspace.config.api_key_required") if !@api_key
         errors << I18n.t("vagrant_rackspace.config.username_required") if !@username
