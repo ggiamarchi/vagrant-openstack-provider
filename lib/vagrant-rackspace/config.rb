@@ -22,7 +22,7 @@ module VagrantPlugins
       # to DFW.
       # (formerly know as 'endpoint')
       #
-      # expected to be a string url - 
+      # expected to be a string url -
       # 'https://dfw.servers.api.rackspacecloud.com/v2'
       # 'https://ord.servers.api.rackspacecloud.com/v2'
       # 'https://lon.servers.api.rackspacecloud.com/v2'
@@ -53,6 +53,12 @@ module VagrantPlugins
       #
       # @return [String]
       attr_accessor :public_key_path
+
+      # Alternately, if a keypair were already uploaded to Rackspace,
+      # the key name could be provided.
+      #
+      # @return [String]
+      attr_accessor :key_name
 
       # The option that indicates RackConnect usage or not.
       #
@@ -158,6 +164,7 @@ module VagrantPlugins
 
         errors << I18n.t("vagrant_rackspace.config.api_key_required") if !@api_key
         errors << I18n.t("vagrant_rackspace.config.username_required") if !@username
+        errors << I18n.t("one of vagrant.rackspace.config.key_name or vagrant.rackspace.config.public_key_path required") if !@key_name && !@public_key_path
 
         {
           :rackspace_compute_url => @rackspace_compute_url,
@@ -166,9 +173,11 @@ module VagrantPlugins
           errors << I18n.t("vagrant_rackspace.config.invalid_uri", :key => key, :uri => value) unless value.nil? || valid_uri?(value)
         end
 
-        public_key_path = File.expand_path(@public_key_path, machine.env.root_path)
-        if !File.file?(public_key_path)
-          errors << I18n.t("vagrant_rackspace.config.public_key_not_found")
+        if !@key_name
+          public_key_path = File.expand_path(@public_key_path, machine.env.root_path)
+          if !File.file?(public_key_path)
+            errors << I18n.t("vagrant_rackspace.config.public_key_not_found")
+          end
         end
 
         { "RackSpace Provider" => errors }
