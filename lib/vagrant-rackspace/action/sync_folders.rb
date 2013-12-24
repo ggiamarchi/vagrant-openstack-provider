@@ -20,7 +20,7 @@ module VagrantPlugins
           ssh_info = env[:machine].ssh_info
 
           config          = env[:machine].provider_config
-          rsync_includes  = config.rsync_includes          
+          rsync_includes  = config.rsync_includes.to_a
 
           env[:machine].config.vm.synced_folders.each do |id, data|
             hostpath  = File.expand_path(data[:hostpath], env[:root_path])
