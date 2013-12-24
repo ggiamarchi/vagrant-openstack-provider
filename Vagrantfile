@@ -15,8 +15,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider :rackspace do |rs|
     rs.username = ENV['RAX_USERNAME']
     rs.api_key  = ENV['RAX_API_KEY']
-    rs.rsync_include 'core'
-    rs.rsync_include 'foobar'
+
+    # rs.rsync_include 'PATTERN'  # per man page for rsync
   end
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
