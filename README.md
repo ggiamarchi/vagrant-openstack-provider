@@ -30,6 +30,16 @@ $ vagrant up --provider=rackspace
 Of course prior to doing this, you'll need to obtain an Rackspace-compatible
 box file for Vagrant.
 
+### CentOS / RHEL (sudo: sorry, you must have a tty to run sudo)
+
+The default configuration of the RHEL family of Linux distributions requires a tty in order to run sudo.  Vagrant does not connect with a tty by default, so you may experience the error:
+> sudo: sorry, you must have a tty to run sudo
+
+The best way to take deal with this error is to upgrade to Vagrant 1.4 or later, and enable:
+```
+config.ssh.pty = true
+```
+
 ## Quick Start
 
 After installing the plugin (instructions above), the quickest way to get
