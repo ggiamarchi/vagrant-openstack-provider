@@ -32,7 +32,7 @@ box file for Vagrant.
 
 ### CentOS / RHEL (sudo: sorry, you must have a tty to run sudo)
 
-The default configuration of the RHEL family of Linux distrobutions requires a tty in order to run sudo.  Vagrant does not connect with a tty by default, so you may experience the error:
+The default configuration of the RHEL family of Linux distributions requires a tty in order to run sudo.  Vagrant does not connect with a tty by default, so you may experience the error:
 > sudo: sorry, you must have a tty to run sudo
 
 The best way to take deal with this error is to upgrade to Vagrant 1.4 or later, and enable:
