@@ -109,6 +109,8 @@ vagrant will authenticate against the UK authentication endpoint.
 * `public_key_path` - The path to a public key to initialize with the remote
   server. This should be the matching pair for the private key configured
   with `config.ssh.private_key_path` on Vagrant.
+* `key_name` - If a public key has been [uploaded to the account already](http://docs.rackspace.com/servers/api/v2/cs-devguide/content/ServersKeyPairs-d1e2545.html), the uploaded key can be used to initialize the remote server by providing its name.  The uploaded public key should be the matching pair for the private key configured
+  with `config.ssh.private_key_path` on Vagrant.
 * `server_name` - The name of the server within RackSpace Cloud. This
   defaults to the name of the Vagrant machine (via `config.vm.define`), but
   can be overridden with this.

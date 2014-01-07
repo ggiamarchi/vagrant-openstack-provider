@@ -32,12 +32,15 @@ module VagrantPlugins
           # Figure out the name for the server
           server_name = config.server_name || env[:machine].name
 
-          # If we're using the default keypair, then show a warning
-          default_key_path = Vagrant.source_root.join("keys/vagrant.pub").to_s
-          public_key_path  = File.expand_path(config.public_key_path, env[:root_path])
+          # If we are using a key name, can ignore the public key path
+          if not config.key_name
+            # If we're using the default keypair, then show a warning
+            default_key_path = Vagrant.source_root.join("keys/vagrant.pub").to_s
+            public_key_path  = File.expand_path(config.public_key_path, env[:root_path])
 
-          if default_key_path == public_key_path
-            env[:ui].warn(I18n.t("vagrant_rackspace.warn_insecure_ssh"))
+            if default_key_path == public_key_path
+              env[:ui].warn(I18n.t("vagrant_rackspace.warn_insecure_ssh"))
+            end
           end
 
           # Output the settings we're going to use to the user
@@ -52,14 +55,21 @@ module VagrantPlugins
           options = {
             :flavor_id   => flavor.id,
             :image_id    => image.id,
-            :name        => server_name,
-            :personality => [
+            :name        => server_name
+          }
+
+          if config.key_name
+            options[:keypair] = config.key_name
+            env[:ui].info(" -- Key Name: #{config.key_name}")
+          else
+            options[:personality] = [
               {
                 :path     => "/root/.ssh/authorized_keys",
                 :contents => Base64.encode64(File.read(public_key_path))
               }
             ]
-          }
+          end
+
           options[:disk_config] = config.disk_config if config.disk_config
           options[:networks] = config.networks if config.networks
 
