@@ -5,6 +5,7 @@
 .vagrant
 .yardoc
 Gemfile.lock
+gemfiles/*.lock
 InstalledFiles
 _yardoc
 coverage
