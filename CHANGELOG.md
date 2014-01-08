@@ -1,3 +1,16 @@
+# 0.1.5 (January 8, 2014)
+
+IMPROVEMENTS:
+
+  - Fix Vagrant 1.4 compatibility and support multiple SSH keys [GH-58]
+  - Add uploaded keypair support [GH-53]
+  - Add ssh_run support, for vagrant ssh -c [GH-57]
+  - Requires fog 1.19 [GH-65]
+
+BUG FIXES:
+
+  - Remove networks warning as vagrant-rackspace now supports networks [GH-64]
+
 # 0.1.4 (October 15, 2013)
 
 IMPROVEMENTS:

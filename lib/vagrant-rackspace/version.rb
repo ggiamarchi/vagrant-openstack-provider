@@ -1,5 +1,5 @@
 module VagrantPlugins
   module Rackspace
-    VERSION = "0.1.5.dev"
+    VERSION = "0.1.5"
   end
 end
