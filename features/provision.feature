@@ -14,15 +14,14 @@ Feature: vagrant-rackspace fog tests
 
       config.vm.box = "dummy"
       config.ssh.private_key_path = "~/.ssh/id_rsa"
-      config.ssh.max_tries     = 1
-      config.ssh.timeout       = 10
+
 
       config.vm.provider :rackspace do |rs|
         rs.server_name = 'vagrant-provisioned-server'
         rs.username = ENV['RAX_USERNAME']
         rs.api_key  = ENV['RAX_API_KEY']
         rs.rackspace_region   = ENV['RAX_REGION'].downcase.to_sym
-        rs.flavor   = /512MB/
+        rs.flavor   = /1 GB Performance/
         rs.image    = /Ubuntu/
         rs.public_key_path = "~/.ssh/id_rsa.pub"
       end
