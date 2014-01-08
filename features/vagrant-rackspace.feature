@@ -22,15 +22,13 @@ Feature: vagrant-rackspace fog tests
       config.vm.box = "dummy"
       config.ssh.username = "vagrant" if Fog.mock?
       config.ssh.private_key_path = "~/.ssh/id_rsa" unless Fog.mock?
-      config.ssh.max_tries     = 1
-      config.ssh.timeout       = 10
 
       config.vm.provider :rackspace do |rs|
         rs.server_name = 'vagrant-single-server'
         rs.username = ENV['RAX_USERNAME']
         rs.api_key  = ENV['RAX_API_KEY']
         rs.rackspace_region = ENV['RAX_REGION'].downcase.to_sym
-        rs.flavor   = /512MB/
+        rs.flavor   = /1 GB Performance/
         rs.image    = /Ubuntu/
         rs.public_key_path = "~/.ssh/id_rsa.pub" unless Fog.mock?
       end
@@ -41,7 +39,7 @@ Feature: vagrant-rackspace fog tests
     # And I get the server from "Instance ID:"
     Then the server "vagrant-single-server" should be active
 
-Scenario: Create a single server (compute_url)
+Scenario: Create a single server (rackspace_compute_url)
     Given a file named "Vagrantfile" with:
     """
     # Testing options
@@ -54,15 +52,13 @@ Scenario: Create a single server (compute_url)
       config.vm.box = "dummy"
       config.ssh.username = "vagrant" if Fog.mock?
       config.ssh.private_key_path = "~/.ssh/id_rsa" unless Fog.mock?
-      config.ssh.max_tries     = 1
-      config.ssh.timeout       = 10
 
       config.vm.provider :rackspace do |rs|
         rs.server_name = 'vagrant-single-server'
         rs.username = ENV['RAX_USERNAME']
         rs.api_key  = ENV['RAX_API_KEY']
-        rs.compute_url = "https://#{ENV['RAX_REGION'].downcase}.servers.api.rackspacecloud.com/v2"
-        rs.flavor   = /512MB/
+        rs.rackspace_compute_url = "https://#{ENV['RAX_REGION'].downcase}.servers.api.rackspacecloud.com/v2"
+        rs.flavor   = /1 GB Performance/
         rs.image    = /Ubuntu/
         rs.public_key_path = "~/.ssh/id_rsa.pub" unless Fog.mock?
       end
