@@ -1,3 +1,9 @@
+# 0.1.6 (January 8, 2014)
+
+BUG FIXES:
+
+  - Downgraded fog to 1.18 in order to be more compatible with vagrant-aws
+  
 # 0.1.5 (January 8, 2014)
 
 IMPROVEMENTS:
