@@ -62,7 +62,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider :rackspace do |rs|
     rs.username = "YOUR USERNAME"
     rs.api_key  = "YOUR API KEY"
-    rs.flavor   = /512MB/
+    rs.flavor   = /1 GB Performance/
     rs.image    = /Ubuntu/
   end
 end
@@ -150,6 +150,8 @@ As of February 2, 2014, the available flavor names are:
 * 30 GB Performance
 * 60 GB Performance
 * 90 GB Performance
+
+Please note that the standard instances are deprecated in favor of our performance flavors.
 
 ## Networks
 
