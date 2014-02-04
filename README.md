@@ -62,7 +62,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider :rackspace do |rs|
     rs.username = "YOUR USERNAME"
     rs.api_key  = "YOUR API KEY"
-    rs.flavor   = /512MB/
+    rs.flavor   = /1 GB Performance/
     rs.image    = /Ubuntu/
   end
 end
@@ -96,7 +96,7 @@ This provider exposes quite a few provider-specific configuration options:
 * `api_key` - The API key for accessing Rackspace.
 * `flavor` - The server flavor to boot. This can be a string matching
   the exact ID or name of the server, or this can be a regular expression
-  to partially match some server flavor.
+  to partially match some server flavor. Flavors are listed [here](#flavors).
 * `image` - The server image to boot. This can be a string matching the
   exact ID or name of the image, or this can be a regular expression to
   partially match some image.
@@ -129,6 +129,29 @@ Vagrant.configure("2") do |config|
   end
 end
 ```
+
+### Flavors
+
+As of February 2, 2014, the available flavor names are:
+
+* 512MB Standard Instance
+* 1GB Standard Instance
+* 2GB Standard Instance
+* 4GB Standard Instance
+* 8GB Standard Instance
+* 15GB Standard Instance
+* 30GB Standard Instance
+* 1 GB Performance
+* 2 GB Performance
+* 4 GB Performance
+* 8 GB Performance
+* 120 GB Performance
+* 15 GB Performance
+* 30 GB Performance
+* 60 GB Performance
+* 90 GB Performance
+
+Please note that the standard instances are deprecated in favor of our performance flavors.
 
 ## Networks
 
