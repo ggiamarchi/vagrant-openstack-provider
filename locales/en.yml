@@ -43,6 +43,8 @@ en:
         A username is required.
       invalid_uri: |-
         The value for %{key} is not a valid URI: %{uri}
+      metadata_must_be_hash: |-
+        Metadata must be a hash.
 
     errors:
       create_bad_state: |-
