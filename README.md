@@ -64,7 +64,7 @@ Vagrant.configure("2") do |config|
     rs.api_key  = "YOUR API KEY"
     rs.flavor   = /1 GB Performance/
     rs.image    = /Ubuntu/
-    rs.metadata  = {"key" => "value"}                      # optional
+    rs.metadata = {"key" => "value"}       # optional
   end
 end
 ```
