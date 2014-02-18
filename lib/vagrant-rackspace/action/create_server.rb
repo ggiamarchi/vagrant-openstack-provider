@@ -55,7 +55,8 @@ module VagrantPlugins
           options = {
             :flavor_id   => flavor.id,
             :image_id    => image.id,
-            :name        => server_name
+            :name        => server_name,
+            :metadata    => config.metadata
           }
 
           if config.key_name

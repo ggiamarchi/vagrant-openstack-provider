@@ -64,6 +64,7 @@ Vagrant.configure("2") do |config|
     rs.api_key  = "YOUR API KEY"
     rs.flavor   = /1 GB Performance/
     rs.image    = /Ubuntu/
+    rs.metadata = {"key" => "value"}       # optional
   end
 end
 ```
@@ -116,6 +117,8 @@ vagrant will authenticate against the UK authentication endpoint.
   can be overridden with this.
 * `username` - The username with which to access Rackspace.
 * `disk_config` - Disk Configuration  'AUTO' or 'MANUAL'
+* `metadata` - A set of key pair values that will be passed to the instance
+  for configuration.
 
 These can be set like typical provider-specific configuration:
 

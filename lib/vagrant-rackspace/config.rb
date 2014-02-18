@@ -60,6 +60,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :key_name
 
+      # A Hash of metadata that will be sent to the instance for configuration
+      #
+      # @return [Hash]
+      attr_accessor :metadata
+
       # The option that indicates RackConnect usage or not.
       #
       # @return [Boolean]
@@ -126,6 +131,7 @@ module VagrantPlugins
         @image    = /Ubuntu/ if @image == UNSET_VALUE
         @rackconnect = nil if @rackconnect == UNSET_VALUE
         @server_name = nil if @server_name == UNSET_VALUE
+        @metadata = nil if @metadata == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
         @disk_config = nil if @disk_config == UNSET_VALUE
         @networks = nil if @networks.empty?
