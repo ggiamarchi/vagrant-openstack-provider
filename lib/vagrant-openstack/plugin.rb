@@ -1,32 +1,32 @@
 begin
   require "vagrant"
 rescue LoadError
-  raise "The RackSpace Cloud provider must be run within Vagrant."
+  raise "The Openstack Cloud provider must be run within Vagrant."
 end
 
 # This is a sanity check to make sure no one is attempting to install
 # this into an early Vagrant version.
 if Vagrant::VERSION < "1.1.0"
-  raise "RackSpace Cloud provider is only compatible with Vagrant 1.1+"
+  raise "Openstack Cloud provider is only compatible with Vagrant 1.1+"
 end
 
 module VagrantPlugins
-  module Rackspace
+  module Openstack
     class Plugin < Vagrant.plugin("2")
-      name "RackSpace Cloud"
+      name "Openstack Cloud"
       description <<-DESC
-      This plugin enables Vagrant to manage machines in RackSpace Cloud.
+      This plugin enables Vagrant to manage machines in Openstack Cloud.
       DESC
 
-      config(:rackspace, :provider) do
+      config(:openstack, :provider) do
         require_relative "config"
         Config
       end
 
-      provider(:rackspace) do
+      provider(:openstack) do
         # Setup some things
-        Rackspace.init_i18n
-        Rackspace.init_logging
+        Openstack.init_i18n
+        Openstack.init_logging
 
         # Load the actual provider
         require_relative "provider"

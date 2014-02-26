@@ -1,10 +1,10 @@
 require "pathname"
 
-require "vagrant-rackspace/plugin"
+require "vagrant-openstack/plugin"
 
 module VagrantPlugins
-  module Rackspace
-    lib_path = Pathname.new(File.expand_path("../vagrant-rackspace", __FILE__))
+  module Openstack
+    lib_path = Pathname.new(File.expand_path("../vagrant-openstack", __FILE__))
     autoload :Errors, lib_path.join("errors")
 
     # This initializes the i18n load path so that the plugin-specific
@@ -36,7 +36,7 @@ module VagrantPlugins
       # Set the logging level on all "vagrant" namespaced
       # logs as long as we have a valid level.
       if level
-        logger = Log4r::Logger.new("vagrant_rackspace")
+        logger = Log4r::Logger.new("vagrant_openstack")
         logger.outputters = Log4r::Outputter.stderr
         logger.level = level
         logger = nil

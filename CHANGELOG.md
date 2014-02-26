@@ -15,13 +15,13 @@ IMPROVEMENTS:
 
 BUG FIXES:
 
-  - Remove networks warning as vagrant-rackspace now supports networks [GH-64]
+  - Remove networks warning as vagrant-openstack now supports networks [GH-64]
 
 # 0.1.4 (October 15, 2013)
 
 IMPROVEMENTS:
 
-  - Adds endpoint validation (rackspace_compute_url, rackspace_auth_url) [GH-39]
+  - Adds endpoint validation (openstack_compute_url, openstack_auth_url) [GH-39]
   
 FEATURES:
   - Adds ability to configure networks [GH-37]

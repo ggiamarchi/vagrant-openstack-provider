@@ -1,4 +1,4 @@
-Given(/^I have Rackspace credentials available$/) do
+Given(/^I have Openstack credentials available$/) do
   fail unless ENV['RAX_USERNAME'] && ENV['RAX_API_KEY']
 end
 

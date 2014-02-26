@@ -1,15 +1,15 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'vagrant-rackspace/version'
+require 'vagrant-openstack/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = "vagrant-rackspace"
-  gem.version       = VagrantPlugins::Rackspace::VERSION
+  gem.name          = "vagrant-openstack"
+  gem.version       = VagrantPlugins::Openstack::VERSION
   gem.authors       = ["Mitchell Hashimoto"]
   gem.email         = ["mitchell@hashicorp.com"]
-  gem.description   = "Enables Vagrant to manage machines in RackSpace Cloud."
-  gem.summary       = "Enables Vagrant to manage machines in RackSpace Cloud."
+  gem.description   = "Enables Vagrant to manage machines in Openstack Cloud."
+  gem.summary       = "Enables Vagrant to manage machines in Openstack Cloud."
   gem.homepage      = "http://www.vagrantup.com"
 
   gem.add_runtime_dependency "fog", "~> 1.18"

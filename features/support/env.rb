@@ -16,11 +16,11 @@ Before do | scenario |
     }
 
     connect_options = {
-        :provider             => 'rackspace',
-        :rackspace_username   => ENV['RAX_USERNAME'],
-        :rackspace_api_key    => ENV['RAX_API_KEY'],
+        :provider             => 'openstack',
+        :openstack_username   => ENV['RAX_USERNAME'],
+        :openstack_api_key    => ENV['RAX_API_KEY'],
         :version => :v2, # Use Next Gen Cloud Servers
-        :rackspace_region => ENV['RAX_REGION'].downcase.to_sym
+        :openstack_region => ENV['RAX_REGION'].downcase.to_sym
     }
     connect_options.merge!(proxy_options) unless ENV['https_proxy'].nil?
     @compute = Fog::Compute.new(connect_options)

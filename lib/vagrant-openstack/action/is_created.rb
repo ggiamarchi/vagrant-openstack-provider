@@ -1,5 +1,5 @@
 module VagrantPlugins
-  module Rackspace
+  module Openstack
     module Action
       class IsCreated
         def initialize(app, env)

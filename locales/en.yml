@@ -1,5 +1,5 @@
 en:
-  vagrant_rackspace:
+  vagrant_openstack:
     already_created: |-
       The server is already created.
     deleting_server: |-
@@ -22,23 +22,14 @@ en:
       Waiting for RackConnect to complete...
     waiting_for_ssh: |-
       Waiting for SSH to become available...
-    warn_insecure_ssh: |-
-      Warning! By not specifying a custom public/private keypair,
-      Vagrant is defaulting to use the insecure keypair that ships with
-      Vagrant. While this isn't much of a big deal for local development,
-      this is quite insecure for remote servers. Please specify a custom
-      public/private keypair.
     warn_networks: |-
-      Warning! The Rackspace provider doesn't support any of the Vagrant
+      Warning! The Openstack provider doesn't support any of the Vagrant
       high-level network configurations (`config.vm.network`). They
       will be silently ignored.
 
     config:
       api_key_required: |-
         An API key is required.
-      public_key_not_found: |-
-        The public key file could not be found. Please make sure
-        you specified a valid path.
       username_required: |-
         A username is required.
       invalid_uri: |-
@@ -80,7 +71,7 @@ en:
       short_error: |-
         error
       long_error: |-
-        The server is in an erroneous state. Contact RackSpace support
+        The server is in an erroneous state. Contact Openstack support
         or destroy the machine with `vagrant destroy`.
       short_not_created: |-
         not created
