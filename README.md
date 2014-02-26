@@ -133,29 +133,6 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-### Flavors
-
-As of February 2, 2014, the available flavor names are:
-
-* 512MB Standard Instance
-* 1GB Standard Instance
-* 2GB Standard Instance
-* 4GB Standard Instance
-* 8GB Standard Instance
-* 15GB Standard Instance
-* 30GB Standard Instance
-* 1 GB Performance
-* 2 GB Performance
-* 4 GB Performance
-* 8 GB Performance
-* 120 GB Performance
-* 15 GB Performance
-* 30 GB Performance
-* 60 GB Performance
-* 90 GB Performance
-
-Please note that the standard instances are deprecated in favor of our performance flavors.
-
 ## Networks
 
 Networking features in the form of `config.vm.network` are not
