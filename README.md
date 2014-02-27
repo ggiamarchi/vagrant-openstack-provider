@@ -48,7 +48,7 @@ manually within a `config.vm.provider` block. So first, add the dummy
 box using any name you want:
 
 ```
-$ vagrant box add dummy https://github.com/mitchellh/vagrant-openstack/raw/master/dummy.box
+$ vagrant box add dummy https://github.com/ggiamarchi/vagrant-openstack/raw/master/dummy.box
 ...
 ```
 
@@ -83,7 +83,7 @@ no preconfigured defaults.
 
 Every provider in Vagrant must introduce a custom box format. This
 provider introduces `openstack` boxes. You can view an example box in
-the [example_box/ directory](https://github.com/mitchellh/vagrant-openstack/tree/master/example_box).
+the [example_box/ directory](https://github.com/ggiamarchi/vagrant-openstack/tree/master/example_box).
 That directory also contains instructions on how to build a box.
 
 The box format is basically just the required `metadata.json` file
