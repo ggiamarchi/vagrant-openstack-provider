@@ -1,5 +1,7 @@
 # Vagrant Openstack Cloud Provider
 
+[![Build Status](https://api.travis-ci.org/ggiamarchi/vagrant-openstack.png?branch=master)](http://travis-ci.org/ggiamarchi/vagrant-openstack)
+
 This is a [Vagrant](http://www.vagrantup.com) 1.1+ plugin that adds a
 [Openstack Cloud](http://www.openstack.com/cloud) provider to Vagrant,
 allowing Vagrant to control and provision machines within Openstack
