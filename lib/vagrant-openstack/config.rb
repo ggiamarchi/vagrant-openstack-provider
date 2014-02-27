@@ -40,6 +40,11 @@ module VagrantPlugins
       # https://lon.identity.api.openstackcloud.com/v2.0
       attr_writer :openstack_auth_url
 
+      # Network configurations for the instance
+      #
+      # @return [String]
+      attr_accessor :network
+
       # The flavor of server to launch, either the ID or name. This
       # can also be a regular expression to partially match a name.
       attr_accessor :flavor
@@ -64,10 +69,18 @@ module VagrantPlugins
       # @return [Boolean]
       attr_accessor :rackconnect
 
+      #
+      # The name of the openstack project on witch the vm will be created.
+      #
+      attr_accessor :tenant_name
+
       # The name of the server. This defaults to the name of the machine
       # defined by Vagrant (via `config.vm.define`), but can be overriden
       # here.
       attr_accessor :server_name
+
+      # Specify the availability zone in which to create the instance
+      attr_accessor :availability_zone
 
       # The username to access Openstack.
       #
@@ -97,51 +110,53 @@ module VagrantPlugins
       # This defaults to MANUAL
       attr_accessor :disk_config
 
-      # Cloud Networks to attach to the server
-      #
-      # @return [Array]
-      attr_accessor :networks
-
       # Opt files/directories in to the rsync operation performed by this provider
       #
       # @return [Array]
       attr_accessor :rsync_includes
 
-      # Default Openstack Cloud Network IDs
-      SERVICE_NET_ID = '11111111-1111-1111-1111-111111111111'
-      PUBLIC_NET_ID = '00000000-0000-0000-0000-000000000000'
+      # The floating IP address from the IP pool which will be assigned to the instance.
+      #
+      # @return [String]
+      attr_accessor :floating_ip
 
       def initialize
-        @api_key  = UNSET_VALUE
+        @api_key = UNSET_VALUE
         @openstack_region = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
         @openstack_auth_url = UNSET_VALUE
-        @flavor   = UNSET_VALUE
-        @image    = UNSET_VALUE
+        @flavor = UNSET_VALUE
+        @image = UNSET_VALUE
         @rackconnect = UNSET_VALUE
+        @availability_zone = UNSET_VALUE
+        @tenant_name = UNSET_VALUE
         @server_name = UNSET_VALUE
         @username = UNSET_VALUE
         @disk_config = UNSET_VALUE
-        @networks = []
+        @network = UNSET_VALUE
         @rsync_includes = []
         @keypair_name = UNSET_VALUE
         @ssh_username = UNSET_VALUE
+        @floating_ip = UNSET_VALUE
       end
 
       def finalize!
-        @api_key  = nil if @api_key == UNSET_VALUE
+        @api_key = nil if @api_key == UNSET_VALUE
         @openstack_region = nil if @openstack_region == UNSET_VALUE
         @openstack_compute_url = nil if @openstack_compute_url == UNSET_VALUE
         @openstack_auth_url = nil if @openstack_auth_url == UNSET_VALUE
-        @flavor   = /m1.tiny/ if @flavor == UNSET_VALUE # TODO No default value
-        @image    = /cirros/ if @image == UNSET_VALUE   # TODO No default value
+        @flavor = /m1.tiny/ if @flavor == UNSET_VALUE # TODO No default value
+        @image = /cirros/ if @image == UNSET_VALUE    # TODO No default value
         @rackconnect = nil if @rackconnect == UNSET_VALUE
+        @availability_zone = nil if @availability_zone == UNSET_VALUE
+        @tenant_name = nil if @tenant_name == UNSET_VALUE
         @server_name = nil if @server_name == UNSET_VALUE
         @metadata = nil if @metadata == UNSET_VALUE
+        @network = nil if @network == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
         @disk_config = nil if @disk_config == UNSET_VALUE
-        @networks = nil if @networks.empty?
         @rsync_includes = nil if @rsync_includes.empty?
+        @floating_ip = nil if @floating_ip == UNSET_VALUE
 
         # Keypair defaults to nil
         @keypair_name = nil if @keypair_name == UNSET_VALUE
@@ -158,26 +173,6 @@ module VagrantPlugins
           Fog::Openstack::UK_AUTH_ENDPOINT
         else
           @openstack_auth_url
-        end
-      end
-
-      def network(net_id, options={})
-        # Eventually, this should accept options for network configuration,
-        # primarily the IP address, but at the time of writing these
-        # options are unsupported by Cloud Networks.
-        options = {:attached => true}.merge(options)
-
-        # Add the default Public and ServiceNet networks
-        if @networks.empty?
-          @networks = [PUBLIC_NET_ID, SERVICE_NET_ID]
-        end
-
-        net_id = SERVICE_NET_ID if net_id == :service_net
-
-        if options[:attached]
-          @networks << net_id unless @networks.include? net_id
-        else
-          @networks.delete net_id
         end
       end
 

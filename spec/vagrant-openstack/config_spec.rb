@@ -28,10 +28,11 @@ describe VagrantPlugins::Openstack::Config do
     its(:flavor)   { should eq(/m1.tiny/) }
     its(:image)    { should eq(/cirros/) }
     its(:rackconnect) { should be_nil }
+    its(:network) { should be_nil }
     its(:server_name) { should be_nil }
     its(:username) { should be_nil }
     its(:disk_config) { should be_nil }
-    its(:networks) { should be_nil }
+    its(:network) { should be_nil }
     its(:rsync_includes) { should be_nil }
     its(:keypair_name) { should be_nil }
     its(:ssh_username) { should be_nil }
@@ -46,6 +47,7 @@ describe VagrantPlugins::Openstack::Config do
       :image,
       :rackconnect,
       :server_name,
+      :network,
       :disk_config,
       :username,
       :keypair_name,

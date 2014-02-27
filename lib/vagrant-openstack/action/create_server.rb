@@ -11,13 +11,13 @@ module VagrantPlugins
         include Vagrant::Util::Retryable
 
         def initialize(app, env)
-          @app    = app
+          @app = app
           @logger = Log4r::Logger.new("vagrant_openstack::action::create_server")
         end
 
         def call(env)
           # Get the configs
-          config   = env[:machine].provider_config
+          config = env[:machine].provider_config
 
           # Find the flavor
           env[:ui].info(I18n.t("vagrant_openstack.finding_flavor"))
@@ -34,23 +34,30 @@ module VagrantPlugins
 
           # Output the settings we're going to use to the user
           env[:ui].info(I18n.t("vagrant_openstack.launching_server"))
-          env[:ui].info(" -- Flavor: #{flavor.name}")
-          env[:ui].info(" -- Image: #{image.name}")
-          env[:ui].info(" -- Disk Config: #{config.disk_config}") if config.disk_config
-          env[:ui].info(" -- Networks: #{config.networks}") if config.networks
-          env[:ui].info(" -- Name: #{server_name}")
+          env[:ui].info(" -- Flavor       : #{flavor.name}")
+          env[:ui].info(" -- Image        : #{image.name}")
+          env[:ui].info(" -- Disk Config  : #{config.disk_config}") if config.disk_config
+          env[:ui].info(" -- Network      : #{config.network}") if config.network
+          env[:ui].info(" -- Tenant       : #{config.tenant_name}")
+          env[:ui].info(" -- Name         : #{server_name}")
 
           # Build the options for launching...
           options = {
-            :flavor_ref  => flavor.id,
-            :image_ref   => image.id,
-            :name        => server_name,
-            :metadata    => config.metadata,
-            :key_name    => config.keypair_name
+            :flavor_ref         => flavor.id,
+            :image_ref          => image.id,
+            :name               => server_name,
+            :metadata           => config.metadata,
+            :key_name           => config.keypair_name,
+            :availability_zone  => config.availability_zone
           }
 
+          # Find a network if provided
+          if config.network
+            network = find_matching(env[:openstack_network].networks, config.network)
+            options[:nics] = [{"net_id" => network.id}] if network
+          end
+
           options[:disk_config] = config.disk_config if config.disk_config
-          options[:networks] = config.networks if config.networks
 
           # Create the server
           server = env[:openstack_compute].servers.create(options)
@@ -65,12 +72,17 @@ module VagrantPlugins
             next if env[:interrupted]
 
             # Set the progress
-            env[:ui].clear_line
-            env[:ui].report_progress(server.progress, 100, false)
+            #env[:ui].clear_line
+            #env[:ui].report_progress(server.progress, 100, false)
 
             # Wait for the server to be ready
             begin
-              server.wait_for(5) { ready? }
+              server.wait_for(25) { ready? }
+              if config.floating_ip
+                env[:ui].info("Using floating IP #{config.floating_ip}")
+                floater = env[:openstack_compute].addresses.find { |thisone| thisone.ip.eql? config.floating_ip }
+                floater.server = server
+              end
             rescue RuntimeError => e
               # If we don't have an error about a state transition, then
               # we just move on.
@@ -99,15 +111,18 @@ module VagrantPlugins
 
             # Wait for SSH to become available
             env[:ui].info(I18n.t("vagrant_openstack.waiting_for_ssh"))
-            while true
-              begin
-                # If we're interrupted then just back out
-                break if env[:interrupted]
-                break if env[:machine].communicate.ready?
-              rescue Errno::ENETUNREACH
-              end
-              sleep 2
-            end
+            #while true
+            #  begin
+            #    # If we're interrupted then just back out
+            #    break if env[:interrupted]
+            #    break if env[:machine].communicate.ready?
+            #  rescue Errno::ENETUNREACH
+            #  end
+            #end
+
+            # Previous waiting loop does not working for an unknown reason
+            # Dirty workaround awaiting for a bugfix
+            sleep 30
 
             env[:ui].info(I18n.t("vagrant_openstack.ready"))
           end

@@ -9,30 +9,34 @@ module VagrantPlugins
       # in the environment.
       class ConnectOpenstack
         def initialize(app, env)
-          @app    = app
+          @app = app
           @logger = Log4r::Logger.new("vagrant_openstack::action::connect_openstack")
         end
 
         def call(env)
           # Get the configs
-          config   = env[:machine].provider_config
-          api_key  = config.api_key
+          config = env[:machine].provider_config
+          api_key = config.api_key
           username = config.username
+          openstack_auth_url = config.openstack_auth_url
+          tenant_name = config.tenant_name
 
           params = {
-            :provider => :openstack,
-            :version  => :v2,
-            :openstack_api_key => api_key,
-            :openstack_username => username,
-            :openstack_auth_url => config.openstack_auth_url
+              :provider => :openstack,
+              #:version  => :v2, # TODO
+              :openstack_tenant => tenant_name,
+              :openstack_api_key => api_key,
+              :openstack_username => username,
+              :openstack_auth_url => openstack_auth_url
           }
 
-          if config.openstack_compute_url
-            @logger.info("Connecting to Openstack compute_url...")
-            params[:openstack_compute_url] = config.openstack_compute_url
-          else
-            @logger.info("Connecting to Openstack region...")
-            params[:openstack_region] = config.openstack_region
+          if config.network
+            env[:openstack_network] = Fog::Network.new({
+                                                           :provider => :openstack,
+                                                           :openstack_username => username,
+                                                           :openstack_api_key => api_key,
+                                                           :openstack_auth_url => openstack_auth_url
+                                                       })
           end
 
           env[:openstack_compute] = Fog::Compute.new params
