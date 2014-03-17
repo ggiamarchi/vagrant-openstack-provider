@@ -5,9 +5,39 @@ require "vagrant/util/subprocess"
 module VagrantPlugins
   module Openstack
     module Action
+
+      class SyncFolders
+        def initialize(app, env)
+          @app = app
+        end
+
+        def call(env)
+          sync_method = env[:machine].provider_config.sync_method
+          if sync_method == "rsync"
+            RsyncFolders.new(@app, env).call(env)
+          elsif sync_method == "none"
+            NoSyncFolders.new(@app, env).call(env)
+          else
+            raise Errors::SyncMethodError, :sync_method_value => sync_method
+          end
+        end
+
+      end
+
+      class NoSyncFolders
+        def initialize(app, env)
+          @app = app
+        end
+
+        def call(env)
+          @app.call(env)
+          env[:ui].info("Sync folders are disabled")
+        end
+      end
+
       # This middleware uses `rsync` to sync the folders over to the
       # remote instance.
-      class SyncFolders
+      class RsyncFolders
         def initialize(app, env)
           @app    = app
           @logger = Log4r::Logger.new("vagrant_openstack::action::sync_folders")

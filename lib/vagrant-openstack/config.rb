@@ -120,6 +120,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :floating_ip
 
+      # Sync folder method. Can be either "rsync" or "none"
+      #
+      # @return [String]
+      attr_accessor :sync_method
+
       def initialize
         @api_key = UNSET_VALUE
         @openstack_region = UNSET_VALUE
@@ -138,6 +143,7 @@ module VagrantPlugins
         @keypair_name = UNSET_VALUE
         @ssh_username = UNSET_VALUE
         @floating_ip = UNSET_VALUE
+        @sync_method = UNSET_VALUE
       end
 
       def finalize!
@@ -157,6 +163,7 @@ module VagrantPlugins
         @disk_config = nil if @disk_config == UNSET_VALUE
         @rsync_includes = nil if @rsync_includes.empty?
         @floating_ip = nil if @floating_ip == UNSET_VALUE
+        @sync_method = "rsync" if @sync_method == UNSET_VALUE
 
         # Keypair defaults to nil
         @keypair_name = nil if @keypair_name == UNSET_VALUE
