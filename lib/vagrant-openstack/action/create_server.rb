@@ -1,5 +1,6 @@
 require "fog"
 require "log4r"
+require 'socket'
 
 require 'vagrant/util/retryable'
 
@@ -110,19 +111,14 @@ module VagrantPlugins
             end
 
             # Wait for SSH to become available
-            env[:ui].info(I18n.t("vagrant_openstack.waiting_for_ssh"))
-            #while true
-            #  begin
-            #    # If we're interrupted then just back out
-            #    break if env[:interrupted]
-            #    break if env[:machine].communicate.ready?
-            #  rescue Errno::ENETUNREACH
-            #  end
-            #end
-
-            # Previous waiting loop does not working for an unknown reason
-            # Dirty workaround awaiting for a bugfix
-            sleep 30
+            host = env[:machine].provider_config.floating_ip
+            ssh_timeout = env[:machine].provider_config.ssh_timeout
+            if !port_open?(env, host, 22, ssh_timeout)
+              env[:ui].error(I18n.t("vagrant_openstack.timeout"))
+              raise Errors::SshUnavailable,
+                    :host    => host,
+                    :timeout => ssh_timeout
+            end
 
             env[:ui].info(I18n.t("vagrant_openstack.ready"))
           end
@@ -131,6 +127,22 @@ module VagrantPlugins
         end
 
         protected
+
+        def port_open?(env, ip, port, timeout)
+          start_time = Time.now
+          current_time = start_time
+          while (current_time - start_time) <= timeout
+            begin
+              env[:ui].info(I18n.t("vagrant_openstack.waiting_for_ssh"))
+              TCPSocket.new(ip, port)
+              return true
+            rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+              sleep 1
+            end
+            current_time = Time.now
+          end
+          return false
+        end
 
         # This method finds a matching _thing_ in a collection of
         # _things_. This works matching if the ID or NAME equals to
