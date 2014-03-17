@@ -59,15 +59,6 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
 
-    it "should not default networks if overridden" do
-      net_id = "deadbeef-0000-0000-0000-000000000000"
-      subject.send(:network, net_id)
-      subject.finalize!
-      subject.send(:networks).should include(net_id)
-      subject.send(:networks).should include(VagrantPlugins::Openstack::Config::PUBLIC_NET_ID)
-      subject.send(:networks).should include(VagrantPlugins::Openstack::Config::SERVICE_NET_ID)
-    end
-
     it "should not default rsync_includes if overridden" do 
       inc = "core"
       subject.send(:rsync_include, inc)
@@ -190,17 +181,4 @@ describe VagrantPlugins::Openstack::Config do
     end
   end
 
-  describe "network" do
-    it "should remove SERVICE_NET_ID if :service_net is detached" do
-      subject.send(:network, :service_net, :attached => false)
-      subject.send(:networks).should_not include(VagrantPlugins::Openstack::Config::SERVICE_NET_ID)
-    end
-
-    it "should not allow duplicate networks" do
-      net_id = "deadbeef-0000-0000-0000-000000000000"
-      subject.send(:network, net_id)
-      subject.send(:network, net_id)
-      subject.send(:networks).count(net_id).should == 1
-    end
-  end
 end
