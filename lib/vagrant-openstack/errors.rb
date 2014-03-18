@@ -22,6 +22,11 @@ module VagrantPlugins
       class RsyncError < VagrantOpenstackError
         error_key(:rsync_error)
       end
+
+      class SshUnavailable < VagrantOpenstackError
+        error_key(:ssh_unavailble)
+      end
+
     end
   end
 end

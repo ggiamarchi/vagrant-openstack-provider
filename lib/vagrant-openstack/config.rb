@@ -98,6 +98,12 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :ssh_username
 
+      # The SSH timeout use after server creation. If server startup is too long
+      # the timeout value can be increase with this variable. Default is 60 seconds
+      #
+      # @return [Integer]
+      attr_accessor :ssh_timeout
+
       # The disk configuration value.
       #   * AUTO -   The server is built with a single partition the size of the target flavor disk. The file system is automatically adjusted to fit the entire partition.
       #              This keeps things simple and automated. AUTO is valid only for images and servers with a single partition that use the EXT3 file system.
@@ -137,6 +143,7 @@ module VagrantPlugins
         @rsync_includes = []
         @keypair_name = UNSET_VALUE
         @ssh_username = UNSET_VALUE
+        @ssh_timeout = UNSET_VALUE
         @floating_ip = UNSET_VALUE
       end
 
@@ -164,6 +171,7 @@ module VagrantPlugins
         # The SSH values by default are nil, and the top-level config
         # `config.ssh` values are used.
         @ssh_username = nil if @ssh_username == UNSET_VALUE
+        @ssh_timeout = 60 if @ssh_timeout == UNSET_VALUE
       end
 
       # @note Currently, you must authenticate against the UK authenication endpoint to access the London Data center.
