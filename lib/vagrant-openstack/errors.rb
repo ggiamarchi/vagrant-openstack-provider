@@ -19,6 +19,10 @@ module VagrantPlugins
         error_key(:no_matching_image)
       end
 
+      class SyncMethodError < VagrantOpenstackError
+        error_key(:sync_method_error)
+      end
+
       class RsyncError < VagrantOpenstackError
         error_key(:rsync_error)
       end

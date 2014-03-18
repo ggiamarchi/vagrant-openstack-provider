@@ -51,6 +51,8 @@ en:
       no_matching_image: |-
         No matching image was found! Please check your image setting to
         make sure you have a valid image chosen.
+      sync_method_error: |-
+        Value '%{sync_method_value}' is not allowed for 'sync_method' configuration parameter. Valid values are 'rsync' and 'none'
       rsync_error: |-
         There was an error when attemping to rsync a share folder.
         Please inspect the error message below for more info.
