@@ -25,7 +25,7 @@ installing, `vagrant up` and specify the `openstack` provider. An example is
 shown below.
 
 ```
-$ vagrant plugin install vagrant-openstack
+$ vagrant plugin install vagrant-openstack-provider
 ...
 $ vagrant up --provider=openstack
 ...
@@ -105,9 +105,9 @@ This provider exposes quite a few provider-specific configuration options:
 * `image` - The server image to boot. This can be a string matching the
   exact ID or name of the image, or this can be a regular expression to
   partially match some image.
-* `openstack_region` - The region to hit. By default this is :dfw. Valid options are: 
+* `openstack_region` - The region to hit. By default this is :dfw. Valid options are:
 :dfw, :ord, :lon, :iad, :syd.  Users should preference using this setting over `openstack_compute_url` setting.
-* `openstack_compute_url` - The compute_url to hit. This is good for custom endpoints. 
+* `openstack_compute_url` - The compute_url to hit. This is good for custom endpoints.
 * `openstack_auth_url` - The endpoint to authentication against. By default, vagrant will use the global
 openstack authentication endpoint for all regions with the exception of :lon. IF :lon region is specified
 vagrant will authenticate against the UK authentication endpoint.
