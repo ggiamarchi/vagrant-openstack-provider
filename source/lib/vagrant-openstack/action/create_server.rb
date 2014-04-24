@@ -22,6 +22,7 @@ module VagrantPlugins
 
           # Find the flavor
           env[:ui].info(I18n.t("vagrant_openstack.finding_flavor"))
+          env[:ui].debug(env[:openstack_compute].flavors.all)
           flavor = find_matching(env[:openstack_compute].flavors.all, config.flavor)
           raise Errors::NoMatchingFlavor if !flavor
 
