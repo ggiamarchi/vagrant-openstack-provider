@@ -1,6 +1,6 @@
 # Release process
 
-This is vagrant-openstack's current release process, documented so people know what is
+This is vagrant-openstack-provider's current release process, documented so people know what is
 currently done.
 
 ## Prepare the release
@@ -13,5 +13,3 @@ currently done.
 The CHANGELOG.md should be maintained in a similar format to Vagrant:
 
 https://github.com/mitchellh/vagrant/blob/master/CHANGELOG.md
-
-

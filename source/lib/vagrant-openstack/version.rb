@@ -1,5 +1,5 @@
 module VagrantPlugins
   module Openstack
-    VERSION = "0.1.7dev"
+    VERSION = "0.1"
   end
 end
