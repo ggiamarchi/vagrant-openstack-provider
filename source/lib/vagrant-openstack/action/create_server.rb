@@ -65,7 +65,7 @@ module VagrantPlugins
           # Wait for the server to finish building
           env[:ui].info(I18n.t("vagrant_openstack.waiting_for_build"))
           timeout(200) do
-            while client.get_server_status(env, server_id) != 'ACTIVE' do
+            while client.get_server_details(env, server_id)['status'] != 'ACTIVE' do
               sleep 3
               @logger.debug("Waiting for server to be ACTIVE")
             end
@@ -80,23 +80,10 @@ module VagrantPlugins
             # Clear the line one more time so the progress is removed
             env[:ui].clear_line
 
-            # Wait for RackConnect to complete
-            if ( config.rackconnect )
-              env[:ui].info(I18n.t("vagrant_openstack.waiting_for_rackconnect"))
-              while true
-                status = server.metadata.all["rackconnect_automation_status"]
-                if ( !status.nil? )
-                  env[:ui].info( status )
-                end
-                break if env[:interrupted]
-                break if (status.to_s =~ /deployed/i)
-                sleep 10
-              end
-            end
-
             # Wait for SSH to become available
             host = env[:machine].provider_config.floating_ip
             ssh_timeout = env[:machine].provider_config.ssh_timeout
+            sleep 240
             if !port_open?(env, host, 22, ssh_timeout)
               env[:ui].error(I18n.t("vagrant_openstack.timeout"))
               raise Errors::SshUnavailable,

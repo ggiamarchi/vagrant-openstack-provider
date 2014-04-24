@@ -12,17 +12,19 @@ module VagrantPlugins
         end
 
         def call(env)
-          env[:machine_state_id] = read_state(env[:openstack_compute], env[:machine])
+          env[:machine_state_id] = read_state(env)
 
           @app.call(env)
         end
 
-        def read_state(openstack, machine)
+        def read_state(env)
+          machine = env[:machine]
+          client = env[:openstack_client]
           return :not_created if machine.id.nil?
 
           # Find the machine
-          server = openstack.servers.get(machine.id)
-          if server.nil? || server.state == "DELETED"
+          server = client.get_server_details(env, machine.id)
+          if server.nil? || server['status'] == "DELETED"
             # The machine can't be found
             @logger.info("Machine not found or deleted, assuming it got destroyed.")
             machine.id = nil
@@ -30,7 +32,7 @@ module VagrantPlugins
           end
 
           # Return the state
-          return server.state.downcase.to_sym
+          return server['status'].downcase.to_sym
         end
       end
     end

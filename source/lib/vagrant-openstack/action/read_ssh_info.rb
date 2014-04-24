@@ -12,32 +12,33 @@ module VagrantPlugins
         end
 
         def call(env)
-          env[:machine_ssh_info] = read_ssh_info(env[:openstack_compute], env[:machine])
+          env[:machine_ssh_info] = read_ssh_info(env)
 
           @app.call(env)
         end
 
-        def read_ssh_info(openstack, machine)
+        def read_ssh_info(env)
+          client = env[:openstack_client]
+          machine = env[:machine]
+          config = env[:machine].provider_config
+          @logger.debug(config)
           return nil if machine.id.nil?
-
-          # Find the machine
-          server = openstack.servers.get(machine.id)
-          if server.nil?
+          begin
+            details = client.get_server_details(env, machine.id)
+          rescue Exception => e
             # The machine can't be found
+            @logger.error(e)
             @logger.info("Machine couldn't be found, assuming it got destroyed.")
             machine.id = nil
             return nil
           end
 
-          config = machine.provider_config
-
-          if config.network
-            host = server.addresses[config.network].last['addr'] rescue nil
-          else
-            host = server.addresses['public'].last['addr'] rescue nil
+          for addr in details['addresses']['private']
+            if addr['OS-EXT-IPS:type'] == 'floating'
+              host = addr['addr']
+            end
           end
 
-          # Read the DNS info
           return {
             # Usually there should only be one public IP
             :host => host,
