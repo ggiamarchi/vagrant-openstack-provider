@@ -7,7 +7,6 @@ require 'vagrant/util/retryable'
 module VagrantPlugins
   module Openstack
     module Action
-      # This creates the Openstack server.
       class CreateServer
         include Vagrant::Util::Retryable
 
@@ -17,18 +16,19 @@ module VagrantPlugins
         end
 
         def call(env)
-          # Get the configs
           config = env[:machine].provider_config
+          client = env[:openstack_client]
 
           # Find the flavor
           env[:ui].info(I18n.t("vagrant_openstack.finding_flavor"))
-          env[:ui].debug(env[:openstack_compute].flavors.all)
-          flavor = find_matching(env[:openstack_compute].flavors.all, config.flavor)
+          flavors = client.get_all_flavors(env)
+          flavor = find_matching(flavors, config.flavor)
           raise Errors::NoMatchingFlavor if !flavor
 
           # Find the image
           env[:ui].info(I18n.t("vagrant_openstack.finding_image"))
-          image = find_matching(env[:openstack_compute].images.all, config.image)
+          images = client.get_all_images(env)
+          image = find_matching(images, config.image)
           raise Errors::NoMatchingImage if !image
 
           # Figure out the name for the server
@@ -37,35 +37,28 @@ module VagrantPlugins
           # Output the settings we're going to use to the user
           env[:ui].info(I18n.t("vagrant_openstack.launching_server"))
           env[:ui].info(" -- Flavor       : #{flavor.name}")
+          env[:ui].info(" -- FlavorRef    : #{flavor.id}")
           env[:ui].info(" -- Image        : #{image.name}")
+          env[:ui].info(" -- KeyPair      : #{config.keypair_name}")
+          env[:ui].info(" -- ImageRef     : #{image.id}")
           env[:ui].info(" -- Disk Config  : #{config.disk_config}") if config.disk_config
           env[:ui].info(" -- Network      : #{config.network}") if config.network
           env[:ui].info(" -- Tenant       : #{config.tenant_name}")
           env[:ui].info(" -- Name         : #{server_name}")
 
-          # Build the options for launching...
-          options = {
-            :flavor_ref         => flavor.id,
-            :image_ref          => image.id,
-            :name               => server_name,
-            :metadata           => config.metadata,
-            :key_name           => config.keypair_name,
-            :availability_zone  => config.availability_zone
-          }
+          #TODO(julienvey) add metadata
+          #TODO(julienvey) add availability_zone
+          #TODO(julienvey) add disk_config
+          server_id = client.create_server(env, server_name, image.id, flavor.id, config.keypair_name)
 
-          # Find a network if provided
-          if config.network
-            network = find_matching(env[:openstack_network].networks, config.network)
-            options[:nics] = [{"net_id" => network.id}] if network
-          end
-
-          options[:disk_config] = config.disk_config if config.disk_config
-
-          # Create the server
-          server = env[:openstack_compute].servers.create(options)
+          #TODO(julienvey) Find a network if provided
+          #if config.network
+          #  network = find_matching(env[:openstack_network].networks, config.network)
+          #  options[:nics] = [{"net_id" => network.id}] if network
+          #end
 
           # Store the ID right away so we can track it
-          env[:machine].id = server.id
+          env[:machine].id = server_id
 
           # Wait for the server to finish building
           env[:ui].info(I18n.t("vagrant_openstack.waiting_for_build"))

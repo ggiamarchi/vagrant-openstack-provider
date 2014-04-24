@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem "appraisal", "1.0.0"
+gem "restclient", "0.10.0"
 gem "vagrant", :git => "git://github.com/mitchellh/vagrant.git", :tag => "v1.4.3"
 
 group :development do
@@ -11,4 +12,3 @@ group :development do
   # Vagrant environment itself using `vagrant plugin`.
   gem 'coveralls', require: false
 end
-

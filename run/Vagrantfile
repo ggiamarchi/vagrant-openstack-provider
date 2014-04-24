@@ -60,6 +60,7 @@ finish() {
   run "" mkdir -p /var/lib/vagrant/provisionning
   run "" touch /var/lib/vagrant/provisionning/ok
   #TODO(julienvey) generate private key with ssh-keygen
+  run "" export RESTCLIENT_LOG=stdout
 }
 
 # Main script

@@ -21,7 +21,7 @@ Vagrant.configure("2") do |config|
     os.openstack_compute_url = ENV['OS_COMPUTE_URL']
     os.availability_zone = "nova"
     os.tenant_name = ENV['OS_TENANT_NAME']
-    os.keypair_name = "julien-mac"
+    os.keypair_name = "julien-vagrant"
     os.ssh_username = "stack"
 
 #    os.metadata  = {"key" => "value"}                      # optional
