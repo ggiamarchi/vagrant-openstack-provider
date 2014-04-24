@@ -1,6 +1,7 @@
 require "fog"
 require "log4r"
 require 'socket'
+require "timeout"
 
 require 'vagrant/util/retryable'
 
@@ -49,6 +50,7 @@ module VagrantPlugins
           #TODO(julienvey) add metadata
           #TODO(julienvey) add availability_zone
           #TODO(julienvey) add disk_config
+
           server_id = client.create_server(env, server_name, image.id, flavor.id, config.keypair_name)
 
           #TODO(julienvey) Find a network if provided
@@ -62,28 +64,16 @@ module VagrantPlugins
 
           # Wait for the server to finish building
           env[:ui].info(I18n.t("vagrant_openstack.waiting_for_build"))
-          retryable(:on => Fog::Errors::TimeoutError, :tries => 200) do # TODO retryable(:on => Timeout::Error, :tries => 200) do
-            # If we're interrupted don't worry about waiting
-            next if env[:interrupted]
-
-            # Set the progress
-            #env[:ui].clear_line
-            #env[:ui].report_progress(server.progress, 100, false)
-
-            # Wait for the server to be ready
-            begin
-              server.wait_for(25) { ready? }
-              if config.floating_ip
-                env[:ui].info("Using floating IP #{config.floating_ip}")
-                floater = env[:openstack_compute].addresses.find { |thisone| thisone.ip.eql? config.floating_ip }
-                floater.server = server
-              end
-            rescue RuntimeError => e
-              # If we don't have an error about a state transition, then
-              # we just move on.
-              raise if e.message !~ /should have transitioned/
-              raise Errors::CreateBadState, :state => server.state
+          timeout(200) do
+            while client.get_server_status(env, server_id) != 'ACTIVE' do
+              sleep 3
+              @logger.debug("Waiting for server to be ACTIVE")
             end
+          end
+
+          if config.floating_ip
+            env[:ui].info("Using floating IP #{config.floating_ip}")
+            client.add_floating_ip(env, server_id, config.floating_ip)
           end
 
           if !env[:interrupted]

@@ -58,6 +58,26 @@ module VagrantPlugins
           :content_type => :json)
         return JSON.parse(server)['server']['id']
       end
+
+      def get_server_status(env, server_id)
+        config = env[:machine].provider_config
+        server_details = RestClient.get(config.openstack_compute_url + "/servers/" + server_id,
+          "X-Auth-Token" => @token,
+          :accept => :json)
+        return JSON.parse(server_details)['server']['status']
+      end
+
+      def add_floating_ip(env, server_id, floating_ip)
+        config = env[:machine].provider_config
+        server_details = RestClient.post(config.openstack_compute_url + "/servers/" + server_id + "/action", {
+          :addFloatingIp => {
+              :address => floating_ip
+            }
+          }.to_json,
+          "X-Auth-Token" => @token,
+          :accept => :json,
+          :content_type => :json)
+      end
     end
 
     class Item
