@@ -5,6 +5,9 @@ rvm:
   - 2.0.0
   - 2.1.0
 
+before_install:
+  - cd source
+
 install:
   - "travis_retry bundle install"
   - "travis_retry appraisal install"
@@ -16,4 +19,3 @@ gemfile:
   - gemfiles/latest_stable.gemfile
   - gemfiles/oldest_current.gemfile
   - gemfiles/previous_release.gemfile
-
