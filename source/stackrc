@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # With the addition of Keystone, to use an openstack cloud you should

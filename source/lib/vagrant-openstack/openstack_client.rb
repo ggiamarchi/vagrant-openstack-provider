@@ -59,6 +59,13 @@ module VagrantPlugins
         return JSON.parse(server)['server']['id']
       end
 
+      def delete_server(env, server_id)
+        config = env[:machine].provider_config
+        server = RestClient.delete(config.openstack_compute_url + "/servers/" + server_id,
+          "X-Auth-Token" => @token,
+          :accept => :json)
+      end
+
       def get_server_details(env, server_id)
         config = env[:machine].provider_config
         server_details = RestClient.get(config.openstack_compute_url + "/servers/" + server_id,
