@@ -1,6 +1,6 @@
 @announce
-@vagrant-openstack
-Feature: vagrant-openstack fog tests
+@vagrant-openstack-provider
+Feature: vagrant-openstack-provider fog tests
 
   Background:
     Given I have Openstack credentials available
@@ -10,7 +10,7 @@ Feature: vagrant-openstack fog tests
     Given a file named "Vagrantfile" with:
     """
     Vagrant.configure("2") do |config|
-      Vagrant.require_plugin "vagrant-openstack"
+      Vagrant.require_plugin "vagrant-openstack-provider"
 
       config.vm.box = "dummy"
       config.ssh.private_key_path = "~/.ssh/id_rsa"

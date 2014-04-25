@@ -1,8 +1,8 @@
 @announce
-@vagrant-openstack
-Feature: vagrant-openstack fog tests
+@vagrant-openstack-provider
+Feature: vagrant-openstack-provider fog tests
   As a Fog developer
-  I want to smoke (or "fog") test vagrant-openstack.
+  I want to smoke (or "fog") test vagrant-openstack-provider.
   So I am confident my upstream changes did not create downstream problems.
 
   Background:
@@ -16,8 +16,8 @@ Feature: vagrant-openstack fog tests
     require File.expand_path '../fog_mock', __FILE__
 
     Vagrant.configure("2") do |config|
-      # dev/test method of loading plugin, normally would be 'vagrant plugin install vagrant-openstack'
-      Vagrant.require_plugin "vagrant-openstack"
+      # dev/test method of loading plugin, normally would be 'vagrant plugin install vagrant-openstack-provider'
+      Vagrant.require_plugin "vagrant-openstack-provider"
 
       config.vm.box = "dummy"
       config.ssh.username = "vagrant" if Fog.mock?
@@ -46,8 +46,8 @@ Scenario: Create a single server (openstack_compute_url)
     require File.expand_path '../fog_mock', __FILE__
 
     Vagrant.configure("2") do |config|
-      # dev/test method of loading plugin, normally would be 'vagrant plugin install vagrant-openstack'
-      Vagrant.require_plugin "vagrant-openstack"
+      # dev/test method of loading plugin, normally would be 'vagrant plugin install vagrant-openstack-provider'
+      Vagrant.require_plugin "vagrant-openstack-provider"
 
       config.vm.box = "dummy"
       config.ssh.username = "vagrant" if Fog.mock?

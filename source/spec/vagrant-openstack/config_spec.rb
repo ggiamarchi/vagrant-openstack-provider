@@ -8,7 +8,7 @@ if ENV['COVERAGE'] != 'false'
   SimpleCov.start
 end
 
-require "vagrant-openstack/config"
+require "vagrant-openstack-provider/config"
 require 'fog'
 
 describe VagrantPlugins::Openstack::Config do
@@ -59,7 +59,7 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
 
-    it "should not default rsync_includes if overridden" do 
+    it "should not default rsync_includes if overridden" do
       inc = "core"
       subject.send(:rsync_include, inc)
       subject.finalize!

@@ -1,9 +1,9 @@
-require 'vagrant-openstack'
+require 'vagrant-openstack-provider'
 
 Vagrant.configure("2") do |config|
 
   config.vm.box = "dummy-openstack"
-  config.vm.box_url = "https://github.com/ggiamarchi/vagrant-openstack-plugin/raw/new_version/source/dummy.box"
+  config.vm.box_url = "https://github.com/ggiamarchi/vagrant-openstack/raw/master/source/dummy.box"
 
   config.ssh.private_key_path = "/home/vagrant/.ssh/id_rsa"
   config.ssh.shell = "sh"
