@@ -1,5 +1,4 @@
 require "vagrant"
-require "fog"
 
 module VagrantPlugins
   module Openstack

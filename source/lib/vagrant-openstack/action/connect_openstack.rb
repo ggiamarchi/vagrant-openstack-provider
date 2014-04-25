@@ -1,4 +1,3 @@
-require "fog"
 require "log4r"
 require "restclient"
 require "json"
