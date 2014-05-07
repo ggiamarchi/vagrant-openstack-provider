@@ -9,7 +9,6 @@ if ENV['COVERAGE'] != 'false'
 end
 
 require "vagrant-openstack-provider/config"
-require 'fog'
 
 describe VagrantPlugins::Openstack::Config do
   describe "defaults" do

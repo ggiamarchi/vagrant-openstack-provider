@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
     os.floating_ip = "185.39.216.118"
     os.api_key = ENV['OS_PASSWORD']
     #os.network = "private"
-    os.flavor = /Linux-XL.2plus-4vCpu-32G/
+    os.flavor = /Linux-L-2vCpu-4G/
     os.image = /ubuntu-12.04_x86_64_LVM/
     os.openstack_auth_url = ENV['OS_AUTH_URL']
     os.openstack_compute_url = ENV['OS_COMPUTE_URL']
