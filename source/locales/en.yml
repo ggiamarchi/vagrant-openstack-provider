@@ -14,6 +14,8 @@ en:
       The server hasn't been created yet. Run `vagrant up` first.
     ready: |-
       The server is ready!
+    stopping_server: |-
+      Stopping server...
     timeout: |-
       Timeout!
     rsync_folder: |-
@@ -68,6 +70,10 @@ en:
         active
       long_active: |-
         The server is up and running. Run `vagrant ssh` to access it.
+      short_shutoff: |-
+        shutoff
+      long_shutoff: |-
+        The server exists but is not running. Run `vagrant up` to start it.
       short_build: |-
         building
       long_build: |-
