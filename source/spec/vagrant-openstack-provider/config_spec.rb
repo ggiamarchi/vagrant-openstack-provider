@@ -1,13 +1,4 @@
-if ENV['COVERAGE'] != 'false'
-  require 'simplecov'
-  require 'coveralls'
-  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
-    SimpleCov::Formatter::HTMLFormatter,
-    Coveralls::SimpleCov::Formatter
-  ]
-  SimpleCov.start
-end
-
+require "utils/coverage"
 require "vagrant-openstack-provider/config"
 
 describe VagrantPlugins::Openstack::Config do
@@ -80,8 +71,7 @@ describe VagrantPlugins::Openstack::Config do
         subject.nonsense1 = true
         subject.nonsense2 = false
         I18n.should_receive(:t).with('vagrant.config.common.bad_field',
-          { :fields => 'nonsense1, nonsense2' })
-        .and_return error_message
+          { :fields => 'nonsense1, nonsense2' }).and_return error_message
         validation_errors.first.should == error_message
       end
     end

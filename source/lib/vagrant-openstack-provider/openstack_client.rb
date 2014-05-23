@@ -28,26 +28,26 @@ module VagrantPlugins
 
         response_token = JSON.parse(authentication)['access']['token']
         @token = response_token['id']
-        @projectId = response_token['tenant']['id']
+        @project_id = response_token['tenant']['id']
       end
 
       def get_all_flavors(env)
         config = env[:machine].provider_config
-        flavors_json = RestClient.get("#{config.openstack_compute_url}/#{@projectId}/flavors",
+        flavors_json = RestClient.get("#{config.openstack_compute_url}/#{@project_id}/flavors",
           {"X-Auth-Token" => @token, :accept => :json})
         return JSON.parse(flavors_json)['flavors'].map { |fl| Item.new(fl['id'], fl['name']) }
       end
 
       def get_all_images(env)
         config = env[:machine].provider_config
-        images_json = RestClient.get("#{config.openstack_compute_url}/#{@projectId}/images",
+        images_json = RestClient.get("#{config.openstack_compute_url}/#{@project_id}/images",
           {"X-Auth-Token" => @token, :accept => :json})
         return JSON.parse(images_json)['images'].map { |im| Item.new(im['id'], im['name']) }
       end
 
       def create_server(env, name, image_ref, flavor_ref, keypair)
         config = env[:machine].provider_config
-        server = RestClient.post("#{config.openstack_compute_url}/#{@projectId}/servers", {
+        server = RestClient.post("#{config.openstack_compute_url}/#{@project_id}/servers", {
           :server => {
               :name => name,
               :imageRef => image_ref,
@@ -63,14 +63,14 @@ module VagrantPlugins
 
       def delete_server(env, server_id)
         config = env[:machine].provider_config
-        server = RestClient.delete("#{config.openstack_compute_url}/#{@projectId}/servers/#{server_id}",
+        server = RestClient.delete("#{config.openstack_compute_url}/#{@project_id}/servers/#{server_id}",
           "X-Auth-Token" => @token,
           :accept => :json)
       end
 
       def stop_server(env, server_id)
         config = env[:machine].provider_config
-        server = RestClient.post("#{config.openstack_compute_url}/#{@projectId}/servers/#{server_id}/action", '{ "os-stop": null }',
+        server = RestClient.post("#{config.openstack_compute_url}/#{@project_id}/servers/#{server_id}/action", '{ "os-stop": null }',
           "X-Auth-Token" => @token,
           :accept => :json,
           :content_type => :json)
@@ -78,7 +78,7 @@ module VagrantPlugins
 
       def get_server_details(env, server_id)
         config = env[:machine].provider_config
-        server_details = RestClient.get("#{config.openstack_compute_url}/#{@projectId}/servers/#{server_id}",
+        server_details = RestClient.get("#{config.openstack_compute_url}/#{@project_id}/servers/#{server_id}",
           "X-Auth-Token" => @token,
           :accept => :json)
         return JSON.parse(server_details)['server']
@@ -86,7 +86,7 @@ module VagrantPlugins
 
       def add_floating_ip(env, server_id, floating_ip)
         config = env[:machine].provider_config
-        server_details = RestClient.post("#{config.openstack_compute_url}/#{@projectId}/servers/#{server_id}/action", {
+        server_details = RestClient.post("#{config.openstack_compute_url}/#{@project_id}/servers/#{server_id}/action", {
           :addFloatingIp => {
               :address => floating_ip
             }
