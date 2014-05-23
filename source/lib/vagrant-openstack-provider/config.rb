@@ -8,15 +8,6 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :api_key
 
-      # The region to access Openstack. If nil, it will default
-      # to DFW.
-      # (formerly know as 'endpoint')
-      #
-      # expected to be a symbol - :dfw (default), :ord, :lon
-      #
-      # Users should preference the openstack_region setting over openstack_compute_url
-      attr_accessor :openstack_region
-
       # The compute_url to access Openstack. If nil, it will default
       # to DFW.
       # (formerly know as 'endpoint')
@@ -25,24 +16,10 @@ module VagrantPlugins
       # 'https://dfw.servers.api.openstackcloud.com/v2'
       # 'https://ord.servers.api.openstackcloud.com/v2'
       # 'https://lon.servers.api.openstackcloud.com/v2'
-      #
-      # alternatively, can use constants if you require 'fog/openstack' in your Vagrantfile
-      # Fog::Compute::OpenstackV2::DFW_ENDPOINT
-      # Fog::Compute::OpenstackV2::ORD_ENDPOINT
-      # Fog::Compute::OpenstackV2::LON_ENDPOINT
-      #
-      # Users should preference the openstack_region setting over openstack_compute_url
       attr_accessor :openstack_compute_url
 
       # The authenication endpoint. This defaults to Openstack's global authentication endpoint.
-      # Users of the London data center should specify the following:
-      # https://lon.identity.api.openstackcloud.com/v2.0
-      attr_writer :openstack_auth_url
-
-      # Network configurations for the instance
-      #
-      # @return [String]
-      attr_accessor :network
+      attr_accessor :openstack_auth_url
 
       # The flavor of server to launch, either the ID or name. This
       # can also be a regular expression to partially match a name.
@@ -51,22 +28,6 @@ module VagrantPlugins
       # The name or ID of the image to use. This can also be a regular
       # expression to partially match a name.
       attr_accessor :image
-
-      # Alternately, if a keypair were already uploaded to Openstack,
-      # the key name could be provided.
-      #
-      # @return [String]
-      attr_accessor :key_name
-
-      # A Hash of metadata that will be sent to the instance for configuration
-      #
-      # @return [Hash]
-      attr_accessor :metadata
-
-      # The option that indicates RackConnect usage or not.
-      #
-      # @return [Boolean]
-      attr_accessor :rackconnect
 
       #
       # The name of the openstack project on witch the vm will be created.
@@ -77,9 +38,6 @@ module VagrantPlugins
       # defined by Vagrant (via `config.vm.define`), but can be overriden
       # here.
       attr_accessor :server_name
-
-      # Specify the availability zone in which to create the instance
-      attr_accessor :availability_zone
 
       # The username to access Openstack.
       #
@@ -103,18 +61,6 @@ module VagrantPlugins
       # @return [Integer]
       attr_accessor :ssh_timeout
 
-      # The disk configuration value.
-      #   * AUTO -   The server is built with a single partition the size of the target flavor disk. The file system is automatically adjusted to fit the entire partition.
-      #              This keeps things simple and automated. AUTO is valid only for images and servers with a single partition that use the EXT3 file system.
-      #              This is the default setting for applicable Openstack base images.
-      #
-      #   * MANUAL - The server is built using whatever partition scheme and file system is in the source image. If the target flavor disk is larger,
-      #              the remaining disk space is left unpartitioned. This enables images to have non-EXT3 file systems, multiple partitions,
-      #              and so on, and enables you to manage the disk configuration.
-      #
-      # This defaults to MANUAL
-      attr_accessor :disk_config
-
       # Opt files/directories in to the rsync operation performed by this provider
       #
       # @return [Array]
@@ -132,18 +78,13 @@ module VagrantPlugins
 
       def initialize
         @api_key = UNSET_VALUE
-        @openstack_region = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
         @openstack_auth_url = UNSET_VALUE
         @flavor = UNSET_VALUE
         @image = UNSET_VALUE
-        @rackconnect = UNSET_VALUE
-        @availability_zone = UNSET_VALUE
         @tenant_name = UNSET_VALUE
         @server_name = UNSET_VALUE
         @username = UNSET_VALUE
-        @disk_config = UNSET_VALUE
-        @network = UNSET_VALUE
         @rsync_includes = []
         @keypair_name = UNSET_VALUE
         @ssh_username = UNSET_VALUE
@@ -154,19 +95,13 @@ module VagrantPlugins
 
       def finalize!
         @api_key = nil if @api_key == UNSET_VALUE
-        @openstack_region = nil if @openstack_region == UNSET_VALUE
         @openstack_compute_url = nil if @openstack_compute_url == UNSET_VALUE
         @openstack_auth_url = nil if @openstack_auth_url == UNSET_VALUE
         @flavor = /m1.tiny/ if @flavor == UNSET_VALUE # TODO No default value
         @image = /cirros/ if @image == UNSET_VALUE    # TODO No default value
-        @rackconnect = nil if @rackconnect == UNSET_VALUE
-        @availability_zone = nil if @availability_zone == UNSET_VALUE
         @tenant_name = nil if @tenant_name == UNSET_VALUE
         @server_name = nil if @server_name == UNSET_VALUE
-        @metadata = nil if @metadata == UNSET_VALUE
-        @network = nil if @network == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
-        @disk_config = nil if @disk_config == UNSET_VALUE
         @rsync_includes = nil if @rsync_includes.empty?
         @floating_ip = nil if @floating_ip == UNSET_VALUE
         @sync_method = "rsync" if @sync_method == UNSET_VALUE
@@ -178,16 +113,6 @@ module VagrantPlugins
         # `config.ssh` values are used.
         @ssh_username = nil if @ssh_username == UNSET_VALUE
         @ssh_timeout = 60 if @ssh_timeout == UNSET_VALUE
-      end
-
-      # @note Currently, you must authenticate against the UK authenication endpoint to access the London Data center.
-      #     Hopefully this method makes the experience more seemless for users of the UK cloud.
-      def openstack_auth_url
-        if (@openstack_auth_url.nil? || @openstack_auth_url == UNSET_VALUE) && lon_region?
-          Fog::Openstack::UK_AUTH_ENDPOINT
-        else
-          @openstack_auth_url
-        end
       end
 
       def rsync_include(inc)
@@ -209,12 +134,6 @@ module VagrantPlugins
         end
 
         { "Openstack Provider" => errors }
-      end
-
-      private
-
-      def lon_region?
-        openstack_region && openstack_region != UNSET_VALUE && openstack_region.to_sym == :lon
       end
 
       private

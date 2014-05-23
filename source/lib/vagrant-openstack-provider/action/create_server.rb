@@ -41,8 +41,6 @@ module VagrantPlugins
           env[:ui].info(" -- Image        : #{image.name}")
           env[:ui].info(" -- KeyPair      : #{config.keypair_name}")
           env[:ui].info(" -- ImageRef     : #{image.id}")
-          env[:ui].info(" -- Disk Config  : #{config.disk_config}") if config.disk_config
-          env[:ui].info(" -- Network      : #{config.network}") if config.network
           env[:ui].info(" -- Tenant       : #{config.tenant_name}")
           env[:ui].info(" -- Name         : #{server_name}")
 
@@ -82,7 +80,6 @@ module VagrantPlugins
             # Wait for SSH to become available
             host = env[:machine].provider_config.floating_ip
             ssh_timeout = env[:machine].provider_config.ssh_timeout
-            sleep 240
             if !port_open?(env, host, 22, ssh_timeout)
               env[:ui].error(I18n.t("vagrant_openstack.timeout"))
               raise Errors::SshUnavailable,

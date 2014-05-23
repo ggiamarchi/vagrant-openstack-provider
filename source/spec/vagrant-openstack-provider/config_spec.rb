@@ -21,17 +21,12 @@ describe VagrantPlugins::Openstack::Config do
     end
 
     its(:api_key)  { should be_nil }
-    its(:openstack_region) { should be_nil }
     its(:openstack_compute_url) { should be_nil }
     its(:openstack_auth_url) { should be_nil }
     its(:flavor)   { should eq(/m1.tiny/) }
     its(:image)    { should eq(/cirros/) }
-    its(:rackconnect) { should be_nil }
-    its(:network) { should be_nil }
     its(:server_name) { should be_nil }
     its(:username) { should be_nil }
-    its(:disk_config) { should be_nil }
-    its(:network) { should be_nil }
     its(:rsync_includes) { should be_nil }
     its(:keypair_name) { should be_nil }
     its(:ssh_username) { should be_nil }
@@ -39,15 +34,11 @@ describe VagrantPlugins::Openstack::Config do
 
   describe "overriding defaults" do
     [:api_key,
-      :openstack_region,
       :openstack_compute_url,
       :openstack_auth_url,
       :flavor,
       :image,
-      :rackconnect,
       :server_name,
-      :network,
-      :disk_config,
       :username,
       :keypair_name,
       :ssh_username].each do |attribute|
@@ -134,50 +125,4 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
   end
-
-  describe "openstack_auth_url" do
-    it "should return UNSET_VALUE if openstack_auth_url and openstack_region are UNSET" do
-      subject.openstack_auth_url.should == VagrantPlugins::Openstack::Config::UNSET_VALUE
-    end
-    it "should return UNSET_VALUE if openstack_auth_url is UNSET and openstack_region is :ord" do
-      subject.openstack_region = :ord
-      subject.openstack_auth_url.should == VagrantPlugins::Openstack::Config::UNSET_VALUE
-    end
-    it "should return custom endpoint if supplied and openstack_region is :lon" do
-      my_endpoint = 'http://custom-endpoint.com'
-      subject.openstack_region = :lon
-      subject.openstack_auth_url = my_endpoint
-      subject.openstack_auth_url.should == my_endpoint
-    end
-    it "should return custom endpoint if supplied and openstack_region is UNSET" do
-      my_endpoint = 'http://custom-endpoint.com'
-      subject.openstack_auth_url = my_endpoint
-      subject.openstack_auth_url.should == my_endpoint
-    end
-  end
-
-
-  describe "lon_region?" do
-    it "should return false if openstack_region is UNSET_VALUE" do
-      subject.openstack_region = VagrantPlugins::Openstack::Config::UNSET_VALUE
-      subject.send(:lon_region?).should be_false
-    end
-    it "should return false if openstack_region is nil" do
-      subject.openstack_region = nil
-      subject.send(:lon_region?).should be_false
-    end
-    it "should return false if openstack_region is :ord" do
-      subject.openstack_region = :ord
-      subject.send(:lon_region?).should be_false
-    end
-    it "should return true if openstack_region is 'lon'" do
-      subject.openstack_region = 'lon'
-      subject.send(:lon_region?).should be_true
-    end
-    it "should return true if openstack_Region is :lon" do
-      subject.openstack_region = :lon
-      subject.send(:lon_region?).should be_true
-    end
-  end
-
 end
