@@ -85,6 +85,7 @@ module VagrantPlugins
       end
 
       def add_floating_ip(env, server_id, floating_ip)
+        check_floating_ip(env, floating_ip)
         config = env[:machine].provider_config
         server_details = RestClient.post("#{config.openstack_compute_url}/#{@project_id}/servers/#{server_id}/action", {
           :addFloatingIp => {
@@ -94,6 +95,23 @@ module VagrantPlugins
           "X-Auth-Token" => @token,
           :accept => :json,
           :content_type => :json)
+      end
+
+      def check_floating_ip(env, floating_ip)
+        config = env[:machine].provider_config
+        ip_details = RestClient.get("#{config.openstack_compute_url}/#{@projectId}/os-floating-ips",
+          "X-Auth-Token" => @token,
+          :accept => :json)
+        for ip in JSON.parse(ip_details)['floating_ips']
+          if ip['ip'] == floating_ip
+            if !ip['instance_id'].nil?
+              raise "Floating IP #{floating_ip} already assigned to another server"
+            else
+              return
+            end
+          end
+        end
+        raise "Floating IP #{floating_ip} not available for this tenant"
       end
     end
 
