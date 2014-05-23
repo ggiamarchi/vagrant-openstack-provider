@@ -44,17 +44,7 @@ module VagrantPlugins
           env[:ui].info(" -- Tenant       : #{config.tenant_name}")
           env[:ui].info(" -- Name         : #{server_name}")
 
-          #TODO(julienvey) add metadata
-          #TODO(julienvey) add availability_zone
-          #TODO(julienvey) add disk_config
-
           server_id = client.create_server(env, server_name, image.id, flavor.id, config.keypair_name)
-
-          #TODO(julienvey) Find a network if provided
-          #if config.network
-          #  network = find_matching(env[:openstack_network].networks, config.network)
-          #  options[:nics] = [{"net_id" => network.id}] if network
-          #end
 
           # Store the ID right away so we can track it
           env[:machine].id = server_id
