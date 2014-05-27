@@ -1,14 +1,4 @@
-if ENV['COVERAGE'] != 'false'
-  require 'simplecov'
-  require 'coveralls'
-  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
-    SimpleCov::Formatter::HTMLFormatter,
-    Coveralls::SimpleCov::Formatter
-  ]
-  SimpleCov.start
-end
-
-require "vagrant-openstack-provider/provider"
+require "vagrant-openstack-provider/spec_helper"
 
 describe VagrantPlugins::Openstack::Provider do
   before :each do

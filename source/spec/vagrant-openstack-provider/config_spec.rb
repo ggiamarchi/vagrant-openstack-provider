@@ -1,5 +1,4 @@
-require "utils/coverage"
-require "vagrant-openstack-provider/config"
+require "vagrant-openstack-provider/spec_helper"
 
 describe VagrantPlugins::Openstack::Config do
   describe "defaults" do

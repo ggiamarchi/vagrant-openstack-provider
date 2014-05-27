@@ -1,6 +1,4 @@
-require "utils/coverage"
-require 'webmock/rspec'
-require "vagrant-openstack-provider/openstack_client"
+require "vagrant-openstack-provider/spec_helper"
 
 describe VagrantPlugins::Openstack::OpenstackClient do
 
