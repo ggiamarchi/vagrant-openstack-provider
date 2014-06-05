@@ -124,6 +124,30 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       end
     end
 
+    describe "get_all_images" do
+      context "with token and project_id acquainted" do
+        it "returns all images" do
+          stub_request(:get, "http://nova/a1b2c3/images").
+              with(
+              :headers => {
+                  'Accept'=>'application/json',
+                  'X-Auth-Token'=>'123456'
+              }).
+              to_return(
+              :status => 200,
+              :body => '{ "images": [ { "id": "i1", "name": "image1"}, { "id": "i2", "name": "image2"} ] }')
+
+          images = @os_client.get_all_images(env)
+
+          expect(images.length).to eq(2)
+          expect(images[0].id).to eq('i1')
+          expect(images[0].name).to eq('image1')
+          expect(images[1].id).to eq('i2')
+          expect(images[1].name).to eq('image2')
+        end
+      end
+    end
+
   end
 
 end
