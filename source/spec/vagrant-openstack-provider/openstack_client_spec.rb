@@ -148,6 +148,28 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       end
     end
 
+    describe "create_server" do
+      context "with token and project_id acquainted" do
+        it "returns new instance id" do
+
+          stub_request(:post, "http://nova/a1b2c3/servers").
+              with(
+              :body => '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key"}}',
+              :headers => {
+                'Accept'=>'application/json',
+                'Content-Type'=>'application/json',
+                'X-Auth-Token'=>'123456'
+              }).
+              to_return(:status => 202, :body => '{ "server": { "id": "o1o2o3" } }')
+
+          instance_id = @os_client.create_server(env, "inst", "img", "flav", "key")
+
+          expect(instance_id).to eq('o1o2o3')
+
+        end
+      end
+    end
+
   end
 
 end
