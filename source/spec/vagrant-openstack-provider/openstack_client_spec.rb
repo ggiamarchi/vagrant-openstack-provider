@@ -170,6 +170,24 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       end
     end
 
+    describe "delete_server" do
+      context "with token and project_id acquainted" do
+        it "returns new instance id" do
+
+          stub_request(:delete, "http://nova/a1b2c3/servers/o1o2o3").
+              with(
+              :headers => {
+                'Accept'=>'application/json',
+                'X-Auth-Token'=>'123456'
+              }).
+              to_return(:status => 204)
+
+          @os_client.delete_server(env, "o1o2o3")
+
+        end
+      end
+    end
+
   end
 
 end
