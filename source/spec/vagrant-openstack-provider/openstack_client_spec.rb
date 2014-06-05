@@ -188,6 +188,26 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       end
     end
 
+    describe "stop_server" do
+      context "with token and project_id acquainted" do
+        it "returns new instance id" do
+
+          stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action").
+              with(
+                :body => "{ \"os-stop\": null }",
+                :headers => {
+                    'Accept'=>'application/json',
+                    'Content-Type'=>'application/json',
+                    'X-Auth-Token'=>'123456'
+              }).
+              to_return(:status => 202)
+
+          @os_client.stop_server(env, "o1o2o3")
+
+        end
+      end
+    end
+
   end
 
 end
