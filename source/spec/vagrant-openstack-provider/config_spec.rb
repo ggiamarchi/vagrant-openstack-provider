@@ -10,7 +10,7 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
 
-    its(:api_key)  { should be_nil }
+    its(:password)  { should be_nil }
     its(:openstack_compute_url) { should be_nil }
     its(:openstack_auth_url) { should be_nil }
     its(:flavor)   { should eq(/m1.tiny/) }
@@ -23,7 +23,7 @@ describe VagrantPlugins::Openstack::Config do
   end
 
   describe "overriding defaults" do
-    [:api_key,
+    [:password,
       :openstack_compute_url,
       :openstack_auth_url,
       :flavor,
@@ -55,7 +55,7 @@ describe VagrantPlugins::Openstack::Config do
     before(:each) do
       machine.stub_chain(:env, :root_path).and_return '/'
       subject.username = 'foo'
-      subject.api_key = 'bar'
+      subject.password = 'bar'
       subject.keypair_name = 'keypair'
     end
 
@@ -90,8 +90,8 @@ describe VagrantPlugins::Openstack::Config do
 
     context "the API key" do
       it "should error if not given" do
-        subject.api_key = nil
-        I18n.should_receive(:t).with('vagrant_openstack.config.api_key required').and_return error_message
+        subject.password = nil
+        I18n.should_receive(:t).with('vagrant_openstack.config.password required').and_return error_message
         validation_errors.first.should == error_message
       end
     end

@@ -32,7 +32,7 @@ en:
       will be silently ignored.
 
     config:
-      api_key_required: |-
+      password_required: |-
         An API key is required.
       username_required: |-
         A username is required.

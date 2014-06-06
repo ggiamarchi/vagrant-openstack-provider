@@ -13,7 +13,7 @@ Vagrant.configure("2") do |config|
     os.server_name = "vagrant-os-plugin-test"
     os.username = ENV['OS_USERNAME']
     os.floating_ip = "185.39.216.244"
-    os.api_key = ENV['OS_PASSWORD']
+    os.password = ENV['OS_PASSWORD']
     os.flavor = /Linux-L-2vCpu-4G/
     os.image = /ubuntu-12.04_x86_64_LVM/
     os.openstack_auth_url = ENV['OS_AUTH_URL']
