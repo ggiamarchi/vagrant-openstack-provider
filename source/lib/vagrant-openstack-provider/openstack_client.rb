@@ -87,7 +87,7 @@ module VagrantPlugins
       def add_floating_ip(env, server_id, floating_ip)
         check_floating_ip(env, floating_ip)
         config = env[:machine].provider_config
-        server_details = RestClient.post("#{config.openstack_compute_url}/#{@project_id}/servers/#{server_id}/action", {
+        RestClient.post("#{config.openstack_compute_url}/#{@project_id}/servers/#{server_id}/action", {
           :addFloatingIp => {
               :address => floating_ip
             }
@@ -96,6 +96,8 @@ module VagrantPlugins
           :accept => :json,
           :content_type => :json)
       end
+
+      private
 
       def check_floating_ip(env, floating_ip)
         config = env[:machine].provider_config

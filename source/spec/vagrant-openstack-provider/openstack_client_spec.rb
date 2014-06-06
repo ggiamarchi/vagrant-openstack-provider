@@ -247,6 +247,108 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       end
     end
 
+    describe "add_floating_ip" do
+
+      context "with token and project_id acquainted and IP available" do
+        it "returns server details" do
+
+          stub_request(:get, "http://nova//os-floating-ips").
+              with(:headers => {
+              'Accept'=>'application/json',
+              'X-Auth-Token'=>'123456'
+              }).
+              to_return(:status => 200, :body => '
+                {
+                    "floating_ips": [
+                        {
+                            "fixed_ip": null,
+                            "id": 1,
+                            "instance_id": null,
+                            "ip": "1.2.3.4",
+                            "pool": "nova"
+                        },
+                        {
+                            "fixed_ip": null,
+                            "id": 2,
+                            "instance_id": null,
+                            "ip": "5.6.7.8",
+                            "pool": "nova"
+                        }
+                    ]
+                }')
+
+          stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action").
+              with(:body => '{"addFloatingIp":{"address":"1.2.3.4"}}',
+                   :headers => {
+                       'Accept'=>'application/json',
+                       'Content-Type'=>'application/json',
+                       'X-Auth-Token'=>'123456'
+              }).
+              to_return(:status => 202)
+
+          @os_client.add_floating_ip(env, "o1o2o3", "1.2.3.4")
+        end
+      end
+
+      context "with token and project_id acquainted and IP already in use" do
+        it "raise an error" do
+
+          stub_request(:get, "http://nova//os-floating-ips").
+              with(:headers => {
+              'Accept'=>'application/json',
+              'X-Auth-Token'=>'123456'
+              }).
+              to_return(:status => 200, :body => '
+                {
+                    "floating_ips": [
+                        {
+                            "fixed_ip": null,
+                            "id": 1,
+                            "instance_id": "inst",
+                            "ip": "1.2.3.4",
+                            "pool": "nova"
+                        },
+                        {
+                            "fixed_ip": null,
+                            "id": 2,
+                            "instance_id": null,
+                            "ip": "5.6.7.8",
+                            "pool": "nova"
+                        }
+                    ]
+                }')
+
+          expect { @os_client.add_floating_ip(env, "o1o2o3", "1.2.3.4") }.to raise_error(RuntimeError)
+        end
+      end
+
+      context "with token and project_id acquainted and IP not allocated" do
+        it "raise an error" do
+
+          stub_request(:get, "http://nova//os-floating-ips").
+              with(:headers => {
+              'Accept'=>'application/json',
+              'X-Auth-Token'=>'123456'
+          }).
+              to_return(:status => 200, :body => '
+                {
+                    "floating_ips": [
+                        {
+                            "fixed_ip": null,
+                            "id": 2,
+                            "instance_id": null,
+                            "ip": "5.6.7.8",
+                            "pool": "nova"
+                        }
+                    ]
+                }')
+
+          expect { @os_client.add_floating_ip(env, "o1o2o3", "1.2.3.4") }.to raise_error(RuntimeError)
+        end
+      end
+
+    end
+
   end
 
 end
