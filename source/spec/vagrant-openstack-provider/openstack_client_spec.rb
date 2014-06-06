@@ -208,6 +208,45 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       end
     end
 
+    describe "get_server_details" do
+      context "with token and project_id acquainted" do
+        it "returns server details" do
+
+          stub_request(:get, "http://nova/a1b2c3/servers/o1o2o3").
+              with(:headers => {
+              'Accept'=>'application/json',
+              'X-Auth-Token'=>'123456'
+              }).
+              to_return(:status => 200, :body => '
+                {
+                  "server": {
+                     "addresses": { "private": [ { "addr": "192.168.0.3", "version": 4 } ] },
+                     "created": "2012-08-20T21:11:09Z",
+                     "flavor": { "id": "1" },
+                     "id": "o1o2o3",
+                     "image": { "id": "i1" },
+                     "name": "new-server-test",
+                     "progress": 0,
+                     "status": "ACTIVE",
+                     "tenant_id": "openstack",
+                     "updated": "2012-08-20T21:11:09Z",
+                     "user_id": "fake"
+                  }
+                }
+              ')
+
+          server = @os_client.get_server_details(env, "o1o2o3")
+
+          expect(server['id']).to eq('o1o2o3')
+          expect(server['status']).to eq('ACTIVE')
+          expect(server['tenant_id']).to eq('openstack')
+          expect(server['image']['id']).to eq('i1')
+          expect(server['flavor']['id']).to eq('1')
+
+        end
+      end
+    end
+
   end
 
 end
