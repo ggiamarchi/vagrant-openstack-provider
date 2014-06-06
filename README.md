@@ -98,31 +98,27 @@ provider-specific configuration for this provider.
 
 This provider exposes quite a few provider-specific configuration options:
 
+* `username` - The username with which to access Openstack.
 * `api_key` - The API key for accessing Openstack.
-* `flavor` - The server flavor to boot. This can be a string matching
-  the exact ID or name of the server, or this can be a regular expression
-  to partially match some server flavor. Flavors are listed [here](#flavors).
-* `image` - The server image to boot. This can be a string matching the
-  exact ID or name of the image, or this can be a regular expression to
-  partially match some image.
-* `openstack_region` - The region to hit. By default this is :dfw. Valid options are:
-:dfw, :ord, :lon, :iad, :syd.  Users should preference using this setting over `openstack_compute_url` setting.
+* `tenant_name` - The Openstack project name to work on
+* `flavor` - The name of the flavor to use for the VM
+* `image` - The name of the image to use for the VM
 * `openstack_compute_url` - The compute_url to hit. This is good for custom endpoints.
 * `openstack_auth_url` - The endpoint to authentication against. By default, vagrant will use the global
 openstack authentication endpoint for all regions with the exception of :lon. IF :lon region is specified
 vagrant will authenticate against the UK authentication endpoint.
-* `public_key_path` - The path to a public key to initialize with the remote
-  server. This should be the matching pair for the private key configured
-  with `config.ssh.private_key_path` on Vagrant.
-* `key_name` - If a public key has been [uploaded to the account already](http://docs.openstack.com/servers/api/v2/cs-devguide/content/ServersKeyPairs-d1e2545.html), the uploaded key can be used to initialize the remote server by providing its name.  The uploaded public key should be the matching pair for the private key configured
-  with `config.ssh.private_key_path` on Vagrant.
+* `keypair_name` - The name of the key pair register in nova to associate with the VM. The public key should
+  be the matching pair for the private key configured with `config.ssh.private_key_path` on Vagrant.
+* `ssh_username` - Username used by Vagrant for ssh login.
+* `floating_ip` - The floating IP to associate with the VM. This IP must be formerly allocated.
 * `server_name` - The name of the server within Openstack Cloud. This
   defaults to the name of the Vagrant machine (via `config.vm.define`), but
   can be overridden with this.
-* `username` - The username with which to access Openstack.
-* `disk_config` - Disk Configuration  'AUTO' or 'MANUAL'
-* `metadata` - A set of key pair values that will be passed to the instance
-  for configuration.
+* `sync_method` - Specify the synchronization method for shared folder between the host and the remote VM.
+  Currently, it can be "rsync" or "none". The default value is "rsync". If your Openstack image does not
+  include rsync, you must set this parameter to "none".
+* `rsync_includes` - If `sync_method` is set to "rsync", this parameter give the list of local folders to sync
+  on the remote VM.
 
 These can be set like typical provider-specific configuration:
 
