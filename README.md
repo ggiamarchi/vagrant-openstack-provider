@@ -65,7 +65,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :openstack do |rs|
     rs.username = "YOUR USERNAME"
-    rs.api_key  = "YOUR API KEY"
+    rs.password = "YOUR API KEY"
     rs.flavor   = /1 GB Performance/
     rs.image    = /Ubuntu/
     rs.metadata = {"key" => "value"}       # optional
@@ -99,7 +99,7 @@ provider-specific configuration for this provider.
 This provider exposes quite a few provider-specific configuration options:
 
 * `username` - The username with which to access Openstack.
-* `api_key` - The API key for accessing Openstack.
+* `password` - The API key for accessing Openstack.
 * `tenant_name` - The Openstack project name to work on
 * `flavor` - The name of the flavor to use for the VM
 * `image` - The name of the image to use for the VM
@@ -128,7 +128,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :openstack do |rs|
     rs.username = "mitchellh"
-    rs.api_key  = "foobarbaz"
+    rs.password = "foobarbaz"
   end
 end
 ```
@@ -145,7 +145,7 @@ However, you may attach a VM to an isolated [Cloud Network](http://www.openstack
 ```ruby
 config.vm.provider :openstack do |rs|
   rs.username = "mitchellh"
-  rs.api_key  = "foobarbaz"
+  rs.password = "foobarbaz"
   rs.network '443aff42-be57-effb-ad30-c097c1e4503f'
   rs.network '5e738e11-def2-4a75-ad1e-05bbe3b49efe'
   rs.network :service_net, :attached => false

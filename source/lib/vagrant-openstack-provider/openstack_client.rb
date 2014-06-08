@@ -19,7 +19,7 @@ module VagrantPlugins
               :tenantName => config.tenant_name,
               :passwordCredentials => {
                 :username => config.username,
-                :password => config.api_key
+                :password => config.password
               }
             }
           }.to_json,

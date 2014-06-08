@@ -6,7 +6,7 @@ module VagrantPlugins
       # The API key to access Openstack.
       #
       # @return [String]
-      attr_accessor :api_key
+      attr_accessor :password
 
       # The compute_url to access Openstack. If nil, it will default
       # to DFW.
@@ -77,7 +77,7 @@ module VagrantPlugins
       attr_accessor :sync_method
 
       def initialize
-        @api_key = UNSET_VALUE
+        @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
         @openstack_auth_url = UNSET_VALUE
         @flavor = UNSET_VALUE
@@ -94,7 +94,7 @@ module VagrantPlugins
       end
 
       def finalize!
-        @api_key = nil if @api_key == UNSET_VALUE
+        @password = nil if @password == UNSET_VALUE
         @openstack_compute_url = nil if @openstack_compute_url == UNSET_VALUE
         @openstack_auth_url = nil if @openstack_auth_url == UNSET_VALUE
         @flavor = /m1.tiny/ if @flavor == UNSET_VALUE # TODO No default value
@@ -122,7 +122,7 @@ module VagrantPlugins
       def validate(machine)
         errors = _detected_errors
 
-        errors << I18n.t("vagrant_openstack.config.api_key required") if !@api_key
+        errors << I18n.t("vagrant_openstack.config.password required") if !@password
         errors << I18n.t("vagrant_openstack.config.username required") if !@username
         errors << I18n.t("vagrant_openstack.config.keypair_name required") if !@keypair_name
 

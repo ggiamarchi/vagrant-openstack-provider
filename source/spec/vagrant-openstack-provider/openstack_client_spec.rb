@@ -8,7 +8,7 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       config.stub(:openstack_compute_url) { "http://nova" }
       config.stub(:tenant_name) { "testTenant" }
       config.stub(:username) { "username" }
-      config.stub(:api_key) { "password" }
+      config.stub(:password) { "password" }
     end
   }
 
