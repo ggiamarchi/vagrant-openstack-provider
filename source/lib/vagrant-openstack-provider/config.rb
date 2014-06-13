@@ -122,9 +122,9 @@ module VagrantPlugins
       def validate(machine)
         errors = _detected_errors
 
-        errors << I18n.t("vagrant_openstack.config.password required") if !@password
-        errors << I18n.t("vagrant_openstack.config.username required") if !@username
-        errors << I18n.t("vagrant_openstack.config.keypair_name required") if !@keypair_name
+        errors << I18n.t("vagrant_openstack.config.password_required") if !@password
+        errors << I18n.t("vagrant_openstack.config.username_required") if !@username
+        errors << I18n.t("vagrant_openstack.config.keypair_name_required") if !@keypair_name
 
         {
           :openstack_compute_url => @openstack_compute_url,

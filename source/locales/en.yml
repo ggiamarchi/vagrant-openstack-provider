@@ -33,13 +33,15 @@ en:
 
     config:
       password_required: |-
-        An API key is required.
+        A password is required.
       username_required: |-
         A username is required.
       invalid_uri: |-
         The value for %{key} is not a valid URI: %{uri}
       metadata_must_be_hash: |-
         Metadata must be a hash.
+      keypair_name_required: |-
+        A keypair name is required.
 
     errors:
       create_bad_state: |-
