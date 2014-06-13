@@ -137,6 +137,21 @@ module VagrantPlugins
         end
       end
 
+      # This is the action that is primarily responsible for resuming
+      # suspended machines.
+      def self.action_resume
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use ConfigValidate
+          b.use Call, IsCreated do |env, b2|
+            if !env[:result]
+              b2.use MessageNotCreated
+            end
+            b2.use ConnectOpenstack
+            b2.use Resume
+          end
+        end
+      end
+
       # The autoload farm
       action_root = Pathname.new(File.expand_path("../action", __FILE__))
       autoload :ConnectOpenstack, action_root.join("connect_openstack")
@@ -150,6 +165,7 @@ module VagrantPlugins
       autoload :ReadState, action_root.join("read_state")
       autoload :SyncFolders, action_root.join("sync_folders")
       autoload :Suspend, action_root.join("suspend")
+      autoload :Resume, action_root.join("resume")
     end
   end
 end
