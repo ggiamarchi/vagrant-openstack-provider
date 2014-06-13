@@ -68,6 +68,14 @@ module VagrantPlugins
           :accept => :json)
       end
 
+      def suspend_server(env, server_id)
+        config = env[:machine].provider_config
+        RestClient.post("#{config.openstack_compute_url}/#{@project_id}/servers/#{server_id}/action", '{ "suspend": null }',
+          "X-Auth-Token" => @token,
+          :accept => :json,
+          :content_type => :json)
+      end
+
       def stop_server(env, server_id)
         config = env[:machine].provider_config
         RestClient.post("#{config.openstack_compute_url}/#{@project_id}/servers/#{server_id}/action", '{ "os-stop": null }',

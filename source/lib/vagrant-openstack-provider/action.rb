@@ -121,6 +121,22 @@ module VagrantPlugins
         end
       end
 
+      # This is the action that is primarily responsible for suspending
+      # the virtual machine.
+      def self.action_suspend
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use ConfigValidate
+          b.use Call, IsCreated do |env, b2|
+            if !env[:result]
+              b2.use MessageNotCreated
+              next
+            end
+            b2.use ConnectOpenstack
+            b2.use Suspend
+          end
+        end
+      end
+
       # The autoload farm
       action_root = Pathname.new(File.expand_path("../action", __FILE__))
       autoload :ConnectOpenstack, action_root.join("connect_openstack")
@@ -133,6 +149,7 @@ module VagrantPlugins
       autoload :ReadSSHInfo, action_root.join("read_ssh_info")
       autoload :ReadState, action_root.join("read_state")
       autoload :SyncFolders, action_root.join("sync_folders")
+      autoload :Suspend, action_root.join("suspend")
     end
   end
 end
