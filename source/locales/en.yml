@@ -2,6 +2,8 @@ en:
   vagrant_openstack:
     already_created: |-
       The server is already created.
+    already_suspended: |-
+      The server is already suspended
     deleting_server: |-
       Deleting server...
     finding_flavor: |-

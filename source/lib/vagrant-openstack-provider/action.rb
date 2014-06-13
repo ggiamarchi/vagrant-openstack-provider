@@ -12,14 +12,13 @@ module VagrantPlugins
       def self.action_destroy
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
-          b.use Call, IsCreated do |env, b2|
-            if !env[:result]
+          b.use ConnectOpenstack
+          b.use Call, ReadState do |env, b2|
+            if env[:machine_state_id] === :not_created
               b2.use MessageNotCreated
-              next
+            else
+              b2.use DeleteServer
             end
-
-            b2.use ConnectOpenstack
-            b2.use DeleteServer
           end
         end
       end
@@ -28,14 +27,14 @@ module VagrantPlugins
       def self.action_provision
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
-          b.use Call, IsCreated do |env, b2|
-            if !env[:result]
+          b.use ConnectOpenstack
+          b.use Call, ReadState do |env, b2|
+            if env[:machine_state_id] === :not_created
               b2.use MessageNotCreated
-              next
+            else
+              b2.use Provision
+              b2.use SyncFolders
             end
-
-            b2.use Provision
-            b2.use SyncFolders
           end
         end
       end
@@ -65,13 +64,13 @@ module VagrantPlugins
       def self.action_ssh
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
-          b.use Call, IsCreated do |env, b2|
-            if !env[:result]
+          b.use ConnectOpenstack
+          b.use Call, ReadState do |env, b2|
+            if env[:machine_state_id] === :not_created
               b2.use MessageNotCreated
-              next
+            else
+              b2.use SSHExec
             end
-
-            b2.use SSHExec
           end
         end
       end
@@ -79,13 +78,13 @@ module VagrantPlugins
       def self.action_ssh_run
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
-          b.use Call, IsCreated do |env, b2|
-            if !env[:result]
+          b.use ConnectOpenstack
+          b.use Call, ReadState do |env, b2|
+            if env[:machine_state_id] === :not_created
               b2.use MessageNotCreated
-              next
+            else
+              b2.use SSHRun
             end
-
-            b2.use SSHRun
           end
         end
       end
@@ -93,16 +92,16 @@ module VagrantPlugins
       def self.action_up
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
-          b.use Call, IsCreated do |env, b2|
-            if env[:result]
-              b2.use MessageAlreadyCreated
-              next
-            end
+          b.use ConnectOpenstack
 
-            b2.use ConnectOpenstack
-            b2.use Provision
-            b2.use SyncFolders
-            b2.use CreateServer
+          b.use Call, ReadState do |env, b2|
+            if env[:machine_state_id] === :not_created
+              b2.use Provision
+              b2.use SyncFolders
+              b2.use CreateServer
+            else
+              b2.use MessageAlreadyCreated
+            end
           end
         end
       end
@@ -110,13 +109,13 @@ module VagrantPlugins
       def self.action_halt
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
-          b.use Call, IsCreated do |env, b2|
-            if !env[:result]
+          b.use ConnectOpenstack
+          b.use Call, ReadState do |env, b2|
+            if env[:machine_state_id] === :not_created
               b2.use MessageNotCreated
-              next
+            else
+              b2.use StopServer
             end
-            b2.use ConnectOpenstack
-            b2.use StopServer
           end
         end
       end
@@ -126,13 +125,15 @@ module VagrantPlugins
       def self.action_suspend
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
-          b.use Call, IsCreated do |env, b2|
-            if !env[:result]
+          b.use ConnectOpenstack
+          b.use Call, ReadState do |env, b2|
+            if env[:machine_state_id] === :not_created
               b2.use MessageNotCreated
-              next
+            elsif env[:machine_state_id] === :suspended
+              b2.use MessageAlreadySuspended
+            else
+              b2.use Suspend
             end
-            b2.use ConnectOpenstack
-            b2.use Suspend
           end
         end
       end
@@ -142,12 +143,13 @@ module VagrantPlugins
       def self.action_resume
         Vagrant::Action::Builder.new.tap do |b|
           b.use ConfigValidate
-          b.use Call, IsCreated do |env, b2|
-            if !env[:result]
+          b.use ConnectOpenstack
+          b.use Call, ReadState do |env, b2|
+            if env[:machine_state_id] === :not_created
               b2.use MessageNotCreated
+            else
+              b2.use Resume
             end
-            b2.use ConnectOpenstack
-            b2.use Resume
           end
         end
       end
@@ -158,8 +160,8 @@ module VagrantPlugins
       autoload :CreateServer, action_root.join("create_server")
       autoload :DeleteServer, action_root.join("delete_server")
       autoload :StopServer, action_root.join("stop_server")
-      autoload :IsCreated, action_root.join("is_created")
       autoload :MessageAlreadyCreated, action_root.join("message_already_created")
+      autoload :MessageAlreadySuspended, action_root.join("message_already_suspended")
       autoload :MessageNotCreated, action_root.join("message_not_created")
       autoload :ReadSSHInfo, action_root.join("read_ssh_info")
       autoload :ReadState, action_root.join("read_state")
