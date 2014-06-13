@@ -160,14 +160,16 @@ module VagrantPlugins
       autoload :CreateServer, action_root.join("create_server")
       autoload :DeleteServer, action_root.join("delete_server")
       autoload :StopServer, action_root.join("stop_server")
-      autoload :MessageAlreadyCreated, action_root.join("message_already_created")
-      autoload :MessageAlreadySuspended, action_root.join("message_already_suspended")
-      autoload :MessageNotCreated, action_root.join("message_not_created")
       autoload :ReadSSHInfo, action_root.join("read_ssh_info")
       autoload :ReadState, action_root.join("read_state")
       autoload :SyncFolders, action_root.join("sync_folders")
       autoload :Suspend, action_root.join("suspend")
       autoload :Resume, action_root.join("resume")
+
+      messages_root = Pathname.new(File.expand_path("../message", __FILE__))
+      autoload :MessageAlreadyCreated, messages_root.join("message_already_created")
+      autoload :MessageAlreadySuspended, messages_root.join("message_already_suspended")
+      autoload :MessageNotCreated, messages_root.join("message_not_created")
     end
   end
 end
