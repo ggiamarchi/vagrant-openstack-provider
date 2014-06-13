@@ -83,7 +83,7 @@ describe VagrantPlugins::Openstack::Config do
     context "the keypair name" do
       it "should error if not given" do
         subject.keypair_name = nil
-        I18n.should_receive(:t).with('vagrant_openstack.config.keypair_name required').and_return error_message
+        I18n.should_receive(:t).with('vagrant_openstack.config.keypair_name_required').and_return error_message
         validation_errors.first.should == error_message
       end
     end
@@ -91,7 +91,7 @@ describe VagrantPlugins::Openstack::Config do
     context "the API key" do
       it "should error if not given" do
         subject.password = nil
-        I18n.should_receive(:t).with('vagrant_openstack.config.password required').and_return error_message
+        I18n.should_receive(:t).with('vagrant_openstack.config.password_required').and_return error_message
         validation_errors.first.should == error_message
       end
     end
@@ -99,7 +99,7 @@ describe VagrantPlugins::Openstack::Config do
     context "the username" do
       it "should error if not given" do
         subject.username = nil
-        I18n.should_receive(:t).with('vagrant_openstack.config.username required').and_return error_message
+        I18n.should_receive(:t).with('vagrant_openstack.config.username_required').and_return error_message
         validation_errors.first.should == error_message
       end
     end
