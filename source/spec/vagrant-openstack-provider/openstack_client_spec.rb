@@ -252,7 +252,7 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       context "with token and project_id acquainted and IP available" do
         it "returns server details" do
 
-          stub_request(:get, "http://nova//os-floating-ips").
+          stub_request(:get, "http://nova/a1b2c3/os-floating-ips").
               with(:headers => {
               'Accept'=>'application/json',
               'X-Auth-Token'=>'123456'
@@ -293,7 +293,7 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       context "with token and project_id acquainted and IP already in use" do
         it "raise an error" do
 
-          stub_request(:get, "http://nova//os-floating-ips").
+          stub_request(:get, "http://nova/a1b2c3/os-floating-ips").
               with(:headers => {
               'Accept'=>'application/json',
               'X-Auth-Token'=>'123456'
@@ -325,7 +325,7 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       context "with token and project_id acquainted and IP not allocated" do
         it "raise an error" do
 
-          stub_request(:get, "http://nova//os-floating-ips").
+          stub_request(:get, "http://nova/a1b2c3/os-floating-ips").
               with(:headers => {
               'Accept'=>'application/json',
               'X-Auth-Token'=>'123456'
