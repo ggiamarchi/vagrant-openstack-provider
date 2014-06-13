@@ -14,7 +14,7 @@ describe VagrantPlugins::Openstack::Config do
     its(:openstack_compute_url) { should be_nil }
     its(:openstack_auth_url) { should be_nil }
     its(:flavor)   { should be_nil }
-    its(:image)    { should eq(/cirros/) }
+    its(:image)    { should be_nil }
     its(:server_name) { should be_nil }
     its(:username) { should be_nil }
     its(:rsync_includes) { should be_nil }

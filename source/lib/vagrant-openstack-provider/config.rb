@@ -98,7 +98,7 @@ module VagrantPlugins
         @openstack_compute_url = nil if @openstack_compute_url == UNSET_VALUE
         @openstack_auth_url = nil if @openstack_auth_url == UNSET_VALUE
         @flavor = nil if @flavor == UNSET_VALUE
-        @image = /cirros/ if @image == UNSET_VALUE    # TODO No default value
+        @image = nil if @image == UNSET_VALUE    # TODO No default value
         @tenant_name = nil if @tenant_name == UNSET_VALUE
         @server_name = nil if @server_name == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
