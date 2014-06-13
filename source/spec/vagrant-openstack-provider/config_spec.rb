@@ -13,7 +13,7 @@ describe VagrantPlugins::Openstack::Config do
     its(:password)  { should be_nil }
     its(:openstack_compute_url) { should be_nil }
     its(:openstack_auth_url) { should be_nil }
-    its(:flavor)   { should eq(/m1.tiny/) }
+    its(:flavor)   { should be_nil }
     its(:image)    { should eq(/cirros/) }
     its(:server_name) { should be_nil }
     its(:username) { should be_nil }
