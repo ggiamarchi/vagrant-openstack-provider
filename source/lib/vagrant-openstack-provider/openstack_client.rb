@@ -101,7 +101,7 @@ module VagrantPlugins
 
       def check_floating_ip(env, floating_ip)
         config = env[:machine].provider_config
-        ip_details = RestClient.get("#{config.openstack_compute_url}/#{@projectId}/os-floating-ips",
+        ip_details = RestClient.get("#{config.openstack_compute_url}/#{@project_id}/os-floating-ips",
           "X-Auth-Token" => @token,
           :accept => :json)
         for ip in JSON.parse(ip_details)['floating_ips']
