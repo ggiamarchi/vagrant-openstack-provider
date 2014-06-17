@@ -93,7 +93,7 @@ module VagrantPlugins
               env[:ui].info(I18n.t("vagrant_openstack.waiting_for_ssh"))
               TCPSocket.new(ip, port)
               return true
-            rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+            rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ETIMEDOUT
               sleep 1
             end
             current_time = Time.now
