@@ -154,17 +154,35 @@ module VagrantPlugins
         end
       end
 
+      def self.action_reload
+        Vagrant::Action::Builder.new.tap do |b|
+          b.use ConfigValidate
+          b.use ConnectOpenstack
+          b.use Call, ReadState do |env, b2|
+            if env[:machine_state_id] === :not_created
+              b2.use MessageNotCreated
+            else
+              b2.use StopServer
+              b2.use WaitForServerToStop
+              b2.use StartServer
+            end
+          end
+        end
+      end
+
       # The autoload farm
       action_root = Pathname.new(File.expand_path("../action", __FILE__))
       autoload :ConnectOpenstack, action_root.join("connect_openstack")
       autoload :CreateServer, action_root.join("create_server")
       autoload :DeleteServer, action_root.join("delete_server")
       autoload :StopServer, action_root.join("stop_server")
+      autoload :StartServer, action_root.join("start_server")
       autoload :ReadSSHInfo, action_root.join("read_ssh_info")
       autoload :ReadState, action_root.join("read_state")
       autoload :SyncFolders, action_root.join("sync_folders")
       autoload :Suspend, action_root.join("suspend")
       autoload :Resume, action_root.join("resume")
+      autoload :WaitForServerToStop, action_root.join("wait_stop")
 
       messages_root = Pathname.new(File.expand_path("../message", __FILE__))
       autoload :MessageAlreadyCreated, messages_root.join("message_already_created")

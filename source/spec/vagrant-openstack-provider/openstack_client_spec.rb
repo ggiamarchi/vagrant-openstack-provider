@@ -246,6 +246,26 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       end
     end
 
+    describe "start_server" do
+      context "with token and project_id acquainted" do
+        it "returns new instance id" do
+
+          stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action").
+              with(
+                :body => "{ \"os-start\": null }",
+                :headers => {
+                    'Accept'=>'application/json',
+                    'Content-Type'=>'application/json',
+                    'X-Auth-Token'=>'123456'
+              }).
+              to_return(:status => 202)
+
+          @os_client.start_server(env, "o1o2o3")
+
+        end
+      end
+    end
+
     describe "get_server_details" do
       context "with token and project_id acquainted" do
         it "returns server details" do

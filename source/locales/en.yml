@@ -18,6 +18,8 @@ en:
       The server is ready!
     stopping_server: |-
       Stopping server...
+    starting_server: |-
+      Starting server...
     timeout: |-
       Timeout!
     rsync_folder: |-
@@ -28,6 +30,8 @@ en:
       Waiting for RackConnect to complete...
     waiting_for_ssh: |-
       Waiting for SSH to become available...
+    waiting_stop: |-
+      Waiting for the server to stop...
     warn_networks: |-
       Warning! The Openstack provider doesn't support any of the Vagrant
       high-level network configurations (`config.vm.network`). They

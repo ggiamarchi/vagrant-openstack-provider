@@ -3,17 +3,17 @@ require "log4r"
 module VagrantPlugins
   module Openstack
     module Action
-      class StopServer
+      class StartServer
         def initialize(app, env)
           @app    = app
-          @logger = Log4r::Logger.new("vagrant_openstack::action::stop_server")
+          @logger = Log4r::Logger.new("vagrant_openstack::action::start_server")
         end
 
         def call(env)
           if env[:machine].id
-            env[:ui].info(I18n.t("vagrant_openstack.stopping_server"))
+            env[:ui].info(I18n.t("vagrant_openstack.starting_server"))
             client = env[:openstack_client]
-            client.stop_server(env, env[:machine].id)
+            client.start_server(env, env[:machine].id)
           end
           @app.call(env)
         end

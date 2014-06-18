@@ -1,9 +1,10 @@
 require "log4r"
+require "timeout"
 
 module VagrantPlugins
   module Openstack
     module Action
-      class StopServer
+      class WaitForServerToStop
         def initialize(app, env)
           @app    = app
           @logger = Log4r::Logger.new("vagrant_openstack::action::stop_server")
@@ -11,9 +12,14 @@ module VagrantPlugins
 
         def call(env)
           if env[:machine].id
-            env[:ui].info(I18n.t("vagrant_openstack.stopping_server"))
+            env[:ui].info(I18n.t("vagrant_openstack.waiting_stop"))
             client = env[:openstack_client]
-            client.stop_server(env, env[:machine].id)
+            timeout(200) do
+              while client.get_server_details(env, env[:machine].id)['status'] != 'SHUTOFF' do
+                sleep 3
+                @logger.debug("Waiting for server to stop")
+              end
+            end
           end
           @app.call(env)
         end

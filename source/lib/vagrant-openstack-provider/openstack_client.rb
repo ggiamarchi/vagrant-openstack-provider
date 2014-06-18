@@ -93,6 +93,14 @@ module VagrantPlugins
           :content_type => :json)
       end
 
+      def start_server(env, server_id)
+        config = env[:machine].provider_config
+        RestClient.post("#{config.openstack_compute_url}/#{@project_id}/servers/#{server_id}/action", '{ "os-start": null }',
+          "X-Auth-Token" => @token,
+          :accept => :json,
+          :content_type => :json)
+      end
+
       def get_server_details(env, server_id)
         config = env[:machine].provider_config
         server_details = RestClient.get("#{config.openstack_compute_url}/#{@project_id}/servers/#{server_id}",
