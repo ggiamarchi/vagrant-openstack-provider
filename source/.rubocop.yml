@@ -1,6 +1,10 @@
 
 inherit_from: .rubocop_todo.yml
 
+AllCops:
+  Exclude:
+    - 'out/**/*'
+
 Style/ClassLength:
   Max: 300
 

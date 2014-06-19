@@ -13,7 +13,7 @@ install:
   - travis_retry appraisal install
 
 script:
-  - bundle exec rubocop lib spec
+  - bundle exec rubocop
   - appraisal rake
 
 gemfile:
