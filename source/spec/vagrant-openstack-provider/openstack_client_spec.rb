@@ -15,7 +15,7 @@ describe VagrantPlugins::Openstack::OpenstackClient do
   let(:env) {
     Hash.new.tap do |env|
       env[:ui] = double("ui")
-      env[:ui].stub(:info).with(anything())
+      env[:ui].stub(:info).with(anything)
       env[:machine] = double("machine")
       env[:machine].stub(:provider_config) { config }
     end
@@ -24,23 +24,15 @@ describe VagrantPlugins::Openstack::OpenstackClient do
   describe "authenticate" do
 
     class OpenstackClientTest < VagrantPlugins::Openstack::OpenstackClient
-      def get_token()
-        return @token
-      end
-
-      def get_project_id()
-        return @project_id
-      end
-
-      def get_endpoints()
-        return @endpoints
-      end
+      attr_reader :token
+      attr_reader :project_id
+      attr_reader :endpoints
     end
 
     let(:keystone_request_headers) {
       {
-          'Accept'=>'application/json',
-          'Content-Type'=>'application/json'
+        'Accept' => 'application/json',
+        'Content-Type' => 'application/json'
       }
     }
 
@@ -49,7 +41,10 @@ describe VagrantPlugins::Openstack::OpenstackClient do
     }
 
     let(:keystone_response_body) {
-      '{"access":{"token":{"id":"0123456789","tenant":{"id":"testTenantId"}},"serviceCatalog":[{"endpoints":[{"id":"eid1","publicURL":"http://nova"}],"type":"compute"},{"endpoints":[{"id":"eid2","publicURL":"http://neutron"}],"type":"network"}]}}'
+      '{"access":{"token":{"id":"0123456789","tenant":{"id":"testTenantId"}},"serviceCatalog":[
+         {"endpoints":[{"id":"eid1","publicURL":"http://nova"}],"type":"compute"},
+         {"endpoints":[{"id":"eid2","publicURL":"http://neutron"}],"type":"network"}
+       ]}}'
     }
 
     before :each do
@@ -59,42 +54,42 @@ describe VagrantPlugins::Openstack::OpenstackClient do
     context "with good credentials" do
 
       it "store token and tenant id" do
-        stub_request(:post, "http://keystoneAuthV2").
-          with(
-            :body => keystone_request_body,
-            :headers => keystone_request_headers).
-          to_return(
-            :status => 200,
-            :body => keystone_response_body,
-            :headers => keystone_request_headers)
+        stub_request(:post, "http://keystoneAuthV2")
+          .with(
+            body: keystone_request_body,
+            headers: keystone_request_headers)
+          .to_return(
+            status: 200,
+            body: keystone_response_body,
+            headers: keystone_request_headers)
 
         @os_client.authenticate(env)
 
-        @os_client.get_token.should eq("0123456789")
-        @os_client.get_project_id.should eq("testTenantId")
-        @os_client.get_endpoints()['compute'].should eq('http://nova')
-        @os_client.get_endpoints()['network'].should eq('http://neutron')
+        @os_client.token.should eq("0123456789")
+        @os_client.project_id.should eq("testTenantId")
+        @os_client.endpoints['compute'].should eq('http://nova')
+        @os_client.endpoints['network'].should eq('http://neutron')
       end
 
       context "with compute endpoint override" do
         it "store token and tenant id" do
           config.stub(:openstack_compute_url) { 'http://novaOverride' }
 
-          stub_request(:post, "http://keystoneAuthV2").
-            with(
-              :body => keystone_request_body,
-              :headers => keystone_request_headers).
-            to_return(
-              :status => 200,
-              :body => keystone_response_body,
-              :headers => keystone_request_headers)
+          stub_request(:post, "http://keystoneAuthV2")
+            .with(
+              body: keystone_request_body,
+              headers: keystone_request_headers)
+            .to_return(
+              status: 200,
+              body: keystone_response_body,
+              headers: keystone_request_headers)
 
           @os_client.authenticate(env)
 
-          @os_client.get_token.should eq("0123456789")
-          @os_client.get_project_id.should eq("testTenantId")
-          @os_client.get_endpoints()['compute'].should eq('http://novaOverride')
-          @os_client.get_endpoints()['network'].should eq('http://neutron')
+          @os_client.token.should eq("0123456789")
+          @os_client.project_id.should eq("testTenantId")
+          @os_client.endpoints['compute'].should eq('http://novaOverride')
+          @os_client.endpoints['network'].should eq('http://neutron')
         end
       end
 
@@ -102,20 +97,20 @@ describe VagrantPlugins::Openstack::OpenstackClient do
 
     context "with wrong credentials" do
       it "raise an unauthorized error" do
-        stub_request(:post, "http://keystoneAuthV2").
-            with(
-              :body => keystone_request_body,
-              :headers => keystone_request_headers).
-            to_return(
-              :status => 401,
-              :body => '{
+        stub_request(:post, "http://keystoneAuthV2")
+            .with(
+              body: keystone_request_body,
+              headers: keystone_request_headers)
+            .to_return(
+              status: 401,
+              body: '{
                 "error": {
                   "message": "The request you have made requires authentication.",
                   "code": 401,
                   "title": "Unauthorized"
                }
               }',
-              :headers => keystone_request_headers)
+              headers: keystone_request_headers)
 
         expect { @os_client.authenticate(env) }.to raise_error(RestClient::Unauthorized)
       end
@@ -126,7 +121,7 @@ describe VagrantPlugins::Openstack::OpenstackClient do
   describe "nova api calls" do
 
     class OpenstackClientNovaTest < VagrantPlugins::Openstack::OpenstackClient
-      def initialize()
+      def initialize
         @token = "123456"
         @project_id = "a1b2c3"
         @endpoints = Hash.new
@@ -141,15 +136,16 @@ describe VagrantPlugins::Openstack::OpenstackClient do
     describe "get_all_flavors" do
       context "with token and project_id acquainted" do
         it "returns all flavors" do
-          stub_request(:get, "http://nova/a1b2c3/flavors").
-              with(
-                :headers => {
-                    'Accept'=>'application/json',
-                    'X-Auth-Token'=>'123456'
-              }).
-              to_return(
-                :status => 200,
-                :body => '{ "flavors": [ { "id": "f1", "name": "flavor1"}, { "id": "f2", "name": "flavor2"} ] }')
+          stub_request(:get, "http://nova/a1b2c3/flavors")
+              .with(
+                headers:
+                {
+                  'Accept' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+              .to_return(
+                status: 200,
+                body: '{ "flavors": [ { "id": "f1", "name": "flavor1"}, { "id": "f2", "name": "flavor2"} ] }')
 
           flavors = @os_client.get_all_flavors(env)
 
@@ -165,15 +161,16 @@ describe VagrantPlugins::Openstack::OpenstackClient do
     describe "get_all_images" do
       context "with token and project_id acquainted" do
         it "returns all images" do
-          stub_request(:get, "http://nova/a1b2c3/images").
-              with(
-              :headers => {
-                  'Accept'=>'application/json',
-                  'X-Auth-Token'=>'123456'
-              }).
-              to_return(
-              :status => 200,
-              :body => '{ "images": [ { "id": "i1", "name": "image1"}, { "id": "i2", "name": "image2"} ] }')
+          stub_request(:get, "http://nova/a1b2c3/images")
+              .with(
+                headers:
+                {
+                  'Accept' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+              .to_return(
+                status: 200,
+                body: '{ "images": [ { "id": "i1", "name": "image1"}, { "id": "i2", "name": "image2"} ] }')
 
           images = @os_client.get_all_images(env)
 
@@ -190,15 +187,16 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       context "with token and project_id acquainted" do
         it "returns new instance id" do
 
-          stub_request(:post, "http://nova/a1b2c3/servers").
-              with(
-              :body => '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key"}}',
-              :headers => {
-                'Accept'=>'application/json',
-                'Content-Type'=>'application/json',
-                'X-Auth-Token'=>'123456'
-              }).
-              to_return(:status => 202, :body => '{ "server": { "id": "o1o2o3" } }')
+          stub_request(:post, "http://nova/a1b2c3/servers")
+              .with(
+                body: '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key"}}',
+                headers:
+                {
+                  'Accept' => 'application/json',
+                  'Content-Type' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+              .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
 
           instance_id = @os_client.create_server(env, "inst", "img", "flav", "key")
 
@@ -212,13 +210,13 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       context "with token and project_id acquainted" do
         it "returns new instance id" do
 
-          stub_request(:delete, "http://nova/a1b2c3/servers/o1o2o3").
-              with(
-              :headers => {
-                'Accept'=>'application/json',
-                'X-Auth-Token'=>'123456'
-              }).
-              to_return(:status => 204)
+          stub_request(:delete, "http://nova/a1b2c3/servers/o1o2o3")
+              .with(
+                headers: {
+                  'Accept' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+              .to_return(status: 204)
 
           @os_client.delete_server(env, "o1o2o3")
 
@@ -230,15 +228,16 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       context "with token and project_id acquainted" do
         it "returns new instance id" do
 
-          stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action").
-              with(
-                :body => "{ \"suspend\": null }",
-                :headers => {
-                    'Accept'=>'application/json',
-                    'Content-Type'=>'application/json',
-                    'X-Auth-Token'=>'123456'
-              }).
-              to_return(:status => 202)
+          stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action")
+              .with(
+                body: "{ \"suspend\": null }",
+                headers:
+                {
+                  'Accept' => 'application/json',
+                  'Content-Type' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+              .to_return(status: 202)
 
           @os_client.suspend_server(env, "o1o2o3")
         end
@@ -249,15 +248,16 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       context "with token and project_id acquainted" do
         it "returns new instance id" do
 
-          stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action").
-              with(
-                :body => "{ \"resume\": null }",
-                :headers => {
-                    'Accept'=>'application/json',
-                    'Content-Type'=>'application/json',
-                    'X-Auth-Token'=>'123456'
-              }).
-              to_return(:status => 202)
+          stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action")
+              .with(
+                body: "{ \"resume\": null }",
+                headers:
+                {
+                  'Accept' => 'application/json',
+                  'Content-Type' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+              .to_return(status: 202)
 
           @os_client.resume_server(env, "o1o2o3")
         end
@@ -268,15 +268,16 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       context "with token and project_id acquainted" do
         it "returns new instance id" do
 
-          stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action").
-              with(
-                :body => "{ \"os-stop\": null }",
-                :headers => {
-                    'Accept'=>'application/json',
-                    'Content-Type'=>'application/json',
-                    'X-Auth-Token'=>'123456'
-              }).
-              to_return(:status => 202)
+          stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action")
+              .with(
+                body: '{ "os-stop": null }',
+                headers:
+                {
+                  'Accept' => 'application/json',
+                  'Content-Type' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+              .to_return(status: 202)
 
           @os_client.stop_server(env, "o1o2o3")
 
@@ -288,15 +289,16 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       context "with token and project_id acquainted" do
         it "returns new instance id" do
 
-          stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action").
-              with(
-                :body => "{ \"os-start\": null }",
-                :headers => {
-                    'Accept'=>'application/json',
-                    'Content-Type'=>'application/json',
-                    'X-Auth-Token'=>'123456'
-              }).
-              to_return(:status => 202)
+          stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action")
+              .with(
+                body: "{ \"os-start\": null }",
+                headers:
+                {
+                  'Accept' => 'application/json',
+                  'Content-Type' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+              .to_return(status: 202)
 
           @os_client.start_server(env, "o1o2o3")
 
@@ -308,12 +310,13 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       context "with token and project_id acquainted" do
         it "returns server details" do
 
-          stub_request(:get, "http://nova/a1b2c3/servers/o1o2o3").
-              with(:headers => {
-              'Accept'=>'application/json',
-              'X-Auth-Token'=>'123456'
-              }).
-              to_return(:status => 200, :body => '
+          stub_request(:get, "http://nova/a1b2c3/servers/o1o2o3")
+              .with(headers:
+                {
+                  'Accept' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+              .to_return(status: 200, body: '
                 {
                   "server": {
                      "addresses": { "private": [ { "addr": "192.168.0.3", "version": 4 } ] },
@@ -348,12 +351,13 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       context "with token and project_id acquainted and IP available" do
         it "returns server details" do
 
-          stub_request(:get, "http://nova/a1b2c3/os-floating-ips").
-              with(:headers => {
-              'Accept'=>'application/json',
-              'X-Auth-Token'=>'123456'
-              }).
-              to_return(:status => 200, :body => '
+          stub_request(:get, "http://nova/a1b2c3/os-floating-ips")
+              .with(headers:
+                {
+                  'Accept' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+              .to_return(status: 200, body: '
                 {
                     "floating_ips": [
                         {
@@ -373,14 +377,15 @@ describe VagrantPlugins::Openstack::OpenstackClient do
                     ]
                 }')
 
-          stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action").
-              with(:body => '{"addFloatingIp":{"address":"1.2.3.4"}}',
-                   :headers => {
-                       'Accept'=>'application/json',
-                       'Content-Type'=>'application/json',
-                       'X-Auth-Token'=>'123456'
-              }).
-              to_return(:status => 202)
+          stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action")
+              .with(body: '{"addFloatingIp":{"address":"1.2.3.4"}}',
+                    headers:
+                    {
+                      'Accept' => 'application/json',
+                      'Content-Type' => 'application/json',
+                      'X-Auth-Token' => '123456'
+                    })
+              .to_return(status: 202)
 
           @os_client.add_floating_ip(env, "o1o2o3", "1.2.3.4")
         end
@@ -389,12 +394,13 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       context "with token and project_id acquainted and IP already in use" do
         it "raise an error" do
 
-          stub_request(:get, "http://nova/a1b2c3/os-floating-ips").
-              with(:headers => {
-              'Accept'=>'application/json',
-              'X-Auth-Token'=>'123456'
-              }).
-              to_return(:status => 200, :body => '
+          stub_request(:get, "http://nova/a1b2c3/os-floating-ips")
+              .with(headers:
+                {
+                  'Accept' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+              .to_return(status: 200, body: '
                 {
                     "floating_ips": [
                         {
@@ -421,12 +427,13 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       context "with token and project_id acquainted and IP not allocated" do
         it "raise an error" do
 
-          stub_request(:get, "http://nova/a1b2c3/os-floating-ips").
-              with(:headers => {
-              'Accept'=>'application/json',
-              'X-Auth-Token'=>'123456'
-          }).
-              to_return(:status => 200, :body => '
+          stub_request(:get, "http://nova/a1b2c3/os-floating-ips")
+              .with(headers:
+                {
+                  'Accept' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+              .to_return(status: 200, body: '
                 {
                     "floating_ips": [
                         {
@@ -444,7 +451,5 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       end
 
     end
-
   end
-
 end

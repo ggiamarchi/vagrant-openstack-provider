@@ -6,7 +6,7 @@ module VagrantPlugins
       # This action reads the SSH info for the machine and puts it into the
       # `:machine_ssh_info` key in the environment.
       class ReadSSHInfo
-        def initialize(app, env)
+        def initialize(app, _env)
           @app    = app
           @logger = Log4r::Logger.new("vagrant_openstack::action::read_ssh_info")
         end
@@ -19,11 +19,11 @@ module VagrantPlugins
 
         def read_ssh_info(env)
           config = env[:machine].provider_config
-          return {
+          {
             # Usually there should only be one public IP
-            :host => config.floating_ip,
-            :port => 22,
-            :username => config.ssh_username
+            host: config.floating_ip,
+            port: 22,
+            username: config.ssh_username
           }
         end
       end

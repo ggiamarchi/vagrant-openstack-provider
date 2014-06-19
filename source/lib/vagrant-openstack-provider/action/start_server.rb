@@ -4,7 +4,7 @@ module VagrantPlugins
   module Openstack
     module Action
       class StartServer
-        def initialize(app, env)
+        def initialize(app, _env)
           @app    = app
           @logger = Log4r::Logger.new("vagrant_openstack::action::start_server")
         end

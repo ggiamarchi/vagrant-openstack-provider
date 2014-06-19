@@ -98,7 +98,7 @@ module VagrantPlugins
         @openstack_compute_url = nil if @openstack_compute_url == UNSET_VALUE
         @openstack_auth_url = nil if @openstack_auth_url == UNSET_VALUE
         @flavor = nil if @flavor == UNSET_VALUE
-        @image = nil if @image == UNSET_VALUE    # TODO No default value
+        @image = nil if @image == UNSET_VALUE # TODO, No default value
         @tenant_name = nil if @tenant_name == UNSET_VALUE
         @server_name = nil if @server_name == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
@@ -119,7 +119,7 @@ module VagrantPlugins
         @rsync_includes << inc
       end
 
-      def validate(machine)
+      def validate(_machine)
         errors = _detected_errors
 
         errors << I18n.t("vagrant_openstack.config.password_required") if !@password
@@ -127,10 +127,10 @@ module VagrantPlugins
         errors << I18n.t("vagrant_openstack.config.keypair_name_required") if !@keypair_name
 
         {
-          :openstack_compute_url => @openstack_compute_url,
-          :openstack_auth_url => @openstack_auth_url
+          openstack_compute_url: @openstack_compute_url,
+          openstack_auth_url: @openstack_auth_url
         }.each_pair do |key, value|
-          errors << I18n.t("vagrant_openstack.config.invalid_uri", :key => key, :uri => value) unless value.nil? || valid_uri?(value)
+          errors << I18n.t("vagrant_openstack.config.invalid_uri", key: key, uri: value) unless value.nil? || valid_uri?(value)
         end
 
         { "Openstack Provider" => errors }
@@ -138,7 +138,7 @@ module VagrantPlugins
 
       private
 
-      def valid_uri? value
+      def valid_uri?(value)
         uri = URI.parse value
         uri.kind_of?(URI::HTTP)
       end

@@ -2,7 +2,7 @@ module VagrantPlugins
   module Openstack
     module Action
       class Suspend
-        def initialize(app, env)
+        def initialize(app, _env)
           @app = app
         end
 

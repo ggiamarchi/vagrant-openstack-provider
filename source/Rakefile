@@ -18,4 +18,4 @@ Bundler::GemHelper.install_tasks
 RSpec::Core::RakeTask.new
 
 # Default task is to run the unit tests
-task :default => "spec"
+task default: "spec"

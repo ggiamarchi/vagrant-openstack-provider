@@ -5,7 +5,7 @@ module VagrantPlugins
     module Action
       # This deletes the running server, if there is one.
       class DeleteServer
-        def initialize(app, env)
+        def initialize(app, _env)
           @app    = app
           @logger = Log4r::Logger.new("vagrant_openstack::action::delete_server")
         end

@@ -6,7 +6,7 @@ module VagrantPlugins
       # This action reads the state of the machine and puts it in the
       # `:machine_state_id` key in the environment.
       class ReadState
-        def initialize(app, env)
+        def initialize(app, _env)
           @app    = app
           @logger = Log4r::Logger.new("vagrant_openstack::action::read_state")
         end
@@ -31,7 +31,7 @@ module VagrantPlugins
           end
 
           # Return the state
-          return server['status'].downcase.to_sym
+          server['status'].downcase.to_sym
         end
       end
     end

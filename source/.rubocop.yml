@@ -1,0 +1,28 @@
+
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  Exclude:
+    - 'out/**/*'
+
+Style/FileName:
+  Enabled: false
+
+Style/Encoding:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/ClassLength:
+  Max: 300
+
+Style/CyclomaticComplexity:
+  Severity: warning
+  Max: 15
+
+Style/MethodLength:
+  Max: 50
+
+Style/LineLength:
+  Max: 150
