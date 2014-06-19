@@ -49,7 +49,10 @@ describe VagrantPlugins::Openstack::OpenstackClient do
     }
 
     let(:keystone_response_body) {
-      '{"access":{"token":{"id":"0123456789","tenant":{"id":"testTenantId"}},"serviceCatalog":[{"endpoints":[{"id":"eid1","publicURL":"http://nova"}],"type":"compute"},{"endpoints":[{"id":"eid2","publicURL":"http://neutron"}],"type":"network"}]}}'
+      '{"access":{"token":{"id":"0123456789","tenant":{"id":"testTenantId"}},"serviceCatalog":[
+         {"endpoints":[{"id":"eid1","publicURL":"http://nova"}],"type":"compute"},
+         {"endpoints":[{"id":"eid2","publicURL":"http://neutron"}],"type":"network"}
+       ]}}'
     }
 
     before :each do

@@ -9,10 +9,12 @@ before_install:
   - cd source
 
 install:
-  - "travis_retry bundle install"
-  - "travis_retry appraisal install"
+  - travis_retry bundle install
+  - travis_retry appraisal install
 
-script: "appraisal rake"
+script:
+  - bundle exec rubocop lib spec
+  - appraisal rake
 
 gemfile:
   - Gemfile

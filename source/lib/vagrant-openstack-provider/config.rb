@@ -130,7 +130,8 @@ module VagrantPlugins
           :openstack_compute_url => @openstack_compute_url,
           :openstack_auth_url => @openstack_auth_url
         }.each_pair do |key, value|
-          errors << I18n.t("vagrant_openstack.config.invalid_uri", :key => key, :uri => value) unless value.nil? || valid_uri?(value)
+          errors << I18n.t("vagrant_openstack.config.invalid_uri",
+                           :key => key, :uri => value) unless value.nil? || valid_uri?(value)
         end
 
         { "Openstack Provider" => errors }
