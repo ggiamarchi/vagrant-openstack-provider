@@ -5,7 +5,7 @@ describe VagrantPlugins::Openstack::OpenstackClient do
   let(:config) {
     double("config").tap do |config|
       config.stub(:openstack_auth_url) { "http://keystoneAuthV2" }
-      config.stub(:openstack_compute_url) { "http://nova" }
+      config.stub(:openstack_compute_url) { nil }
       config.stub(:tenant_name) { "testTenant" }
       config.stub(:username) { "username" }
       config.stub(:password) { "password" }
@@ -14,6 +14,8 @@ describe VagrantPlugins::Openstack::OpenstackClient do
 
   let(:env) {
     Hash.new.tap do |env|
+      env[:ui] = double("ui")
+      env[:ui].stub(:info).with(anything())
       env[:machine] = double("machine")
       env[:machine].stub(:provider_config) { config }
     end
@@ -29,6 +31,10 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       def get_project_id()
         return @project_id
       end
+
+      def get_endpoints()
+        return @endpoints
+      end
     end
 
     let(:keystone_request_headers) {
@@ -42,11 +48,16 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       '{"auth":{"tenantName":"testTenant","passwordCredentials":{"username":"username","password":"password"}}}'
     }
 
+    let(:keystone_response_body) {
+      '{"access":{"token":{"id":"0123456789","tenant":{"id":"testTenantId"}},"serviceCatalog":[{"endpoints":[{"id":"eid1","publicURL":"http://nova"}],"type":"compute"},{"endpoints":[{"id":"eid2","publicURL":"http://neutron"}],"type":"network"}]}}'
+    }
+
     before :each do
       @os_client = OpenstackClientTest.new
     end
 
     context "with good credentials" do
+
       it "store token and tenant id" do
         stub_request(:post, "http://keystoneAuthV2").
           with(
@@ -54,14 +65,39 @@ describe VagrantPlugins::Openstack::OpenstackClient do
             :headers => keystone_request_headers).
           to_return(
             :status => 200,
-            :body => '{"access":{"token":{"id":"0123456789","tenant":{"id":"testTenantId"}}}}',
+            :body => keystone_response_body,
             :headers => keystone_request_headers)
 
         @os_client.authenticate(env)
 
         @os_client.get_token.should eq("0123456789")
         @os_client.get_project_id.should eq("testTenantId")
+        @os_client.get_endpoints()['compute'].should eq('http://nova')
+        @os_client.get_endpoints()['network'].should eq('http://neutron')
       end
+
+      context "with compute endpoint override" do
+        it "store token and tenant id" do
+          config.stub(:openstack_compute_url) { 'http://novaOverride' }
+
+          stub_request(:post, "http://keystoneAuthV2").
+            with(
+              :body => keystone_request_body,
+              :headers => keystone_request_headers).
+            to_return(
+              :status => 200,
+              :body => keystone_response_body,
+              :headers => keystone_request_headers)
+
+          @os_client.authenticate(env)
+
+          @os_client.get_token.should eq("0123456789")
+          @os_client.get_project_id.should eq("testTenantId")
+          @os_client.get_endpoints()['compute'].should eq('http://novaOverride')
+          @os_client.get_endpoints()['network'].should eq('http://neutron')
+        end
+      end
+
     end
 
     context "with wrong credentials" do
@@ -93,6 +129,8 @@ describe VagrantPlugins::Openstack::OpenstackClient do
       def initialize()
         @token = "123456"
         @project_id = "a1b2c3"
+        @endpoints = Hash.new
+        @endpoints['compute'] = "http://nova/a1b2c3"
       end
     end
 
