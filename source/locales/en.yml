@@ -145,3 +145,11 @@ en:
         not created
       long_not_created: |-
         The server is not created. Run `vagrant up` to create it.
+
+    client:
+      looking_for_available_endpoints: |-
+        Looking for available endpoints...
+      multiple_endpoint: |-
+        %{size} endpoints are available for service '%{type}' but only the first one will be used
+      authentication: |-
+        Authentication on project %{project} with user %{user}

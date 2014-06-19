@@ -36,13 +36,13 @@ module VagrantPlugins
 
           # Output the settings we're going to use to the user
           env[:ui].info(I18n.t("vagrant_openstack.launching_server"))
-          env[:ui].info(" -- Flavor       : #{flavor.name}")
-          env[:ui].info(" -- FlavorRef    : #{flavor.id}")
-          env[:ui].info(" -- Image        : #{image.name}")
-          env[:ui].info(" -- KeyPair      : #{config.keypair_name}")
-          env[:ui].info(" -- ImageRef     : #{image.id}")
-          env[:ui].info(" -- Tenant       : #{config.tenant_name}")
-          env[:ui].info(" -- Name         : #{server_name}")
+          env[:ui].info(" -- Flavor         : #{flavor.name}")
+          env[:ui].info(" -- FlavorRef      : #{flavor.id}")
+          env[:ui].info(" -- Image          : #{image.name}")
+          env[:ui].info(" -- KeyPair        : #{config.keypair_name}")
+          env[:ui].info(" -- ImageRef       : #{image.id}")
+          env[:ui].info(" -- Tenant         : #{config.tenant_name}")
+          env[:ui].info(" -- Name           : #{server_name}")
 
           server_id = client.create_server(env, server_name, image.id, flavor.id, config.keypair_name)
 
