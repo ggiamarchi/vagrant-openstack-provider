@@ -12,10 +12,10 @@ if ENV['COVERAGE'] != 'false'
 end
 
 Dir[
-  "lib/vagrant-openstack-provider/config.rb",
-  "lib/vagrant-openstack-provider/errors.rb",
-  "lib/vagrant-openstack-provider/provider.rb",
-  "lib/vagrant-openstack-provider/client/*.rb",
-  "lib/vagrant-openstack-provider/action/*.rb"].each { |file| require file[4, file.length - 1] }
+  'lib/vagrant-openstack-provider/config.rb',
+  'lib/vagrant-openstack-provider/errors.rb',
+  'lib/vagrant-openstack-provider/provider.rb',
+  'lib/vagrant-openstack-provider/client/*.rb',
+  'lib/vagrant-openstack-provider/action/*.rb'].each { |file| require file[4, file.length - 1] }
 
 require 'webmock/rspec'

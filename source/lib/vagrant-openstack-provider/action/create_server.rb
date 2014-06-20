@@ -1,6 +1,6 @@
-require "log4r"
+require 'log4r'
 require 'socket'
-require "timeout"
+require 'timeout'
 
 require 'vagrant/util/retryable'
 
@@ -12,7 +12,7 @@ module VagrantPlugins
 
         def initialize(app, _env)
           @app = app
-          @logger = Log4r::Logger.new("vagrant_openstack::action::create_server")
+          @logger = Log4r::Logger.new('vagrant_openstack::action::create_server')
         end
 
         def call(env)
@@ -20,22 +20,22 @@ module VagrantPlugins
           client = env[:openstack_client].nova
 
           # Find the flavor
-          env[:ui].info(I18n.t("vagrant_openstack.finding_flavor"))
+          env[:ui].info(I18n.t('vagrant_openstack.finding_flavor'))
           flavors = client.get_all_flavors(env)
           flavor = find_matching(flavors, config.flavor)
-          raise Errors::NoMatchingFlavor if !flavor
+          fail Errors::NoMatchingFlavor unless flavor
 
           # Find the image
-          env[:ui].info(I18n.t("vagrant_openstack.finding_image"))
+          env[:ui].info(I18n.t('vagrant_openstack.finding_image'))
           images = client.get_all_images(env)
           image = find_matching(images, config.image)
-          raise Errors::NoMatchingImage if !image
+          fail Errors::NoMatchingImage unless image
 
           # Figure out the name for the server
           server_name = config.server_name || env[:machine].name
 
           # Output the settings we're going to use to the user
-          env[:ui].info(I18n.t("vagrant_openstack.launching_server"))
+          env[:ui].info(I18n.t('vagrant_openstack.launching_server'))
           env[:ui].info(" -- Flavor         : #{flavor.name}")
           env[:ui].info(" -- FlavorRef      : #{flavor.id}")
           env[:ui].info(" -- Image          : #{image.name}")
@@ -50,11 +50,11 @@ module VagrantPlugins
           env[:machine].id = server_id
 
           # Wait for the server to finish building
-          env[:ui].info(I18n.t("vagrant_openstack.waiting_for_build"))
+          env[:ui].info(I18n.t('vagrant_openstack.waiting_for_build'))
           timeout(200) do
             while client.get_server_details(env, server_id)['status'] != 'ACTIVE'
               sleep 3
-              @logger.debug("Waiting for server to be ACTIVE")
+              @logger.debug('Waiting for server to be ACTIVE')
             end
           end
 
@@ -63,19 +63,19 @@ module VagrantPlugins
             client.add_floating_ip(env, server_id, config.floating_ip)
           end
 
-          if !env[:interrupted]
+          unless env[:interrupted]
             # Clear the line one more time so the progress is removed
             env[:ui].clear_line
 
             # Wait for SSH to become available
             host = env[:machine].provider_config.floating_ip
             ssh_timeout = env[:machine].provider_config.ssh_timeout
-            if !port_open?(env, host, 22, ssh_timeout)
-              env[:ui].error(I18n.t("vagrant_openstack.timeout"))
-              raise Errors::SshUnavailable, host: host, timeou: ssh_timeout
+            unless port_open?(env, host, 22, ssh_timeout)
+              env[:ui].error(I18n.t('vagrant_openstack.timeout'))
+              fail Errors::SshUnavailable, host: host, timeou: ssh_timeout
             end
 
-            env[:ui].info(I18n.t("vagrant_openstack.ready"))
+            env[:ui].info(I18n.t('vagrant_openstack.ready'))
           end
 
           @app.call(env)
@@ -88,7 +88,7 @@ module VagrantPlugins
           current_time = start_time
           while (current_time - start_time) <= timeout
             begin
-              env[:ui].info(I18n.t("vagrant_openstack.waiting_for_ssh"))
+              env[:ui].info(I18n.t('vagrant_openstack.waiting_for_ssh'))
               TCPSocket.new(ip, port)
               return true
             rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ETIMEDOUT

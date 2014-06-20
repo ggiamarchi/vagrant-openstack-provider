@@ -1,22 +1,22 @@
-require "log4r"
-require "restclient"
-require "json"
+require 'log4r'
+require 'restclient'
+require 'json'
 
 module VagrantPlugins
   module Openstack
     class NovaClient
       def initialize
-        @logger = Log4r::Logger.new("vagrant_openstack::nova")
+        @logger = Log4r::Logger.new('vagrant_openstack::nova')
         @session = VagrantPlugins::Openstack.session
       end
 
       def get_all_flavors(_env)
-        flavors_json = RestClient.get("#{@session.endpoints[:compute]}/flavors", "X-Auth-Token" => @session.token, :accept => :json)
+        flavors_json = RestClient.get("#{@session.endpoints[:compute]}/flavors", 'X-Auth-Token' => @session.token, :accept => :json)
         JSON.parse(flavors_json)['flavors'].map { |fl| Item.new(fl['id'], fl['name']) }
       end
 
       def get_all_images(_env)
-        images_json = RestClient.get("#{@session.endpoints[:compute]}/images", "X-Auth-Token" => @session.token, :accept => :json)
+        images_json = RestClient.get("#{@session.endpoints[:compute]}/images", 'X-Auth-Token' => @session.token, :accept => :json)
         JSON.parse(images_json)['images'].map { |im| Item.new(im['id'], im['name']) }
       end
 
@@ -32,7 +32,7 @@ module VagrantPlugins
               key_name: keypair
             }
           }.to_json,
-          "X-Auth-Token" => @session.token,
+          'X-Auth-Token' => @session.token,
           :accept => :json,
           :content_type => :json)
 
@@ -42,14 +42,14 @@ module VagrantPlugins
       def delete_server(_env, server_id)
         RestClient.delete(
           "#{@session.endpoints[:compute]}/servers/#{server_id}",
-          "X-Auth-Token" => @session.token,
+          'X-Auth-Token' => @session.token,
           :accept => :json)
       end
 
       def suspend_server(_env, server_id)
         RestClient.post(
           "#{@session.endpoints[:compute]}/servers/#{server_id}/action", '{ "suspend": null }',
-          "X-Auth-Token" => @session.token,
+          'X-Auth-Token' => @session.token,
           :accept => :json,
           :content_type => :json)
       end
@@ -58,7 +58,7 @@ module VagrantPlugins
         # TODO(julienvey) check status before (if pause->unpause, if suspend->resume...)
         RestClient.post(
           "#{@session.endpoints[:compute]}/servers/#{server_id}/action", '{ "resume": null }',
-          "X-Auth-Token" => @session.token,
+          'X-Auth-Token' => @session.token,
           :accept => :json,
           :content_type => :json)
       end
@@ -66,7 +66,7 @@ module VagrantPlugins
       def stop_server(_env, server_id)
         RestClient.post(
           "#{@session.endpoints[:compute]}/servers/#{server_id}/action", '{ "os-stop": null }',
-          "X-Auth-Token" => @session.token,
+          'X-Auth-Token' => @session.token,
           :accept => :json,
           :content_type => :json)
       end
@@ -74,7 +74,7 @@ module VagrantPlugins
       def start_server(_env, server_id)
         RestClient.post(
           "#{@session.endpoints[:compute]}/servers/#{server_id}/action", '{ "os-start": null }',
-          "X-Auth-Token" => @session.token,
+          'X-Auth-Token' => @session.token,
           :accept => :json,
           :content_type => :json)
       end
@@ -82,7 +82,7 @@ module VagrantPlugins
       def get_server_details(_env, server_id)
         server_details = RestClient.get(
           "#{@session.endpoints[:compute]}/servers/#{server_id}",
-          "X-Auth-Token" => @session.token,
+          'X-Auth-Token' => @session.token,
           :accept => :json)
         JSON.parse(server_details)['server']
       end
@@ -97,7 +97,7 @@ module VagrantPlugins
               address: floating_ip
             }
           }.to_json,
-          "X-Auth-Token" => @session.token,
+          'X-Auth-Token' => @session.token,
           :accept => :json,
           :content_type => :json)
       end
@@ -107,19 +107,19 @@ module VagrantPlugins
       def check_floating_ip(_env, floating_ip)
         ip_details = RestClient.get(
           "#{@session.endpoints[:compute]}/os-floating-ips",
-          "X-Auth-Token" => @session.token,
+          'X-Auth-Token' => @session.token,
           :accept => :json)
 
-        JSON.parse(ip_details)['floating_ips'].each { |ip|
+        JSON.parse(ip_details)['floating_ips'].each do |ip|
           if ip['ip'] == floating_ip
             if !ip['instance_id'].nil?
-              raise "Floating IP #{floating_ip} already assigned to another server"
+              fail "Floating IP #{floating_ip} already assigned to another server"
             else
               return
             end
           end
-        }
-        raise "Floating IP #{floating_ip} not available for this tenant"
+        end
+        fail "Floating IP #{floating_ip} not available for this tenant"
       end
     end
 

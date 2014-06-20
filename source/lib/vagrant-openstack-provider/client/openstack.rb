@@ -1,9 +1,9 @@
-require "log4r"
-require "restclient"
-require "json"
+require 'log4r'
+require 'restclient'
+require 'json'
 
-require "vagrant-openstack-provider/client/keystone"
-require "vagrant-openstack-provider/client/nova"
+require 'vagrant-openstack-provider/client/keystone'
+require 'vagrant-openstack-provider/client/nova'
 
 module VagrantPlugins
   module Openstack

@@ -1,8 +1,8 @@
-require "vagrant"
+require 'vagrant'
 
 module VagrantPlugins
   module Openstack
-    class Config < Vagrant.plugin("2", :config)
+    class Config < Vagrant.plugin('2', :config)
       # The API key to access Openstack.
       #
       # @return [String]
@@ -104,7 +104,7 @@ module VagrantPlugins
         @username = nil if @username == UNSET_VALUE
         @rsync_includes = nil if @rsync_includes.empty?
         @floating_ip = nil if @floating_ip == UNSET_VALUE
-        @sync_method = "rsync" if @sync_method == UNSET_VALUE
+        @sync_method = 'rsync' if @sync_method == UNSET_VALUE
 
         # Keypair defaults to nil
         @keypair_name = nil if @keypair_name == UNSET_VALUE
@@ -122,18 +122,18 @@ module VagrantPlugins
       def validate(_machine)
         errors = _detected_errors
 
-        errors << I18n.t("vagrant_openstack.config.password_required") if !@password
-        errors << I18n.t("vagrant_openstack.config.username_required") if !@username
-        errors << I18n.t("vagrant_openstack.config.keypair_name_required") if !@keypair_name
+        errors << I18n.t('vagrant_openstack.config.password_required') unless @password
+        errors << I18n.t('vagrant_openstack.config.username_required') unless @username
+        errors << I18n.t('vagrant_openstack.config.keypair_name_required') unless @keypair_name
 
         {
           openstack_compute_url: @openstack_compute_url,
           openstack_auth_url: @openstack_auth_url
         }.each_pair do |key, value|
-          errors << I18n.t("vagrant_openstack.config.invalid_uri", key: key, uri: value) unless value.nil? || valid_uri?(value)
+          errors << I18n.t('vagrant_openstack.config.invalid_uri', key: key, uri: value) unless value.nil? || valid_uri?(value)
         end
 
-        { "Openstack Provider" => errors }
+        { 'Openstack Provider' => errors }
       end
 
       private

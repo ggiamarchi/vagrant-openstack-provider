@@ -1,4 +1,4 @@
-require "log4r"
+require 'log4r'
 
 module VagrantPlugins
   module Openstack
@@ -8,7 +8,7 @@ module VagrantPlugins
       class ReadSSHInfo
         def initialize(app, _env)
           @app    = app
-          @logger = Log4r::Logger.new("vagrant_openstack::action::read_ssh_info")
+          @logger = Log4r::Logger.new('vagrant_openstack::action::read_ssh_info')
         end
 
         def call(env)

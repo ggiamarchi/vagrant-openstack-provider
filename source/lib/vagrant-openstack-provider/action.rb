@@ -1,6 +1,6 @@
-require "pathname"
+require 'pathname'
 
-require "vagrant/action/builder"
+require 'vagrant/action/builder'
 
 module VagrantPlugins
   module Openstack
@@ -15,7 +15,7 @@ module VagrantPlugins
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
             if env[:machine_state_id] == :not_created
-              b2.use Message, I18n.t("vagrant_openstack.not_created")
+              b2.use Message, I18n.t('vagrant_openstack.not_created')
             else
               b2.use DeleteServer
             end
@@ -30,7 +30,7 @@ module VagrantPlugins
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
             if env[:machine_state_id] == :not_created
-              b2.use Message, I18n.t("vagrant_openstack.not_created")
+              b2.use Message, I18n.t('vagrant_openstack.not_created')
             else
               b2.use Provision
               b2.use SyncFolders
@@ -67,7 +67,7 @@ module VagrantPlugins
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
             if env[:machine_state_id] == :not_created
-              b2.use Message, I18n.t("vagrant_openstack.not_created")
+              b2.use Message, I18n.t('vagrant_openstack.not_created')
             else
               b2.use SSHExec
             end
@@ -81,7 +81,7 @@ module VagrantPlugins
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
             if env[:machine_state_id] == :not_created
-              b2.use Message, I18n.t("vagrant_openstack.not_created")
+              b2.use Message, I18n.t('vagrant_openstack.not_created')
             else
               b2.use SSHRun
             end
@@ -100,7 +100,7 @@ module VagrantPlugins
               b2.use SyncFolders
               b2.use CreateServer
             else
-              b2.use Message, I18n.t("vagrant_openstack.already_created")
+              b2.use Message, I18n.t('vagrant_openstack.already_created')
             end
           end
         end
@@ -112,7 +112,7 @@ module VagrantPlugins
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
             if env[:machine_state_id] == :not_created
-              b2.use Message, I18n.t("vagrant_openstack.not_created")
+              b2.use Message, I18n.t('vagrant_openstack.not_created')
             else
               b2.use StopServer
             end
@@ -128,9 +128,9 @@ module VagrantPlugins
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
             if env[:machine_state_id] == :not_created
-              b2.use Message, I18n.t("vagrant_openstack.not_created")
+              b2.use Message, I18n.t('vagrant_openstack.not_created')
             elsif env[:machine_state_id] == :suspended
-              b2.use Message, I18n.t("vagrant_openstack.already_suspended")
+              b2.use Message, I18n.t('vagrant_openstack.already_suspended')
             else
               b2.use Suspend
             end
@@ -146,7 +146,7 @@ module VagrantPlugins
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
             if env[:machine_state_id] == :not_created
-              b2.use Message, I18n.t("vagrant_openstack.not_created")
+              b2.use Message, I18n.t('vagrant_openstack.not_created')
             else
               b2.use Resume
             end
@@ -160,7 +160,7 @@ module VagrantPlugins
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
             if env[:machine_state_id] == :not_created
-              b2.use Message, I18n.t("vagrant_openstack.not_created")
+              b2.use Message, I18n.t('vagrant_openstack.not_created')
             else
               b2.use StopServer
               b2.use WaitForServerToStop
@@ -171,18 +171,18 @@ module VagrantPlugins
       end
 
       # The autoload farm
-      action_root = Pathname.new(File.expand_path("../action", __FILE__))
-      autoload :ConnectOpenstack, action_root.join("connect_openstack")
-      autoload :CreateServer, action_root.join("create_server")
-      autoload :DeleteServer, action_root.join("delete_server")
-      autoload :StopServer, action_root.join("stop_server")
-      autoload :StartServer, action_root.join("start_server")
-      autoload :ReadSSHInfo, action_root.join("read_ssh_info")
-      autoload :ReadState, action_root.join("read_state")
-      autoload :SyncFolders, action_root.join("sync_folders")
-      autoload :Suspend, action_root.join("suspend")
-      autoload :Resume, action_root.join("resume")
-      autoload :WaitForServerToStop, action_root.join("wait_stop")
+      action_root = Pathname.new(File.expand_path('../action', __FILE__))
+      autoload :ConnectOpenstack, action_root.join('connect_openstack')
+      autoload :CreateServer, action_root.join('create_server')
+      autoload :DeleteServer, action_root.join('delete_server')
+      autoload :StopServer, action_root.join('stop_server')
+      autoload :StartServer, action_root.join('start_server')
+      autoload :ReadSSHInfo, action_root.join('read_ssh_info')
+      autoload :ReadState, action_root.join('read_state')
+      autoload :SyncFolders, action_root.join('sync_folders')
+      autoload :Suspend, action_root.join('suspend')
+      autoload :Resume, action_root.join('resume')
+      autoload :WaitForServerToStop, action_root.join('wait_stop')
     end
   end
 end

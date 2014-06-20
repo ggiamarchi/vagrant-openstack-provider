@@ -8,7 +8,7 @@ module VagrantPlugins
 
         def call(env)
           if env[:machine].id
-            env[:ui].info I18n.t("vagrant.actions.vm.suspend.suspending")
+            env[:ui].info I18n.t('vagrant.actions.vm.suspend.suspending')
             env[:openstack_client].nova.suspend_server(env, env[:machine].id)
           end
 

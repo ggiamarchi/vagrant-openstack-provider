@@ -1,10 +1,10 @@
-require "vagrant"
+require 'vagrant'
 
 module VagrantPlugins
   module Openstack
     module Errors
       class VagrantOpenstackError < Vagrant::Errors::VagrantError
-        error_namespace("vagrant_openstack.errors")
+        error_namespace('vagrant_openstack.errors')
       end
 
       class CreateBadState < VagrantOpenstackError

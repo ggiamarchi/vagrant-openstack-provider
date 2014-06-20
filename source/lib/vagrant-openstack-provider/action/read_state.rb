@@ -1,4 +1,4 @@
-require "log4r"
+require 'log4r'
 
 module VagrantPlugins
   module Openstack
@@ -8,7 +8,7 @@ module VagrantPlugins
       class ReadState
         def initialize(app, _env)
           @app    = app
-          @logger = Log4r::Logger.new("vagrant_openstack::action::read_state")
+          @logger = Log4r::Logger.new('vagrant_openstack::action::read_state')
         end
 
         def call(env)
@@ -22,9 +22,9 @@ module VagrantPlugins
 
           # Find the machine
           server = env[:openstack_client].nova.get_server_details(env, machine.id)
-          if server.nil? || server['status'] == "DELETED"
+          if server.nil? || server['status'] == 'DELETED'
             # The machine can't be found
-            @logger.info("Machine not found or deleted, assuming it got destroyed.")
+            @logger.info('Machine not found or deleted, assuming it got destroyed.')
             machine.id = nil
             return :not_created
           end

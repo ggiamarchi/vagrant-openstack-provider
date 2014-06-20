@@ -1,41 +1,41 @@
-require "vagrant-openstack-provider/spec_helper"
+require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::NovaClient do
 
-  let(:config) {
-    double("config").tap do |config|
-      config.stub(:openstack_auth_url) { "http://novaAuthV2" }
+  let(:config) do
+    double('config').tap do |config|
+      config.stub(:openstack_auth_url) { 'http://novaAuthV2' }
       config.stub(:openstack_compute_url) { nil }
-      config.stub(:tenant_name) { "testTenant" }
-      config.stub(:username) { "username" }
-      config.stub(:password) { "password" }
+      config.stub(:tenant_name) { 'testTenant' }
+      config.stub(:username) { 'username' }
+      config.stub(:password) { 'password' }
     end
-  }
+  end
 
-  let(:env) {
+  let(:env) do
     Hash.new.tap do |env|
-      env[:ui] = double("ui")
+      env[:ui] = double('ui')
       env[:ui].stub(:info).with(anything)
-      env[:machine] = double("machine")
+      env[:machine] = double('machine')
       env[:machine].stub(:provider_config) { config }
     end
-  }
+  end
 
-  let(:session) {
+  let(:session) do
     VagrantPlugins::Openstack.session
-  }
+  end
 
   before :each do
-    session.token = "123456"
-    session.project_id = "a1b2c3"
-    session.endpoints = { compute: "http://nova/a1b2c3" }
+    session.token = '123456'
+    session.project_id = 'a1b2c3'
+    session.endpoints = { compute: 'http://nova/a1b2c3' }
     @nova_client = VagrantPlugins::Openstack::NovaClient.new
   end
 
-  describe "get_all_flavors" do
-    context "with token and project_id acquainted" do
-      it "returns all flavors" do
-        stub_request(:get, "http://nova/a1b2c3/flavors")
+  describe 'get_all_flavors' do
+    context 'with token and project_id acquainted' do
+      it 'returns all flavors' do
+        stub_request(:get, 'http://nova/a1b2c3/flavors')
             .with(
               headers:
               {
@@ -57,10 +57,10 @@ describe VagrantPlugins::Openstack::NovaClient do
     end
   end
 
-  describe "get_all_images" do
-    context "with token and project_id acquainted" do
-      it "returns all images" do
-        stub_request(:get, "http://nova/a1b2c3/images")
+  describe 'get_all_images' do
+    context 'with token and project_id acquainted' do
+      it 'returns all images' do
+        stub_request(:get, 'http://nova/a1b2c3/images')
             .with(
               headers:
               {
@@ -82,11 +82,11 @@ describe VagrantPlugins::Openstack::NovaClient do
     end
   end
 
-  describe "create_server" do
-    context "with token and project_id acquainted" do
-      it "returns new instance id" do
+  describe 'create_server' do
+    context 'with token and project_id acquainted' do
+      it 'returns new instance id' do
 
-        stub_request(:post, "http://nova/a1b2c3/servers")
+        stub_request(:post, 'http://nova/a1b2c3/servers')
             .with(
               body: '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key"}}',
               headers:
@@ -97,7 +97,7 @@ describe VagrantPlugins::Openstack::NovaClient do
               })
             .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
 
-        instance_id = @nova_client.create_server(env, "inst", "img", "flav", "key")
+        instance_id = @nova_client.create_server(env, 'inst', 'img', 'flav', 'key')
 
         expect(instance_id).to eq('o1o2o3')
 
@@ -105,11 +105,11 @@ describe VagrantPlugins::Openstack::NovaClient do
     end
   end
 
-  describe "delete_server" do
-    context "with token and project_id acquainted" do
-      it "returns new instance id" do
+  describe 'delete_server' do
+    context 'with token and project_id acquainted' do
+      it 'returns new instance id' do
 
-        stub_request(:delete, "http://nova/a1b2c3/servers/o1o2o3")
+        stub_request(:delete, 'http://nova/a1b2c3/servers/o1o2o3')
             .with(
               headers: {
                 'Accept' => 'application/json',
@@ -117,19 +117,19 @@ describe VagrantPlugins::Openstack::NovaClient do
               })
             .to_return(status: 204)
 
-        @nova_client.delete_server(env, "o1o2o3")
+        @nova_client.delete_server(env, 'o1o2o3')
 
       end
     end
   end
 
-  describe "suspend_server" do
-    context "with token and project_id acquainted" do
-      it "returns new instance id" do
+  describe 'suspend_server' do
+    context 'with token and project_id acquainted' do
+      it 'returns new instance id' do
 
-        stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action")
+        stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
             .with(
-              body: "{ \"suspend\": null }",
+              body: '{ "suspend": null }',
               headers:
               {
                 'Accept' => 'application/json',
@@ -138,18 +138,18 @@ describe VagrantPlugins::Openstack::NovaClient do
               })
             .to_return(status: 202)
 
-        @nova_client.suspend_server(env, "o1o2o3")
+        @nova_client.suspend_server(env, 'o1o2o3')
       end
     end
   end
 
-  describe "resume_server" do
-    context "with token and project_id acquainted" do
-      it "returns new instance id" do
+  describe 'resume_server' do
+    context 'with token and project_id acquainted' do
+      it 'returns new instance id' do
 
-        stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action")
+        stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
             .with(
-              body: "{ \"resume\": null }",
+              body: '{ "resume": null }',
               headers:
               {
                 'Accept' => 'application/json',
@@ -158,16 +158,16 @@ describe VagrantPlugins::Openstack::NovaClient do
               })
             .to_return(status: 202)
 
-        @nova_client.resume_server(env, "o1o2o3")
+        @nova_client.resume_server(env, 'o1o2o3')
       end
     end
   end
 
-  describe "stop_server" do
-    context "with token and project_id acquainted" do
-      it "returns new instance id" do
+  describe 'stop_server' do
+    context 'with token and project_id acquainted' do
+      it 'returns new instance id' do
 
-        stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action")
+        stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
             .with(
               body: '{ "os-stop": null }',
               headers:
@@ -178,19 +178,19 @@ describe VagrantPlugins::Openstack::NovaClient do
               })
             .to_return(status: 202)
 
-        @nova_client.stop_server(env, "o1o2o3")
+        @nova_client.stop_server(env, 'o1o2o3')
 
       end
     end
   end
 
-  describe "start_server" do
-    context "with token and project_id acquainted" do
-      it "returns new instance id" do
+  describe 'start_server' do
+    context 'with token and project_id acquainted' do
+      it 'returns new instance id' do
 
-        stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action")
+        stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
             .with(
-              body: "{ \"os-start\": null }",
+              body: '{ "os-start": null }',
               headers:
               {
                 'Accept' => 'application/json',
@@ -199,17 +199,17 @@ describe VagrantPlugins::Openstack::NovaClient do
               })
             .to_return(status: 202)
 
-        @nova_client.start_server(env, "o1o2o3")
+        @nova_client.start_server(env, 'o1o2o3')
 
       end
     end
   end
 
-  describe "get_server_details" do
-    context "with token and project_id acquainted" do
-      it "returns server details" do
+  describe 'get_server_details' do
+    context 'with token and project_id acquainted' do
+      it 'returns server details' do
 
-        stub_request(:get, "http://nova/a1b2c3/servers/o1o2o3")
+        stub_request(:get, 'http://nova/a1b2c3/servers/o1o2o3')
             .with(headers:
               {
                 'Accept' => 'application/json',
@@ -233,7 +233,7 @@ describe VagrantPlugins::Openstack::NovaClient do
               }
             ')
 
-        server = @nova_client.get_server_details(env, "o1o2o3")
+        server = @nova_client.get_server_details(env, 'o1o2o3')
 
         expect(server['id']).to eq('o1o2o3')
         expect(server['status']).to eq('ACTIVE')
@@ -245,12 +245,12 @@ describe VagrantPlugins::Openstack::NovaClient do
     end
   end
 
-  describe "add_floating_ip" do
+  describe 'add_floating_ip' do
 
-    context "with token and project_id acquainted and IP available" do
-      it "returns server details" do
+    context 'with token and project_id acquainted and IP available' do
+      it 'returns server details' do
 
-        stub_request(:get, "http://nova/a1b2c3/os-floating-ips")
+        stub_request(:get, 'http://nova/a1b2c3/os-floating-ips')
             .with(headers:
               {
                 'Accept' => 'application/json',
@@ -276,7 +276,7 @@ describe VagrantPlugins::Openstack::NovaClient do
                   ]
               }')
 
-        stub_request(:post, "http://nova/a1b2c3/servers/o1o2o3/action")
+        stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
             .with(body: '{"addFloatingIp":{"address":"1.2.3.4"}}',
                   headers:
                   {
@@ -286,14 +286,14 @@ describe VagrantPlugins::Openstack::NovaClient do
                   })
             .to_return(status: 202)
 
-        @nova_client.add_floating_ip(env, "o1o2o3", "1.2.3.4")
+        @nova_client.add_floating_ip(env, 'o1o2o3', '1.2.3.4')
       end
     end
 
-    context "with token and project_id acquainted and IP already in use" do
-      it "raise an error" do
+    context 'with token and project_id acquainted and IP already in use' do
+      it 'raise an error' do
 
-        stub_request(:get, "http://nova/a1b2c3/os-floating-ips")
+        stub_request(:get, 'http://nova/a1b2c3/os-floating-ips')
             .with(headers:
               {
                 'Accept' => 'application/json',
@@ -319,14 +319,14 @@ describe VagrantPlugins::Openstack::NovaClient do
                   ]
               }')
 
-        expect { @nova_client.add_floating_ip(env, "o1o2o3", "1.2.3.4") }.to raise_error(RuntimeError)
+        expect { @nova_client.add_floating_ip(env, 'o1o2o3', '1.2.3.4') }.to raise_error(RuntimeError)
       end
     end
 
-    context "with token and project_id acquainted and IP not allocated" do
-      it "raise an error" do
+    context 'with token and project_id acquainted and IP not allocated' do
+      it 'raise an error' do
 
-        stub_request(:get, "http://nova/a1b2c3/os-floating-ips")
+        stub_request(:get, 'http://nova/a1b2c3/os-floating-ips')
             .with(headers:
               {
                 'Accept' => 'application/json',
@@ -345,7 +345,7 @@ describe VagrantPlugins::Openstack::NovaClient do
                   ]
               }')
 
-        expect { @nova_client.add_floating_ip(env, "o1o2o3", "1.2.3.4") }.to raise_error(RuntimeError)
+        expect { @nova_client.add_floating_ip(env, 'o1o2o3', '1.2.3.4') }.to raise_error(RuntimeError)
       end
     end
 

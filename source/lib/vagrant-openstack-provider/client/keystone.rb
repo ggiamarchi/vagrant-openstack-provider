@@ -1,17 +1,17 @@
-require "log4r"
-require "restclient"
-require "json"
+require 'log4r'
+require 'restclient'
+require 'json'
 
 module VagrantPlugins
   module Openstack
     class KeystoneClient
       def initialize
-        @logger = Log4r::Logger.new("vagrant_openstack::keystone")
+        @logger = Log4r::Logger.new('vagrant_openstack::keystone')
         @session = VagrantPlugins::Openstack.session
       end
 
       def authenticate(env)
-        @logger.debug("Authenticating on Keystone")
+        @logger.debug('Authenticating on Keystone')
         config = env[:machine].provider_config
         env[:ui].info(I18n.t('vagrant_openstack.client.authentication', project: config.tenant_name, user: config.username))
 
@@ -47,20 +47,20 @@ module VagrantPlugins
       def read_endpoint_catalog(env, catalog)
         env[:ui].info(I18n.t('vagrant_openstack.client.looking_for_available_endpoints'))
 
-        catalog.each { |service|
+        catalog.each do |service|
           se = service['endpoints']
           if se.size > 1
             env[:ui].warn I18n.t('vagrant_openstack.client.multiple_endpoint', size: se.size, type: service['type'])
             env[:ui].warn "  => #{service['endpoints'][0]['publicURL']}"
           end
           url = se[0]['publicURL'].strip
-          @session.endpoints[service['type'].to_sym] = url if !url.empty?
-        }
+          @session.endpoints[service['type'].to_sym] = url unless url.empty?
+        end
       end
 
       def override_endpoint_catalog_with_user_config(env)
         config = env[:machine].provider_config
-        @session.endpoints[:compute] = config.openstack_compute_url if !config.openstack_compute_url.nil?
+        @session.endpoints[:compute] = config.openstack_compute_url unless config.openstack_compute_url.nil?
       end
 
       def print_endpoint_catalog(env)
