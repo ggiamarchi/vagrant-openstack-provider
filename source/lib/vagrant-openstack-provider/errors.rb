@@ -30,7 +30,6 @@ module VagrantPlugins
       class SshUnavailable < VagrantOpenstackError
         error_key(:ssh_unavailble)
       end
-
     end
   end
 end

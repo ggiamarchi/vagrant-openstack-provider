@@ -5,6 +5,15 @@ AllCops:
   Exclude:
     - 'out/**/*'
 
+Style/FileName:
+  Enabled: false
+
+Style/Encoding:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
 Style/ClassLength:
   Max: 300
 

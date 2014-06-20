@@ -2,7 +2,7 @@ module VagrantPlugins
   module Openstack
     module Action
       class Resume
-        def initialize(app, env)
+        def initialize(app, _env)
           @app = app
         end
 

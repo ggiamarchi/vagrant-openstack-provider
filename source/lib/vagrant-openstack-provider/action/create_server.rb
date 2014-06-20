@@ -10,7 +10,7 @@ module VagrantPlugins
       class CreateServer
         include Vagrant::Util::Retryable
 
-        def initialize(app, env)
+        def initialize(app, _env)
           @app = app
           @logger = Log4r::Logger.new("vagrant_openstack::action::create_server")
         end
@@ -52,7 +52,7 @@ module VagrantPlugins
           # Wait for the server to finish building
           env[:ui].info(I18n.t("vagrant_openstack.waiting_for_build"))
           timeout(200) do
-            while client.get_server_details(env, server_id)['status'] != 'ACTIVE' do
+            while client.get_server_details(env, server_id)['status'] != 'ACTIVE'
               sleep 3
               @logger.debug("Waiting for server to be ACTIVE")
             end
@@ -72,9 +72,7 @@ module VagrantPlugins
             ssh_timeout = env[:machine].provider_config.ssh_timeout
             if !port_open?(env, host, 22, ssh_timeout)
               env[:ui].error(I18n.t("vagrant_openstack.timeout"))
-              raise Errors::SshUnavailable,
-                    :host    => host,
-                    :timeout => ssh_timeout
+              raise Errors::SshUnavailable, host: host, timeou: ssh_timeout
             end
 
             env[:ui].info(I18n.t("vagrant_openstack.ready"))
@@ -98,7 +96,7 @@ module VagrantPlugins
             end
             current_time = Time.now
           end
-          return false
+          false
         end
 
         # This method finds a matching _thing_ in a collection of

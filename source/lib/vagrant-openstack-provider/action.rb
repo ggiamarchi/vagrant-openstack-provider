@@ -14,7 +14,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
-            if env[:machine_state_id] === :not_created
+            if env[:machine_state_id] == :not_created
               b2.use Message, I18n.t("vagrant_openstack.not_created")
             else
               b2.use DeleteServer
@@ -29,7 +29,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
-            if env[:machine_state_id] === :not_created
+            if env[:machine_state_id] == :not_created
               b2.use Message, I18n.t("vagrant_openstack.not_created")
             else
               b2.use Provision
@@ -66,7 +66,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
-            if env[:machine_state_id] === :not_created
+            if env[:machine_state_id] == :not_created
               b2.use Message, I18n.t("vagrant_openstack.not_created")
             else
               b2.use SSHExec
@@ -80,7 +80,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
-            if env[:machine_state_id] === :not_created
+            if env[:machine_state_id] == :not_created
               b2.use Message, I18n.t("vagrant_openstack.not_created")
             else
               b2.use SSHRun
@@ -95,7 +95,7 @@ module VagrantPlugins
           b.use ConnectOpenstack
 
           b.use Call, ReadState do |env, b2|
-            if env[:machine_state_id] === :not_created
+            if env[:machine_state_id] == :not_created
               b2.use Provision
               b2.use SyncFolders
               b2.use CreateServer
@@ -111,7 +111,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
-            if env[:machine_state_id] === :not_created
+            if env[:machine_state_id] == :not_created
               b2.use Message, I18n.t("vagrant_openstack.not_created")
             else
               b2.use StopServer
@@ -127,9 +127,9 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
-            if env[:machine_state_id] === :not_created
+            if env[:machine_state_id] == :not_created
               b2.use Message, I18n.t("vagrant_openstack.not_created")
-            elsif env[:machine_state_id] === :suspended
+            elsif env[:machine_state_id] == :suspended
               b2.use Message, I18n.t("vagrant_openstack.already_suspended")
             else
               b2.use Suspend
@@ -145,7 +145,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
-            if env[:machine_state_id] === :not_created
+            if env[:machine_state_id] == :not_created
               b2.use Message, I18n.t("vagrant_openstack.not_created")
             else
               b2.use Resume
@@ -159,7 +159,7 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
-            if env[:machine_state_id] === :not_created
+            if env[:machine_state_id] == :not_created
               b2.use Message, I18n.t("vagrant_openstack.not_created")
             else
               b2.use StopServer

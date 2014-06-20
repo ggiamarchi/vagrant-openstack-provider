@@ -23,7 +23,8 @@ describe VagrantPlugins::Openstack::Config do
   end
 
   describe "overriding defaults" do
-    [:password,
+    [
+      :password,
       :openstack_compute_url,
       :openstack_auth_url,
       :flavor,
@@ -69,8 +70,7 @@ describe VagrantPlugins::Openstack::Config do
       it "should raise an error" do
         subject.nonsense1 = true
         subject.nonsense2 = false
-        I18n.should_receive(:t).with('vagrant.config.common.bad_field',
-          { :fields => 'nonsense1, nonsense2' }).and_return error_message
+        I18n.should_receive(:t).with('vagrant.config.common.bad_field', fields: 'nonsense1, nonsense2').and_return error_message
         validation_errors.first.should == error_message
       end
     end
@@ -108,7 +108,7 @@ describe VagrantPlugins::Openstack::Config do
       context "the #{url}" do
         it "should not validate if the URL is invalid" do
           subject.send "#{url}=", 'baz'
-          I18n.should_receive(:t).with('vagrant_openstack.config.invalid_uri', {:key => url, :uri => 'baz'}).and_return error_message
+          I18n.should_receive(:t).with('vagrant_openstack.config.invalid_uri', key: url, uri: 'baz').and_return error_message
           validation_errors.first.should == error_message
         end
       end
