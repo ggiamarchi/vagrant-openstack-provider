@@ -72,7 +72,7 @@ module VagrantPlugins
             ssh_timeout = env[:machine].provider_config.ssh_timeout
             unless port_open?(env, host, 22, ssh_timeout)
               env[:ui].error(I18n.t('vagrant_openstack.timeout'))
-              fail Errors::SshUnavailable, host: host, timeou: ssh_timeout
+              fail Errors::SshUnavailable, host: host, timeout: ssh_timeout
             end
 
             env[:ui].info(I18n.t('vagrant_openstack.ready'))
