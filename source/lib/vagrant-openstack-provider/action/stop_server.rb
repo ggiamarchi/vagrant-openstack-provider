@@ -12,8 +12,7 @@ module VagrantPlugins
         def call(env)
           if env[:machine].id
             env[:ui].info(I18n.t("vagrant_openstack.stopping_server"))
-            client = env[:openstack_client]
-            client.stop_server(env, env[:machine].id)
+            env[:openstack_client].nova.stop_server(env, env[:machine].id)
           end
           @app.call(env)
         end

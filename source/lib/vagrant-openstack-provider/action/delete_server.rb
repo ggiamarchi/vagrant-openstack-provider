@@ -13,8 +13,7 @@ module VagrantPlugins
         def call(env)
           if env[:machine].id
             env[:ui].info(I18n.t("vagrant_openstack.deleting_server"))
-            client = env[:openstack_client]
-            client.delete_server(env, env[:machine].id)
+            env[:openstack_client].nova.delete_server(env, env[:machine].id)
             env[:machine].id = nil
           end
 

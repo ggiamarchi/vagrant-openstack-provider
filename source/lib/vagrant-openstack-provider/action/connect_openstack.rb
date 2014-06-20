@@ -1,7 +1,8 @@
 require "log4r"
 require "restclient"
 require "json"
-require_relative "../openstack_client"
+
+require "vagrant-openstack-provider/client/openstack"
 
 module VagrantPlugins
   module Openstack
@@ -16,10 +17,9 @@ module VagrantPlugins
         end
 
         def call(env)
-          # Get the configs
-          client = OpenstackClient.new
+          client = VagrantPlugins::Openstack
           env[:openstack_client] = client
-          client.authenticate(env)
+          client.keystone.authenticate(env)
           @app.call(env)
         end
       end
