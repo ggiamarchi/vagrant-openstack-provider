@@ -18,11 +18,10 @@ module VagrantPlugins
 
         def read_state(env)
           machine = env[:machine]
-          client = env[:openstack_client]
           return :not_created if machine.id.nil?
 
           # Find the machine
-          server = client.get_server_details(env, machine.id)
+          server = env[:openstack_client].nova.get_server_details(env, machine.id)
           if server.nil? || server['status'] == "DELETED"
             # The machine can't be found
             @logger.info("Machine not found or deleted, assuming it got destroyed.")

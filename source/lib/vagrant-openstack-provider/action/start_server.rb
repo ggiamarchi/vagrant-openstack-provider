@@ -12,8 +12,7 @@ module VagrantPlugins
         def call(env)
           if env[:machine].id
             env[:ui].info(I18n.t("vagrant_openstack.starting_server"))
-            client = env[:openstack_client]
-            client.start_server(env, env[:machine].id)
+            env[:openstack_client].nova.start_server(env, env[:machine].id)
           end
           @app.call(env)
         end

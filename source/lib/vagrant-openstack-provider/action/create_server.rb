@@ -17,7 +17,7 @@ module VagrantPlugins
 
         def call(env)
           config = env[:machine].provider_config
-          client = env[:openstack_client]
+          client = env[:openstack_client].nova
 
           # Find the flavor
           env[:ui].info(I18n.t("vagrant_openstack.finding_flavor"))
