@@ -5,20 +5,19 @@ module VagrantPlugins
     class Config < Vagrant.plugin('2', :config)
       # The API key to access Openstack.
       #
-      # @return [String]
       attr_accessor :password
 
-      # The compute_url to access Openstack. If nil, it will default
-      # to DFW.
-      # (formerly know as 'endpoint')
+      # The compute service url to access Openstack. If nil, it will read from
+      # hypermedia catalog form REST API
       #
-      # expected to be a string url -
-      # 'https://dfw.servers.api.openstackcloud.com/v2'
-      # 'https://ord.servers.api.openstackcloud.com/v2'
-      # 'https://lon.servers.api.openstackcloud.com/v2'
       attr_accessor :openstack_compute_url
 
-      # The authenication endpoint. This defaults to Openstack's global authentication endpoint.
+      # The network service url to access Openstack. If nil, it will read from
+      # hypermedia catalog form REST API
+      #
+      attr_accessor :openstack_network_url
+
+      # The authentication endpoint. This defaults to Openstack's global authentication endpoint.
       attr_accessor :openstack_auth_url
 
       # The flavor of server to launch, either the ID or name. This
@@ -76,9 +75,15 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :sync_method
 
+      # Network list the VM will be connected to
+      #
+      # @return [Array]
+      attr_accessor :networks
+
       def initialize
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
+        @openstack_network_url = UNSET_VALUE
         @openstack_auth_url = UNSET_VALUE
         @flavor = UNSET_VALUE
         @image = UNSET_VALUE
@@ -91,29 +96,32 @@ module VagrantPlugins
         @ssh_timeout = UNSET_VALUE
         @floating_ip = UNSET_VALUE
         @sync_method = UNSET_VALUE
+        @networks = []
       end
 
+      # rubocop:disable Style/CyclomaticComplexity
       def finalize!
         @password = nil if @password == UNSET_VALUE
         @openstack_compute_url = nil if @openstack_compute_url == UNSET_VALUE
+        @openstack_network_url = nil if @openstack_network_url == UNSET_VALUE
         @openstack_auth_url = nil if @openstack_auth_url == UNSET_VALUE
         @flavor = nil if @flavor == UNSET_VALUE
-        @image = nil if @image == UNSET_VALUE # TODO, No default value
+        @image = nil if @image == UNSET_VALUE
         @tenant_name = nil if @tenant_name == UNSET_VALUE
         @server_name = nil if @server_name == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
         @rsync_includes = nil if @rsync_includes.empty?
         @floating_ip = nil if @floating_ip == UNSET_VALUE
         @sync_method = 'rsync' if @sync_method == UNSET_VALUE
-
-        # Keypair defaults to nil
         @keypair_name = nil if @keypair_name == UNSET_VALUE
 
         # The SSH values by default are nil, and the top-level config
         # `config.ssh` values are used.
         @ssh_username = nil if @ssh_username == UNSET_VALUE
         @ssh_timeout = 60 if @ssh_timeout == UNSET_VALUE
+        @networks = nil if @networks.empty?
       end
+      # rubocop:enable Style/CyclomaticComplexity
 
       def rsync_include(inc)
         @rsync_includes << inc
@@ -128,6 +136,7 @@ module VagrantPlugins
 
         {
           openstack_compute_url: @openstack_compute_url,
+          openstack_network_url: @openstack_network_url,
           openstack_auth_url: @openstack_auth_url
         }.each_pair do |key, value|
           errors << I18n.t('vagrant_openstack.config.invalid_uri', key: key, uri: value) unless value.nil? || valid_uri?(value)

@@ -61,6 +61,7 @@ module VagrantPlugins
       def override_endpoint_catalog_with_user_config(env)
         config = env[:machine].provider_config
         @session.endpoints[:compute] = config.openstack_compute_url unless config.openstack_compute_url.nil?
+        @session.endpoints[:network] = config.openstack_network_url unless config.openstack_network_url.nil?
       end
 
       def print_endpoint_catalog(env)

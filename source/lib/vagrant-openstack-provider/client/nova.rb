@@ -20,18 +20,23 @@ module VagrantPlugins
         JSON.parse(images_json)['images'].map { |im| Item.new(im['id'], im['name']) }
       end
 
-      def create_server(_env, name, image_ref, flavor_ref, keypair)
+      def create_server(_env, name, image_ref, flavor_ref, networks, keypair)
+        server = {}.tap do |s|
+          s['name'] = name
+          s['imageRef'] = image_ref
+          s['flavorRef'] = flavor_ref
+          s['key_name'] = keypair
+
+          unless networks.nil? || networks.empty?
+            s['networks'] = []
+            networks.each do |uuid|
+              s['networks'] << { uuid: uuid }
+            end
+          end
+        end
+
         server = RestClient.post(
-          "#{@session.endpoints[:compute]}/servers",
-          {
-            server:
-            {
-              name: name,
-              imageRef: image_ref,
-              flavorRef: flavor_ref,
-              key_name: keypair
-            }
-          }.to_json,
+          "#{@session.endpoints[:compute]}/servers", { server: server }.to_json,
           'X-Auth-Token' => @session.token,
           :accept => :json,
           :content_type => :json)

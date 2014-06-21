@@ -17,34 +17,30 @@ module VagrantPlugins
 
         def call(env)
           config = env[:machine].provider_config
-          client = env[:openstack_client].nova
+          nova = env[:openstack_client].nova
 
-          # Find the flavor
-          env[:ui].info(I18n.t('vagrant_openstack.finding_flavor'))
-          flavors = client.get_all_flavors(env)
-          flavor = find_matching(flavors, config.flavor)
-          fail Errors::NoMatchingFlavor unless flavor
-
-          # Find the image
-          env[:ui].info(I18n.t('vagrant_openstack.finding_image'))
-          images = client.get_all_images(env)
-          image = find_matching(images, config.image)
-          fail Errors::NoMatchingImage unless image
-
-          # Figure out the name for the server
+          flavor = resolve_flavor(env)
+          image = resolve_image(env)
+          networks = resolve_networks(env)
           server_name = config.server_name || env[:machine].name
 
-          # Output the settings we're going to use to the user
           env[:ui].info(I18n.t('vagrant_openstack.launching_server'))
+          env[:ui].info(" -- Tenant         : #{config.tenant_name}")
+          env[:ui].info(" -- Name           : #{server_name}")
           env[:ui].info(" -- Flavor         : #{flavor.name}")
           env[:ui].info(" -- FlavorRef      : #{flavor.id}")
           env[:ui].info(" -- Image          : #{image.name}")
-          env[:ui].info(" -- KeyPair        : #{config.keypair_name}")
           env[:ui].info(" -- ImageRef       : #{image.id}")
-          env[:ui].info(" -- Tenant         : #{config.tenant_name}")
-          env[:ui].info(" -- Name           : #{server_name}")
+          env[:ui].info(" -- KeyPair        : #{config.keypair_name}")
+          unless networks.empty?
+            if networks.size == 1
+              env[:ui].info(" -- Network        : #{config.networks[0]}")
+            else
+              env[:ui].info(" -- Networks       : #{config.networks}")
+            end
+          end
 
-          server_id = client.create_server(env, server_name, image.id, flavor.id, config.keypair_name)
+          server_id = nova.create_server(env, server_name, image.id, flavor.id, networks, config.keypair_name)
 
           # Store the ID right away so we can track it
           env[:machine].id = server_id
@@ -52,7 +48,7 @@ module VagrantPlugins
           # Wait for the server to finish building
           env[:ui].info(I18n.t('vagrant_openstack.waiting_for_build'))
           timeout(200) do
-            while client.get_server_details(env, server_id)['status'] != 'ACTIVE'
+            while nova.get_server_details(env, server_id)['status'] != 'ACTIVE'
               sleep 3
               @logger.debug('Waiting for server to be ACTIVE')
             end
@@ -60,7 +56,7 @@ module VagrantPlugins
 
           if config.floating_ip
             env[:ui].info("Using floating IP #{config.floating_ip}")
-            client.add_floating_ip(env, server_id, config.floating_ip)
+            nova.add_floating_ip(env, server_id, config.floating_ip)
           end
 
           unless env[:interrupted]
@@ -81,7 +77,53 @@ module VagrantPlugins
           @app.call(env)
         end
 
-        protected
+        private
+
+        def resolve_flavor(env)
+          config = env[:machine].provider_config
+          nova = env[:openstack_client].nova
+          env[:ui].info(I18n.t('vagrant_openstack.finding_flavor'))
+          flavors = nova.get_all_flavors(env)
+          flavor = find_matching(flavors, config.flavor)
+          fail Errors::NoMatchingFlavor unless flavor
+          flavor
+        end
+
+        def resolve_image(env)
+          config = env[:machine].provider_config
+          nova = env[:openstack_client].nova
+          env[:ui].info(I18n.t('vagrant_openstack.finding_image'))
+          images = nova.get_all_images(env)
+          image = find_matching(images, config.image)
+          fail Errors::NoMatchingImage unless image
+          image
+        end
+
+        def resolve_networks(env)
+          config = env[:machine].provider_config
+          return [] if config.networks.nil? || config.networks.empty?
+          env[:ui].info(I18n.t('vagrant_openstack.finding_networks'))
+
+          private_networks = env[:openstack_client].neutron.get_private_networks(env)
+          private_network_ids = private_networks.map { |n| n[:id] }
+
+          networks = []
+          config.networks.each do |network|
+            if private_network_ids.include?(network)
+              networks << network
+              next
+            end
+            net_id = nil
+            private_networks.each do |n| # Bad algorithm complexity, but here we don't care...
+              next unless n[:name].eql? network
+              fail "Multiple networks with name '#{n[:name]}'" unless net_id.nil?
+              net_id = n[:id]
+            end
+            fail "No matching network with name '#{network}'" if net_id.nil?
+            networks << net_id
+          end
+          networks
+        end
 
         def port_open?(env, ip, port, timeout)
           start_time = Time.now

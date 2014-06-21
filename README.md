@@ -114,6 +114,8 @@ vagrant will authenticate against the UK authentication endpoint.
 * `server_name` - The name of the server within Openstack Cloud. This
   defaults to the name of the Vagrant machine (via `config.vm.define`), but
   can be overridden with this.
+* `networks` - Network list the server must be connected on. Can be omitted if only one private network exists
+  in the Openstack project
 * `sync_method` - Specify the synchronization method for shared folder between the host and the remote VM.
   Currently, it can be "rsync" or "none". The default value is "rsync". If your Openstack image does not
   include rsync, you must set this parameter to "none".
@@ -140,15 +142,16 @@ supported with `vagrant-openstack`, currently. If any of these are
 specified, Vagrant will emit a warning, but will otherwise boot
 the Openstack server.
 
-However, you may attach a VM to an isolated [Cloud Network](http://www.openstack.com/knowledge_center/article/getting-started-with-cloud-networks) (or Networks) using the `network` configuration option. Here's an example which adds two Cloud Networks and disables ServiceNet with the `:attach => false` option:
+You can provide network id or name. However, in Openstack the network name is not unique, thus if there is two networks with
+the same name in your project the plugin will fail. If so, you have to use only ids.
+
+Here's an example which adds two Cloud Networks. The first by id and the second by name.
 
 ```ruby
 config.vm.provider :openstack do |rs|
-  rs.username = "mitchellh"
-  rs.password = "foobarbaz"
-  rs.network '443aff42-be57-effb-ad30-c097c1e4503f'
-  rs.network '5e738e11-def2-4a75-ad1e-05bbe3b49efe'
-  rs.network :service_net, :attached => false
+  ...
+  rs.networks = ['443aff42-be57-effb-ad30-c097c1e4503f', 'backend-network']
+  ...
 end
 ```
 

@@ -97,11 +97,31 @@ describe VagrantPlugins::Openstack::NovaClient do
               })
             .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
 
-        instance_id = @nova_client.create_server(env, 'inst', 'img', 'flav', 'key')
+        instance_id = @nova_client.create_server(env, 'inst', 'img', 'flav', nil, 'key')
 
         expect(instance_id).to eq('o1o2o3')
-
       end
+
+      context 'with one two networks' do
+        it 'returns new instance id' do
+
+          stub_request(:post, 'http://nova/a1b2c3/servers')
+          .with(
+              body: '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key","networks":[{"uuid":"net1"},{"uuid":"net2"}]}}',
+              headers:
+                  {
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                    'X-Auth-Token' => '123456'
+                  })
+          .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
+
+          instance_id = @nova_client.create_server(env, 'inst', 'img', 'flav', %w(net1 net2), 'key')
+
+          expect(instance_id).to eq('o1o2o3')
+        end
+      end
+
     end
   end
 

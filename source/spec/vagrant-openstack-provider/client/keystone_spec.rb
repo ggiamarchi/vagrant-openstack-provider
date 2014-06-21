@@ -6,6 +6,7 @@ describe VagrantPlugins::Openstack::KeystoneClient do
     double('config').tap do |config|
       config.stub(:openstack_auth_url) { 'http://keystoneAuthV2' }
       config.stub(:openstack_compute_url) { nil }
+      config.stub(:openstack_network_url) { nil }
       config.stub(:tenant_name) { 'testTenant' }
       config.stub(:username) { 'username' }
       config.stub(:password) { 'password' }
@@ -91,6 +92,27 @@ describe VagrantPlugins::Openstack::KeystoneClient do
         end
       end
 
+      context 'with network endpoint override' do
+        it 'store token and tenant id' do
+          config.stub(:openstack_network_url) { 'http://neutronOverride' }
+
+          stub_request(:post, 'http://keystoneAuthV2')
+          .with(
+              body: keystone_request_body,
+              headers: keystone_request_headers)
+          .to_return(
+              status: 200,
+              body: keystone_response_body,
+              headers: keystone_request_headers)
+
+          @keystone_client.authenticate(env)
+
+          session.token.should eq('0123456789')
+          session.project_id.should eq('testTenantId')
+          session.endpoints[:compute].should eq('http://nova')
+          session.endpoints[:network].should eq('http://neutronOverride')
+        end
+      end
     end
 
     context 'with wrong credentials' do
