@@ -118,7 +118,7 @@ module VagrantPlugins
         # The SSH values by default are nil, and the top-level config
         # `config.ssh` values are used.
         @ssh_username = nil if @ssh_username == UNSET_VALUE
-        @ssh_timeout = 60 if @ssh_timeout == UNSET_VALUE
+        @ssh_timeout = 180 if @ssh_timeout == UNSET_VALUE
         @networks = nil if @networks.empty?
       end
       # rubocop:enable Style/CyclomaticComplexity
