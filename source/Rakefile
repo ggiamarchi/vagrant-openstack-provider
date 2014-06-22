@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'rspec/core/rake_task'
+require 'rubocop/rake_task'
 
 # Immediately sync all stdout so that tools like buildbot can
 # immediately load in the output.
@@ -17,5 +18,8 @@ Bundler::GemHelper.install_tasks
 # Install the `spec` task so that we can run tests.
 RSpec::Core::RakeTask.new
 
+# Install the `rubocop` task
+RuboCop::RakeTask.new
+
 # Default task is to run the unit tests
-task default: 'spec'
+task default: %w(rubocop spec)
