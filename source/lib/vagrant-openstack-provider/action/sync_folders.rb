@@ -71,10 +71,10 @@ module VagrantPlugins
               "chown -R #{ssh_info[:username]} '#{guestpath}'")
 
             # Generate rsync include commands
-            includes = rsync_includes.each_with_object([]) { |incl, incls|
+            includes = rsync_includes.each_with_object([]) do |incl, incls|
               incls << '--include'
               incls << incl
-            }
+            end
 
             # Rsync over to the guest path using the SSH info. add
             # .hg/ to exclude list as that isn't covered in
@@ -94,15 +94,11 @@ module VagrantPlugins
             ignore_files = ['.hgignore', '.gitignore']
             ignore_files.each do |ignore_file|
               abs_ignore_file = env[:root_path].to_s + '/' + ignore_file
-              if File.exist?(abs_ignore_file)
-                command += ['--exclude-from', abs_ignore_file]
-              end
+              command += ['--exclude-from', abs_ignore_file] if File.exist?(abs_ignore_file)
             end
 
-            r = Vagrant::Util::Subprocess.execute(*command)
-            if r.exit_code != 0
-              fail Errors::RsyncError, guestpath: guestpath, hostpath: hostpath, stderr: r.stderr
-            end
+            next if Vagrant::Util::Subprocess.execute(*command).exit_code == 0
+            ail Errors::RsyncError, guestpath: guestpath, hostpath: hostpath, stderr: r.stderr
           end
         end
 
