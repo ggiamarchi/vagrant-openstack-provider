@@ -172,6 +172,7 @@ module VagrantPlugins
 
       # The autoload farm
       action_root = Pathname.new(File.expand_path('../action', __FILE__))
+      autoload :Message, action_root.join('message')
       autoload :ConnectOpenstack, action_root.join('connect_openstack')
       autoload :CreateServer, action_root.join('create_server')
       autoload :DeleteServer, action_root.join('delete_server')
