@@ -24,6 +24,8 @@ en:
       Starting server...
     timeout: |-
       Timeout!
+    trying_authentication: |-
+      Trying authentication...
     rsync_folder: |-
       Rsyncing folder: %{hostpath} => %{guestpath}
     waiting_for_build: |-
@@ -50,6 +52,10 @@ en:
         A keypair name is required.
 
     errors:
+      default: |-
+        %{message}
+      authentication_required: |-
+        Authentication token is missing or no longer valid.
       create_bad_state: |-
         While creating the server, it transitioned to an unexpected
         state: '%{state}', instead of properly booting. Run `vagrant status`

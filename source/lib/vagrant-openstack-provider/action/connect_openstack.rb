@@ -19,7 +19,7 @@ module VagrantPlugins
         def call(env)
           client = VagrantPlugins::Openstack
           env[:openstack_client] = client
-          client.keystone.authenticate(env)
+          client.keystone.authenticate(env) if client.session.token.nil?
           @app.call(env)
         end
       end

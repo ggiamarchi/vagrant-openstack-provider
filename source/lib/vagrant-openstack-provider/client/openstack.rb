@@ -27,15 +27,15 @@ module VagrantPlugins
     end
 
     def self.keystone
-      Openstack::KeystoneClient.new
+      Openstack::KeystoneClient.instance
     end
 
     def self.nova
-      Openstack::NovaClient.new
+      Openstack::NovaClient.instance
     end
 
     def self.neutron
-      Openstack::NeutronClient.new
+      Openstack::NeutronClient.instance
     end
   end
 end
