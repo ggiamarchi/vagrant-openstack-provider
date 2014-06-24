@@ -187,3 +187,10 @@ that uses it, and uses bundler to execute Vagrant:
 ```
 $ bundle exec vagrant up --provider=openstack
 ```
+
+## Logging
+
+To enable all Vagrant logs set environment variable `VAGRANT_LOG` to the desire
+log level (for instance `VAGRANT_LOG=debug`). If you want only Openstack provider
+logs use the variable `VAGRANT_OPENSTACK_LOG`. if both variables are set, `VAGRANT_LOG`
+takes precedence.

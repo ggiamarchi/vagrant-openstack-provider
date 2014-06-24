@@ -25,7 +25,11 @@ module VagrantPlugins
         # This means that the logging constant wasn't found,
         # which is fine. We just keep `level` as `nil`. But
         # we tell the user.
-        level = nil
+        begin
+          level = Log4r.const_get(ENV['VAGRANT_OPENSTACK_LOG'].upcase)
+        rescue NameError
+          level = nil
+        end
       end
 
       # Some constants, such as "true" resolve to booleans, so the
@@ -33,11 +37,13 @@ module VagrantPlugins
       # sure that the log level is an integer, as Log4r requires.
       level = nil unless level.is_a?(Integer)
 
-      # Set the logging level on all "vagrant" namespaced
+      # Set the logging level
       # logs as long as we have a valid level.
       if level
         logger = Log4r::Logger.new('vagrant_openstack')
-        logger.outputters = Log4r::Outputter.stderr
+        out = Log4r::Outputter.stdout
+        out.formatter = Log4r::PatternFormatter.new(pattern: '%d | %5l | %m', date_pattern: '%Y-%m-%d %H:%M')
+        logger.outputters = out
         logger.level = level
       end
     end
