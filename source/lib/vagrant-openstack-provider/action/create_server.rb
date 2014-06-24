@@ -128,12 +128,14 @@ module VagrantPlugins
         def port_open?(env, ip, port, timeout)
           start_time = Time.now
           current_time = start_time
+          nb_retry = 0
           while (current_time - start_time) <= timeout
             begin
-              env[:ui].info(I18n.t('vagrant_openstack.waiting_for_ssh'))
+              env[:ui].info(I18n.t('vagrant_openstack.waiting_for_ssh')) if nb_retry % 5 == 0
               TCPSocket.new(ip, port)
               return true
             rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ETIMEDOUT
+              nb_retry += 1
               sleep 1
             end
             current_time = Time.now
