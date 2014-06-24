@@ -5,6 +5,11 @@ module VagrantPlugins
     module Errors
       class VagrantOpenstackError < Vagrant::Errors::VagrantError
         error_namespace('vagrant_openstack.errors')
+        error_key(:default)
+      end
+
+      class AuthenticationRequired < VagrantOpenstackError
+        error_key(:authentication_required)
       end
 
       class CreateBadState < VagrantOpenstackError

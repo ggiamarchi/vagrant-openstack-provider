@@ -5,6 +5,8 @@ require 'json'
 module VagrantPlugins
   module Openstack
     class KeystoneClient
+      include Singleton
+
       def initialize
         @logger = Log4r::Logger.new('vagrant_openstack::keystone')
         @session = VagrantPlugins::Openstack.session
