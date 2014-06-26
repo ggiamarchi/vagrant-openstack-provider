@@ -1,11 +1,10 @@
 # Vagrant Openstack Cloud Provider
 
-[![Build Status](https://api.travis-ci.org/ggiamarchi/vagrant-openstack.png?branch=master)](http://travis-ci.org/ggiamarchi/vagrant-openstack)
-[![Dependencies Status](https://gemnasium.com/ggiamarchi/vagrant-openstack.png)](http://gemnasium.com/ggiamarchi/vagrant-openstack)
-[![Code Climate](https://codeclimate.com/github/ggiamarchi/vagrant-openstack.png)](https://codeclimate.com/github/ggiamarchi/vagrant-openstack)
+[![Build Status](https://api.travis-ci.org/ggiamarchi/vagrant-openstack-provider.png?branch=master)](https://travis-ci.org/ggiamarchi/vagrant-openstack-provider)
+[![Code Climate](https://codeclimate.com/github/ggiamarchi/vagrant-openstack-provider.png)](https://codeclimate.com/github/ggiamarchi/vagrant-openstack-provider)
 
 This is a [Vagrant](http://www.vagrantup.com) 1.1+ plugin that adds a
-[Openstack Cloud](http://www.openstack.com/cloud) provider to Vagrant,
+[Openstack Cloud](http://www.openstack.org/software/) provider to Vagrant,
 allowing Vagrant to control and provision machines within Openstack
 cloud.
 
@@ -36,7 +35,7 @@ box file for Vagrant.
 
 ### CentOS / RHEL (sudo: sorry, you must have a tty to run sudo)
 
-The default configuration of the RHEL family of Linux distributions requires a tty in order to run sudo.  Vagrant does not connect with a tty by default, so you may experience the error:
+The default configuration of the RHEL family of Linux distributions requires a tty in order to run sudo. Vagrant does not connect with a tty by default, so you may experience the error:
 > sudo: sorry, you must have a tty to run sudo
 
 The best way to take deal with this error is to upgrade to Vagrant 1.4 or later, and enable:
@@ -52,7 +51,7 @@ manually within a `config.vm.provider` block. So first, add the dummy
 box using any name you want:
 
 ```
-$ vagrant box add dummy https://github.com/ggiamarchi/vagrant-openstack/raw/master/dummy.box
+$ vagrant box add dummy https://github.com/ggiamarchi/vagrant-openstack-provider/raw/master/source/dummy.box
 ...
 ```
 
@@ -86,7 +85,7 @@ no preconfigured defaults.
 
 Every provider in Vagrant must introduce a custom box format. This
 provider introduces `openstack` boxes. You can view an example box in
-the [example_box/ directory](https://github.com/ggiamarchi/vagrant-openstack/tree/master/example_box).
+the [example_box/ directory](https://github.com/ggiamarchi/vagrant-openstack/tree/master/source/example_box).
 That directory also contains instructions on how to build a box.
 
 The box format is basically just the required `metadata.json` file
