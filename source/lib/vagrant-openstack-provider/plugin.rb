@@ -32,6 +32,11 @@ module VagrantPlugins
         require_relative 'provider'
         Provider
       end
+
+      command('openstack') do
+        require_relative 'command/main'
+        Command::Main
+      end
     end
   end
 end

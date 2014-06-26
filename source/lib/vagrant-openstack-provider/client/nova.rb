@@ -154,13 +154,5 @@ module VagrantPlugins
         fail "Floating IP #{floating_ip} not available for this tenant"
       end
     end
-
-    class Item
-      attr_accessor :id, :name
-      def initialize(id, name)
-        @id = id
-        @name = name
-      end
-    end
   end
 end

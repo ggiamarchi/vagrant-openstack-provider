@@ -43,10 +43,10 @@ describe VagrantPlugins::Openstack::NeutronClient do
         networks = @neutron_client.get_private_networks(env)
 
         expect(networks.length).to eq(2)
-        expect(networks[0][:id]).to eq('net-1')
-        expect(networks[0][:name]).to eq('net1')
-        expect(networks[1][:id]).to eq('net-2')
-        expect(networks[1][:name]).to eq('net2')
+        expect(networks[0].id).to eq('net-1')
+        expect(networks[0].name).to eq('net1')
+        expect(networks[1].id).to eq('net-2')
+        expect(networks[1].name).to eq('net2')
       end
     end
   end

@@ -78,6 +78,8 @@ en:
         Error: %{stderr}
       ssh_unavailble: |-
         SSH server anavailable on instance %{host}. You should maybe increase the timeout value which currently is %{timeout} second(s).
+      no_arg_required_for_command: |-
+        Command '%{cmd}' does not required any argument.
 
     states:
       short_active: |-
@@ -161,3 +163,17 @@ en:
         %{size} endpoints are available for service '%{type}' but only the first one will be used
       authentication: |-
         Authentication on project %{project} with user %{user}
+
+    command:
+      main_synopsis: |-
+        Openstack provider specific commands
+      main_usage : |-
+        Usage: vagrant openstack command
+      available_subcommands: |-
+        Available subcommands:
+      image_list_synopsis : |-
+        List available images
+      flavor_list_synopsis : |-
+        List available flavors
+      network_list_synopsis : |-
+        List private networks in project
