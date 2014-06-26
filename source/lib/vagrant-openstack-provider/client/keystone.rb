@@ -13,9 +13,9 @@ module VagrantPlugins
       end
 
       def authenticate(env)
-        @logger.debug('Authenticating on Keystone')
+        @logger.info('Authenticating on Keystone')
         config = env[:machine].provider_config
-        env[:ui].info(I18n.t('vagrant_openstack.client.authentication', project: config.tenant_name, user: config.username))
+        @logger.info(I18n.t('vagrant_openstack.client.authentication', project: config.tenant_name, user: config.username))
 
         authentication = RestClient.post(
             config.openstack_auth_url,
@@ -37,7 +37,7 @@ module VagrantPlugins
 
         read_endpoint_catalog(env, access['serviceCatalog'])
         override_endpoint_catalog_with_user_config(env)
-        print_endpoint_catalog(env)
+        log_endpoint_catalog
 
         response_token = access['token']
         @session.token = response_token['id']
@@ -47,7 +47,7 @@ module VagrantPlugins
       private
 
       def read_endpoint_catalog(env, catalog)
-        env[:ui].info(I18n.t('vagrant_openstack.client.looking_for_available_endpoints'))
+        @logger.info(I18n.t('vagrant_openstack.client.looking_for_available_endpoints'))
 
         catalog.each do |service|
           se = service['endpoints']
@@ -66,9 +66,9 @@ module VagrantPlugins
         @session.endpoints[:network] = config.openstack_network_url unless config.openstack_network_url.nil?
       end
 
-      def print_endpoint_catalog(env)
+      def log_endpoint_catalog
         @session.endpoints.each do |key, value|
-          env[:ui].info(" -- #{key.to_s.ljust 15}: #{value}")
+          @logger.info(" -- #{key.to_s.ljust 15}: #{value}")
         end
       end
     end

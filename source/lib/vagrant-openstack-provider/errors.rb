@@ -35,6 +35,10 @@ module VagrantPlugins
       class SshUnavailable < VagrantOpenstackError
         error_key(:ssh_unavailble)
       end
+
+      class NoArgRequiredForCommand < VagrantOpenstackError
+        error_key(:no_arg_required_for_command)
+      end
     end
   end
 end

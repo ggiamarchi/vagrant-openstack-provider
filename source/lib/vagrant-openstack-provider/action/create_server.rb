@@ -105,7 +105,7 @@ module VagrantPlugins
           env[:ui].info(I18n.t('vagrant_openstack.finding_networks'))
 
           private_networks = env[:openstack_client].neutron.get_private_networks(env)
-          private_network_ids = private_networks.map { |n| n[:id] }
+          private_network_ids = private_networks.map { |n| n.id }
 
           networks = []
           config.networks.each do |network|
@@ -115,9 +115,9 @@ module VagrantPlugins
             end
             net_id = nil
             private_networks.each do |n| # Bad algorithm complexity, but here we don't care...
-              next unless n[:name].eql? network
-              fail "Multiple networks with name '#{n[:name]}'" unless net_id.nil?
-              net_id = n[:id]
+              next unless n.name.eql? network
+              fail "Multiple networks with name '#{n.id}'" unless net_id.nil?
+              net_id = n.id
             end
             fail "No matching network with name '#{network}'" if net_id.nil?
             networks << net_id

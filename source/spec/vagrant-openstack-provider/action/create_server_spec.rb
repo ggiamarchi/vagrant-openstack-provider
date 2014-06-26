@@ -1,6 +1,7 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 include VagrantPlugins::Openstack::Action
+include VagrantPlugins::Openstack::Utils
 
 describe VagrantPlugins::Openstack::Action::CreateServer do
 
@@ -18,7 +19,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
   let(:neutron) do
     double('neutron').tap do |neutron|
       neutron.stub(:get_private_networks).with(anything) do
-        [{ id: 'net-id-1', name: 'net-1' }, { id: 'net-id-2', name: 'net-2' }]
+        [Item.new('net-id-1', 'net-1'), Item.new('net-id-2', 'net-2')]
       end
     end
   end
