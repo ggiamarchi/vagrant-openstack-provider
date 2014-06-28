@@ -12,6 +12,14 @@ module VagrantPlugins
         error_key(:authentication_required)
       end
 
+      class AuthenticationFailed < VagrantOpenstackError
+        error_key(:authentication_failed)
+      end
+
+      class BadAuthenticationEndpoint < VagrantOpenstackError
+        error_key(:bad_authentication_endpoint)
+      end
+
       class CreateBadState < VagrantOpenstackError
         error_key(:create_bad_state)
       end

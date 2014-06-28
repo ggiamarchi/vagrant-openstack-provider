@@ -12,6 +12,7 @@ module VagrantPlugins
 
         def call(env)
           if env[:machine].id
+            @logger.info "Deleting server #{env[:machine].id}..."
             env[:ui].info(I18n.t('vagrant_openstack.deleting_server'))
             env[:openstack_client].nova.delete_server(env, env[:machine].id)
             env[:machine].id = nil

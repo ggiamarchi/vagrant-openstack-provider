@@ -149,7 +149,7 @@ describe VagrantPlugins::Openstack::NovaClient do
 
         stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
             .with(
-              body: '{ "suspend": null }',
+              body: '{"suspend":null}',
               headers:
               {
                 'Accept' => 'application/json',
@@ -169,7 +169,7 @@ describe VagrantPlugins::Openstack::NovaClient do
 
         stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
             .with(
-              body: '{ "resume": null }',
+              body: '{"resume":null}',
               headers:
               {
                 'Accept' => 'application/json',
@@ -189,7 +189,7 @@ describe VagrantPlugins::Openstack::NovaClient do
 
         stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
             .with(
-              body: '{ "os-stop": null }',
+              body: '{"os-stop":null}',
               headers:
               {
                 'Accept' => 'application/json',
@@ -210,7 +210,7 @@ describe VagrantPlugins::Openstack::NovaClient do
 
         stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
             .with(
-              body: '{ "os-start": null }',
+              body: '{"os-start":null}',
               headers:
               {
                 'Accept' => 'application/json',

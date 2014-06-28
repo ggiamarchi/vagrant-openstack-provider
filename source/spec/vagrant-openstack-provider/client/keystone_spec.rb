@@ -132,9 +132,40 @@ describe VagrantPlugins::Openstack::KeystoneClient do
               }',
             headers: keystone_request_headers)
 
-        expect { @keystone_client.authenticate(env) }.to raise_error(RestClient::Unauthorized)
+        expect { @keystone_client.authenticate(env) }.to raise_error(Errors::AuthenticationFailed)
       end
     end
 
+    context 'with bad endpoint' do
+      it 'raise a BadAuthenticationEndpoint error' do
+        stub_request(:post, 'http://keystoneAuthV2')
+        .with(
+            body: keystone_request_body,
+            headers: keystone_request_headers)
+        .to_return(
+            status: 404)
+
+        expect { @keystone_client.authenticate(env) }.to raise_error(Errors::BadAuthenticationEndpoint)
+      end
+    end
+
+    context 'with internal server error' do
+      it 'raise a VagrantOpenstackError error with response body as message' do
+        stub_request(:post, 'http://keystoneAuthV2')
+        .with(
+            body: keystone_request_body,
+            headers: keystone_request_headers)
+        .to_return(
+            status: 500,
+            body: 'Internal server error')
+
+        begin
+          @keystone_client.authenticate(env)
+          fail 'Expected Errors::VagrantOpenstackError'
+        rescue Errors::VagrantOpenstackError => e
+          e.message.should eq('Internal server error')
+        end
+      end
+    end
   end
 end

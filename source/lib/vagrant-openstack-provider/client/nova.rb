@@ -16,135 +16,82 @@ module VagrantPlugins
       end
 
       def get_all_flavors(env)
-        authenticated(env) do
-          flavors_json = RestClient.get("#{@session.endpoints[:compute]}/flavors",
-                                        'X-Auth-Token' => @session.token,
-                                        :accept => :json) { |res| handle_response(res) }
-
-          return JSON.parse(flavors_json)['flavors'].map { |fl| Item.new(fl['id'], fl['name']) }
-        end
+        flavors_json = get(env, "#{@session.endpoints[:compute]}/flavors")
+        JSON.parse(flavors_json)['flavors'].map { |fl| Item.new(fl['id'], fl['name']) }
       end
 
       def get_all_images(env)
-        authenticated(env) do
-          images_json = RestClient.get(
-            "#{@session.endpoints[:compute]}/images",
-            'X-Auth-Token' => @session.token, :accept => :json) { |res| handle_response(res) }
-
-          JSON.parse(images_json)['images'].map { |im| Item.new(im['id'], im['name']) }
-        end
+        images_json = get(env, "#{@session.endpoints[:compute]}/images")
+        JSON.parse(images_json)['images'].map { |fl| Item.new(fl['id'], fl['name']) }
       end
 
       def create_server(env, name, image_ref, flavor_ref, networks, keypair)
-        authenticated(env) do
-          server = {}.tap do |s|
-            s['name'] = name
-            s['imageRef'] = image_ref
-            s['flavorRef'] = flavor_ref
-            s['key_name'] = keypair
-            unless networks.nil? || networks.empty?
-              s['networks'] = []
-              networks.each do |uuid|
-                s['networks'] << { uuid: uuid }
-              end
+        server = {}.tap do |s|
+          s['name'] = name
+          s['imageRef'] = image_ref
+          s['flavorRef'] = flavor_ref
+          s['key_name'] = keypair
+          unless networks.nil? || networks.empty?
+            s['networks'] = []
+            networks.each do |uuid|
+              s['networks'] << { uuid: uuid }
             end
           end
-
-          server = RestClient.post(
-            "#{@session.endpoints[:compute]}/servers", { server: server }.to_json,
-            'X-Auth-Token' => @session.token,
-            :accept => :json,
-            :content_type => :json) { |res| handle_response(res) }
-
-          JSON.parse(server)['server']['id']
         end
+        server = post(env, "#{@session.endpoints[:compute]}/servers", { server: server }.to_json)
+        JSON.parse(server)['server']['id']
       end
 
       def delete_server(env, server_id)
-        authenticated(env) do
-          RestClient.delete(
-            "#{@session.endpoints[:compute]}/servers/#{server_id}",
-            'X-Auth-Token' => @session.token,
-            :accept => :json) { |res| handle_response(res) }
-        end
+        delete(env, "#{@session.endpoints[:compute]}/servers/#{server_id}")
       end
 
       def suspend_server(env, server_id)
-        authenticated(env) do
-          RestClient.post(
-            "#{@session.endpoints[:compute]}/servers/#{server_id}/action", '{ "suspend": null }',
-            'X-Auth-Token' => @session.token,
-            :accept => :json,
-            :content_type => :json) { |res| handle_response(res) }
-        end
+        change_server_state(env, server_id, :suspend)
       end
 
       def resume_server(env, server_id)
         # TODO(julienvey) check status before (if pause->unpause, if suspend->resume...)
-        authenticated(env) do
-          RestClient.post(
-            "#{@session.endpoints[:compute]}/servers/#{server_id}/action", '{ "resume": null }',
-            'X-Auth-Token' => @session.token,
-            :accept => :json,
-            :content_type => :json) { |res| handle_response(res) }
-        end
+        change_server_state(env, server_id, :resume)
       end
 
       def stop_server(env, server_id)
-        authenticated(env) do
-          RestClient.post(
-            "#{@session.endpoints[:compute]}/servers/#{server_id}/action", '{ "os-stop": null }',
-            'X-Auth-Token' => @session.token,
-            :accept => :json,
-            :content_type => :json) { |res| handle_response(res) }
-        end
+        change_server_state(env, server_id, :stop)
       end
 
       def start_server(env, server_id)
-        authenticated(env) do
-          RestClient.post(
-            "#{@session.endpoints[:compute]}/servers/#{server_id}/action", '{ "os-start": null }',
-            'X-Auth-Token' => @session.token,
-            :accept => :json,
-            :content_type => :json) { |res| handle_response(res) }
-        end
+        change_server_state(env, server_id, :start)
       end
 
       def get_server_details(env, server_id)
-        authenticated(env) do
-          server_details = RestClient.get(
-            "#{@session.endpoints[:compute]}/servers/#{server_id}",
-            'X-Auth-Token' => @session.token,
-            :accept => :json) { |res| handle_response(res) }
-
-          return JSON.parse(server_details)['server']
-        end
+        server_details = get(env, "#{@session.endpoints[:compute]}/servers/#{server_id}")
+        JSON.parse(server_details)['server']
       end
 
       def add_floating_ip(env, server_id, floating_ip)
-        authenticated(env) do
-          check_floating_ip(env, floating_ip)
-          RestClient.post(
-            "#{@session.endpoints[:compute]}/servers/#{server_id}/action",
-            {
-              addFloatingIp:
-              {
-                address: floating_ip
-              }
-            }.to_json,
-            'X-Auth-Token' => @session.token,
-            :accept => :json,
-            :content_type => :json) { |res| handle_response(res) }
-        end
+        check_floating_ip(env, floating_ip)
+
+        post(env, "#{@session.endpoints[:compute]}/servers/#{server_id}/action",
+             { addFloatingIp: { address: floating_ip } }.to_json)
       end
 
       private
 
-      def check_floating_ip(_env, floating_ip)
-        ip_details = RestClient.get(
-          "#{@session.endpoints[:compute]}/os-floating-ips",
-          'X-Auth-Token' => @session.token,
-          :accept => :json) { |res| handle_response(res) }
+      VM_STATES =
+          {
+            suspend: 'suspend',
+            resume: 'resume',
+            start: 'os-start',
+            stop: 'os-stop'
+          }
+
+      def change_server_state(env, server_id, new_state)
+        post(env, "#{@session.endpoints[:compute]}/servers/#{server_id}/action",
+             { :"#{VM_STATES[new_state.to_sym]}" => nil }.to_json)
+      end
+
+      def check_floating_ip(env, floating_ip)
+        ip_details = get(env, "#{@session.endpoints[:compute]}/os-floating-ips")
 
         JSON.parse(ip_details)['floating_ips'].each do |ip|
           next unless ip['ip'] == floating_ip

@@ -22,6 +22,9 @@ describe VagrantPlugins::Openstack::Utils do
   class TestUtils
     include VagrantPlugins::Openstack::Utils
     include VagrantPlugins::Openstack::Errors
+
+    attr_writer :logger
+
     def target(env)
       authenticated(env) do
         env[:target].call
@@ -36,7 +39,12 @@ describe VagrantPlugins::Openstack::Utils do
   describe 'authenticated' do
 
     before :each do
+      TestUtils.send(:public, *TestUtils.private_instance_methods)
       @utils = TestUtils.new
+      @utils.logger = double.tap do |logger|
+        logger.stub(:debug)
+        logger.stub(:info)
+      end
     end
 
     context 'with two authentication errors' do
@@ -72,13 +80,21 @@ describe VagrantPlugins::Openstack::Utils do
 
   describe 'handle_response' do
     before :each do
+      TestUtils.send(:public, *TestUtils.private_instance_methods)
       @utils = TestUtils.new
+      @utils.logger = double.tap do |logger|
+        logger.stub(:debug)
+        logger.stub(:info)
+      end
     end
 
     [200, 201, 202, 204].each do |code|
       context "response code is #{code}" do
         it 'should return the response' do
-          mock_resp = double.tap { |mock| mock.stub(:code).and_return(code) }
+          mock_resp = double.tap do |mock|
+            mock.stub(:code).and_return(code)
+            mock.stub(:headers)
+          end
           resp = @utils.handle_response(mock_resp)
           expect(resp.code).to eq(code)
         end
@@ -87,15 +103,19 @@ describe VagrantPlugins::Openstack::Utils do
 
     context 'response code is 401' do
       it 'should return raise a AuthenticationRequired error' do
-        mock_resp = double.tap { |mock| mock.stub(:code).and_return(401) }
+        mock_resp = double.tap do |mock|
+          mock.stub(:code).and_return(401)
+          mock.stub(:headers)
+        end
         expect { @utils.handle_response(mock_resp) }.to raise_error Errors::AuthenticationRequired
       end
     end
 
     context 'response code is 400' do
-      it 'should return raise a VagrantOpenstackError error with error message' do
+      it 'should return raise a VagrantOpenstackError with bad request message' do
         mock_resp = double.tap do |mock|
           mock.stub(:code).and_return(400)
+          mock.stub(:headers)
           mock.stub(:to_s).and_return('{ "badRequest": { "message": "Error... Bad request" } }')
         end
         begin
@@ -107,10 +127,43 @@ describe VagrantPlugins::Openstack::Utils do
       end
     end
 
+    context 'response code is 404' do
+      it 'should return raise a VagrantOpenstackError with conflict message' do
+        mock_resp = double.tap do |mock|
+          mock.stub(:code).and_return(404)
+          mock.stub(:headers)
+          mock.stub(:to_s).and_return('{ "itemNotFound": { "message": "Error... Not found" } }')
+        end
+        begin
+          @utils.handle_response(mock_resp)
+          fail
+        rescue Errors::VagrantOpenstackError => e
+          expect(e.message).to eq('Error... Not found')
+        end
+      end
+    end
+
+    context 'response code is 409' do
+      it 'should return raise a VagrantOpenstackError with conflict message' do
+        mock_resp = double.tap do |mock|
+          mock.stub(:code).and_return(409)
+          mock.stub(:headers)
+          mock.stub(:to_s).and_return('{ "conflictingRequest": { "message": "Error... Conflict" } }')
+        end
+        begin
+          @utils.handle_response(mock_resp)
+          fail
+        rescue Errors::VagrantOpenstackError => e
+          expect(e.message).to eq('Error... Conflict')
+        end
+      end
+    end
+
     context 'response code is 500' do
       it 'should return raise a VagrantOpenstackError error with error message' do
         mock_resp = double.tap do |mock|
           mock.stub(:code).and_return(500)
+          mock.stub(:headers)
           mock.stub(:to_s).and_return('Internal server error')
         end
         begin
