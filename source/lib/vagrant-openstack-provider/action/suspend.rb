@@ -4,10 +4,12 @@ module VagrantPlugins
       class Suspend
         def initialize(app, _env)
           @app = app
+          @logger = Log4r::Logger.new('vagrant_openstack::action::suspend_server')
         end
 
         def call(env)
           if env[:machine].id
+            @logger.info "Saving VM #{env[:machine].id} state and suspending execution..."
             env[:ui].info I18n.t('vagrant.actions.vm.suspend.suspending')
             env[:openstack_client].nova.suspend_server(env, env[:machine].id)
           end

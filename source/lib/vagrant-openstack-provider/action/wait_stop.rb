@@ -17,7 +17,7 @@ module VagrantPlugins
             timeout(200) do
               while client.get_server_details(env, env[:machine].id)['status'] != 'SHUTOFF'
                 sleep 3
-                @logger.debug('Waiting for server to stop')
+                @logger.info('Waiting for server to stop')
               end
             end
           end

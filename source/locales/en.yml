@@ -28,6 +28,8 @@ en:
       Trying authentication...
     rsync_folder: |-
       Rsyncing folder: %{hostpath} => %{guestpath}
+    using_floating_ip: |-
+      Using floating IP %{floating_ip}
     waiting_for_build: |-
       Waiting for the server to be built...
     waiting_for_ssh: |-
@@ -56,6 +58,10 @@ en:
         %{message}
       authentication_required: |-
         Authentication token is missing or no longer valid.
+      authentication_failed: |-
+        Authentication failed.
+      bad_authentication_endpoint: |-
+        Bad authentication endpoint.
       create_bad_state: |-
         While creating the server, it transitioned to an unexpected
         state: '%{state}', instead of properly booting. Run `vagrant status`

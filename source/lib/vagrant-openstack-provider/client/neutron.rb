@@ -16,16 +16,12 @@ module VagrantPlugins
       end
 
       def get_private_networks(env)
-        authenticated(env) do
-          networks_json = RestClient.get("#{@session.endpoints[:network]}/networks",
-                                         'X-Auth-Token' => @session.token,
-                                         :accept => :json) { |res| handle_response(res) }
-          networks = []
-          JSON.parse(networks_json)['networks'].each do |n|
-            networks << Item.new(n['id'], n['name']) if n['tenant_id'].eql? @session.project_id
-          end
-          networks
+        networks_json = get(env, "#{@session.endpoints[:network]}/networks")
+        networks = []
+        JSON.parse(networks_json)['networks'].each do |n|
+          networks << Item.new(n['id'], n['name']) if n['tenant_id'].eql? @session.project_id
         end
+        networks
       end
     end
   end
