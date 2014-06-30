@@ -8,7 +8,7 @@ This is a [Vagrant](http://www.vagrantup.com) 1.1+ plugin that adds a
 allowing Vagrant to control and provision machines within Openstack
 cloud.
 
-**Note:** This plugin requires Vagrant 1.1+.
+**Note:** This plugin was originally forked from [mitchellh/vagrant-rackspace](https://github.com/mitchellh/vagrant-rackspace)
 
 ## Features
 
