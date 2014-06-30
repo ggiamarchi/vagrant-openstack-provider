@@ -17,8 +17,6 @@ Vagrant.configure("2") do |config|
     os.flavor = /Linux-L-2vCpu-4G/
     os.image = /ubuntu-12.04_x86_64_LVM/
     os.openstack_auth_url = ENV['OS_AUTH_URL']
-    os.openstack_compute_url = ENV['OS_COMPUTE_URL']
-    os.openstack_network_url = ENV['OS_NETWORK_URL']
     os.tenant_name = ENV['OS_TENANT_NAME']
     os.keypair_name = "julien-vagrant"
     os.ssh_username = "stack"

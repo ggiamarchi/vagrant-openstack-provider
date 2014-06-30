@@ -1,7 +1,9 @@
 #!/bin/bash
 
+#Provider examples:
+#Numergy
 export OS_AUTH_URL=https://cloud.numergy.com/identity/v2.0/tokens
-export OS_COMPUTE_URL=https://cloud.numergy.com/compute/v2
+#....
 
 if [ -z "$OS_USERNAME" ]; then
   echo "Please enter your OpenStack tenant name: "
