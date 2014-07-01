@@ -97,8 +97,9 @@ module VagrantPlugins
               command += ['--exclude-from', abs_ignore_file] if File.exist?(abs_ignore_file)
             end
 
-            next if Vagrant::Util::Subprocess.execute(*command).exit_code == 0
-            ail Errors::RsyncError, guestpath: guestpath, hostpath: hostpath, stderr: r.stderr
+            r = Vagrant::Util::Subprocess.execute(*command)
+            next if r.exit_code == 0
+            fail Errors::RsyncError, guestpath: guestpath, hostpath: hostpath, stderr: r.stderr
           end
         end
 
