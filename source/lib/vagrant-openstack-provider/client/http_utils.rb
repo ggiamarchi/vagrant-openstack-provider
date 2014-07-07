@@ -7,8 +7,8 @@ require 'vagrant-openstack-provider/client/request_logger'
 
 module VagrantPlugins
   module Openstack
-    module Utils
-      include VagrantPlugins::Openstack::Utils::RequestLogger
+    module HttpUtils
+      include VagrantPlugins::Openstack::HttpUtils::RequestLogger
 
       def get(env, url, headers = {})
         calling_method = caller[0][/`.*'/][1..-2]

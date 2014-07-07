@@ -8,7 +8,7 @@ module VagrantPlugins
   module Openstack
     class KeystoneClient
       include Singleton
-      include VagrantPlugins::Openstack::Utils::RequestLogger
+      include VagrantPlugins::Openstack::HttpUtils::RequestLogger
 
       def initialize
         @logger = Log4r::Logger.new('vagrant_openstack::keystone')

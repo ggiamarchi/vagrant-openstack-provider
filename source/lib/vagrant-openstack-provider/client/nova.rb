@@ -2,13 +2,13 @@ require 'log4r'
 require 'restclient'
 require 'json'
 
-require 'vagrant-openstack-provider/client/utils'
+require 'vagrant-openstack-provider/client/http_utils'
 
 module VagrantPlugins
   module Openstack
     class NovaClient
       include Singleton
-      include VagrantPlugins::Openstack::Utils
+      include VagrantPlugins::Openstack::HttpUtils
 
       def initialize
         @logger = Log4r::Logger.new('vagrant_openstack::nova')

@@ -4,7 +4,7 @@ require 'json'
 
 module VagrantPlugins
   module Openstack
-    module Utils
+    module HttpUtils
       module RequestLogger
         def log_request(method, url, body = nil, headers)
           @logger.debug "request  => method  : #{method}"
