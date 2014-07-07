@@ -2,6 +2,7 @@ require 'vagrant-openstack-provider/spec_helper'
 
 include VagrantPlugins::Openstack::Action
 include VagrantPlugins::Openstack::HttpUtils
+include VagrantPlugins::Openstack::Domain
 
 describe VagrantPlugins::Openstack::Action::CreateServer do
 
