@@ -2,7 +2,7 @@ require 'vagrant-openstack-provider/spec_helper'
 
 include VagrantPlugins::Openstack
 
-describe VagrantPlugins::Openstack::Utils do
+describe VagrantPlugins::Openstack::HttpUtils do
 
   let(:keystone) do
     double('keystone').tap do |keystone|
@@ -20,7 +20,7 @@ describe VagrantPlugins::Openstack::Utils do
   end
 
   class TestUtils
-    include VagrantPlugins::Openstack::Utils
+    include VagrantPlugins::Openstack::HttpUtils
     include VagrantPlugins::Openstack::Errors
 
     attr_writer :logger
