@@ -86,6 +86,10 @@ en:
         SSH server anavailable on instance %{host}. You should maybe increase the timeout value which currently is %{timeout} second(s).
       no_arg_required_for_command: |-
         Command '%{cmd}' does not required any argument.
+      unable_to_resolve_floating_ip: |-
+        Vagrant was unable to resolve a floating ip to communicate with your OpenStack instance. Please specify in your Vagrantfile either `floating_ip` or `floating_ip_pool`.
+      unable_to_resolve_ip: |-
+        Vagrant was unable to resolve a valid ip to ssh on your OpenStack instance.
 
     states:
       short_active: |-

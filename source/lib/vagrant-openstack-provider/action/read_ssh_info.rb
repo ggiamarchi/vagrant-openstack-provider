@@ -18,14 +18,26 @@ module VagrantPlugins
           @app.call(env)
         end
 
+        private
+
         def read_ssh_info(env)
           config = env[:machine].provider_config
           {
-            # Usually there should only be one public IP
-            host: config.floating_ip,
+            host: get_ip_address(env),
             port: 22,
             username: config.ssh_username
           }
+        end
+
+        def get_ip_address(env)
+          return env[:machine].provider_config.floating_ip unless env[:machine].provider_config.floating_ip.nil?
+          details = env[:openstack_client].nova.get_server_details(env, env[:machine].id)
+          details['addresses'].each do |network|
+            network[1].each do |network_detail|
+              return network_detail['addr'] if network_detail['OS-EXT-IPS:type'] == 'floating'
+            end
+          end
+          fail Errors::UnableToResolveIP
         end
       end
     end
