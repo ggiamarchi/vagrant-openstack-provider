@@ -12,7 +12,7 @@ module VagrantPlugins
         end
 
         def call(env)
-          @loger.info 'Reading SSH info'
+          @logger.info 'Reading SSH info'
           env[:machine_ssh_info] = read_ssh_info(env)
 
           @app.call(env)

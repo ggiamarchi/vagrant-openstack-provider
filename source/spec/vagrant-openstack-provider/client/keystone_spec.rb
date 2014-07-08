@@ -51,7 +51,6 @@ describe VagrantPlugins::Openstack::KeystoneClient do
     end
 
     context 'with good credentials' do
-
       it 'store token and tenant id' do
         stub_request(:post, 'http://keystoneAuthV2')
         .with(
@@ -66,52 +65,6 @@ describe VagrantPlugins::Openstack::KeystoneClient do
 
         session.token.should eq('0123456789')
         session.project_id.should eq('testTenantId')
-        session.endpoints[:compute].should eq('http://nova')
-        session.endpoints[:network].should eq('http://neutron')
-      end
-
-      context 'with compute endpoint override' do
-        it 'store token and tenant id' do
-          config.stub(:openstack_compute_url) { 'http://novaOverride' }
-
-          stub_request(:post, 'http://keystoneAuthV2')
-          .with(
-              body: keystone_request_body,
-              headers: keystone_request_headers)
-          .to_return(
-              status: 200,
-              body: keystone_response_body,
-              headers: keystone_request_headers)
-
-          @keystone_client.authenticate(env)
-
-          session.token.should eq('0123456789')
-          session.project_id.should eq('testTenantId')
-          session.endpoints[:compute].should eq('http://novaOverride')
-          session.endpoints[:network].should eq('http://neutron')
-        end
-      end
-
-      context 'with network endpoint override' do
-        it 'store token and tenant id' do
-          config.stub(:openstack_network_url) { 'http://neutronOverride' }
-
-          stub_request(:post, 'http://keystoneAuthV2')
-          .with(
-              body: keystone_request_body,
-              headers: keystone_request_headers)
-          .to_return(
-              status: 200,
-              body: keystone_response_body,
-              headers: keystone_request_headers)
-
-          @keystone_client.authenticate(env)
-
-          session.token.should eq('0123456789')
-          session.project_id.should eq('testTenantId')
-          session.endpoints[:compute].should eq('http://nova')
-          session.endpoints[:network].should eq('http://neutronOverride')
-        end
       end
     end
 
