@@ -3,12 +3,14 @@ require 'restclient'
 require 'json'
 
 require 'vagrant-openstack-provider/client/http_utils'
+require 'vagrant-openstack-provider/client/domain'
 
 module VagrantPlugins
   module Openstack
     class NovaClient
       include Singleton
       include VagrantPlugins::Openstack::HttpUtils
+      include VagrantPlugins::Openstack::Domain
 
       def initialize
         @logger = Log4r::Logger.new('vagrant_openstack::nova')
@@ -18,6 +20,25 @@ module VagrantPlugins
       def get_all_flavors(env)
         flavors_json = get(env, "#{@session.endpoints[:compute]}/flavors")
         JSON.parse(flavors_json)['flavors'].map { |fl| Item.new(fl['id'], fl['name']) }
+      end
+
+      def get_all_floating_ips(env)
+        ips_json = get(env, "#{@session.endpoints[:compute]}/os-floating-ips",
+                       'X-Auth-Token' => @session.token,
+                       :accept => :json) { |res| handle_response(res) }
+        JSON.parse(ips_json)['floating_ips'].map { |n| FloatingIP.new(n['ip'], n['pool'], n['instance_id']) }
+      end
+
+      def allocate_floating_ip(env, pool)
+        ips_json = post(env, "#{@session.endpoints[:compute]}/os-floating-ips",
+                        {
+                          pool: pool
+                        }.to_json,
+                        'X-Auth-Token' => @session.token,
+                        :accept => :json,
+                        :content_type => :json) { |res| handle_response(res) }
+        floating_ip = JSON.parse(ips_json)['floating_ip']
+        FloatingIP.new(floating_ip['ip'], floating_ip['pool'], floating_ip['instance_id'])
       end
 
       def get_all_images(env)

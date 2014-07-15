@@ -70,6 +70,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :floating_ip
 
+      # The floating IP pool from where new IPs will be allocated
+      #
+      # @return [String]
+      attr_accessor :floating_ip_pool
+
       # Sync folder method. Can be either "rsync" or "none"
       #
       # @return [String]
@@ -95,6 +100,7 @@ module VagrantPlugins
         @ssh_username = UNSET_VALUE
         @ssh_timeout = UNSET_VALUE
         @floating_ip = UNSET_VALUE
+        @floating_ip_pool = UNSET_VALUE
         @sync_method = UNSET_VALUE
         @networks = []
       end
@@ -112,6 +118,7 @@ module VagrantPlugins
         @username = nil if @username == UNSET_VALUE
         @rsync_includes = nil if @rsync_includes.empty?
         @floating_ip = nil if @floating_ip == UNSET_VALUE
+        @floating_ip_pool = nil if @floating_ip_pool == UNSET_VALUE
         @sync_method = 'rsync' if @sync_method == UNSET_VALUE
         @keypair_name = nil if @keypair_name == UNSET_VALUE
 

@@ -18,7 +18,6 @@ module VagrantPlugins
         def call(env)
           @logger.info 'Start create server action'
 
-          config = env[:machine].provider_config
           nova = env[:openstack_client].nova
 
           flavor = resolve_flavor(env)
@@ -31,10 +30,11 @@ module VagrantPlugins
 
           waiting_for_server_to_be_build(env, server_id)
 
-          if config.floating_ip
-            @logger.info "Using floating IP #{config.floating_ip}"
-            env[:ui].info(I18n.t('vagrant_openstack.using_floating_ip', floating_ip: config.floating_ip))
-            nova.add_floating_ip(env, server_id, config.floating_ip)
+          floating_ip = resolve_floating_ip(env)
+          if floating_ip && !floating_ip.empty?
+            @logger.info "Using floating IP #{floating_ip}"
+            env[:ui].info(I18n.t('vagrant_openstack.using_floating_ip', floating_ip: floating_ip))
+            nova.add_floating_ip(env, server_id, floating_ip)
           end
 
           unless env[:interrupted]
@@ -57,6 +57,33 @@ module VagrantPlugins
         end
 
         private
+
+        # 1. if floating_ip is set, use it
+        # 2. if floating_ip_pool is set
+        #    GET v2/{{tenant_id}}/os-floating-ips
+        #    If any IP with the same pool is available, use it
+        #    Else Allocate a new IP from the pool
+        #       Manage error case
+        # 3. GET v2/{{tenant_id}}/os-floating-ips
+        #    If any IP is available, use it
+        #    Else fail
+        def resolve_floating_ip(env)
+          config = env[:machine].provider_config
+          nova = env[:openstack_client].nova
+          return config.floating_ip if config.floating_ip
+          floating_ips = nova.get_all_floating_ips(env)
+          if config.floating_ip_pool
+            floating_ips.each do |single|
+              return single.ip if single.pool == config.floating_ip_pool && single.instance_id.nil?
+            end
+            return nova.allocate_floating_ip(env, config.floating_ip_pool).ip
+          else
+            floating_ips.each do |ip|
+              return ip.ip if ip.instance_id.nil?
+            end
+          end
+          fail Errors::UnableToResolveFloatingIP
+        end
 
         def resolve_flavor(env)
           @logger.info 'Resolving flavor'

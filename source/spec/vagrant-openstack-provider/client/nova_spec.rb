@@ -225,6 +225,76 @@ describe VagrantPlugins::Openstack::NovaClient do
     end
   end
 
+  describe 'get_all_floating_ips' do
+    context 'with token and project_id acquainted' do
+      it 'returns all floating ips' do
+        stub_request(:get, 'http://nova/a1b2c3/os-floating-ips')
+         .with(headers:
+          {
+            'Accept' => 'application/json',
+            'Accept-Encoding' => 'gzip, deflate',
+            'User-Agent' => 'Ruby',
+            'X-Auth-Token' => '123456'
+          })
+         .to_return(status: 200, body: '
+         {
+           "floating_ips": [
+             {"instance_id": "1234",
+              "ip": "185.39.216.45",
+              "fixed_ip": "192.168.0.54",
+              "id": "2345",
+              "pool": "PublicNetwork-01"
+             },
+             {
+               "instance_id": null,
+               "ip": "185.39.216.95",
+               "fixed_ip": null,
+               "id": "3456",
+               "pool": "PublicNetwork-02"
+             }]
+          }')
+
+        floating_ips = @nova_client.get_all_floating_ips(env)
+
+        expect(floating_ips).to have(2).items
+        expect(floating_ips[0].ip).to eql('185.39.216.45')
+        expect(floating_ips[0].instance_id).to eql('1234')
+        expect(floating_ips[0].pool).to eql('PublicNetwork-01')
+        expect(floating_ips[1].ip).to eql('185.39.216.95')
+        expect(floating_ips[1].instance_id).to be(nil)
+        expect(floating_ips[1].pool).to eql('PublicNetwork-02')
+      end
+    end
+  end
+
+  describe 'get_all_floating_ips' do
+    context 'with token and project_id acquainted' do
+      it 'return newly allocated floating_ip' do
+        stub_request(:post, 'http://nova/a1b2c3/os-floating-ips')
+         .with(body: '{"pool":"pool-1"}',
+               headers: {
+                 'Accept' => 'application/json',
+                 'Content-Type' => 'application/json',
+                 'X-Auth-Token' => '123456' })
+         .to_return(status: 200, body: '
+         {
+           "floating_ip": {
+              "instance_id": null,
+              "ip": "183.45.67.89",
+              "fixed_ip": null,
+              "id": "o1o2o3",
+              "pool": "pool-1"
+           }
+         }')
+        floating_ip = @nova_client.allocate_floating_ip(env, 'pool-1')
+
+        expect(floating_ip.ip).to eql('183.45.67.89')
+        expect(floating_ip.instance_id).to be(nil)
+        expect(floating_ip.pool).to eql('pool-1')
+      end
+    end
+  end
+
   describe 'get_server_details' do
     context 'with token and project_id acquainted' do
       it 'returns server details' do

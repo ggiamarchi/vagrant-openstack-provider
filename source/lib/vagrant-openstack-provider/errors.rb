@@ -47,6 +47,14 @@ module VagrantPlugins
       class NoArgRequiredForCommand < VagrantOpenstackError
         error_key(:no_arg_required_for_command)
       end
+
+      class UnableToResolveFloatingIP < VagrantOpenstackError
+        error_key(:unable_to_resolve_floating_ip)
+      end
+
+      class UnableToResolveIP < VagrantOpenstackError
+        error_key(:unable_to_resolve_ip)
+      end
     end
   end
 end
