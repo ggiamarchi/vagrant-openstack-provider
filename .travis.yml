@@ -11,7 +11,7 @@ install:
 script:
 - bundle exec rake rubocop
 - appraisal rake spec
-- cd functional_tests && ./run_tests.sh
+#- cd functional_tests && ./run_tests.sh
 gemfile:
 - Gemfile
 - gemfiles/latest_stable.gemfile
