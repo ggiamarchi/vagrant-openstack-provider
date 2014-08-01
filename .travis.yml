@@ -25,4 +25,4 @@ env:
   - OS_FLOATING_IP: 185.39.216.103
   - OS_USERNAME: vagrant-openstack@numergy.com
   - OS_TENANT_NAME: Numergy-Dev:vagrant-openstack-plugin-test
-  - secure: YweVVeC/GUMyFuWLp2Qkcf0O/Fp3OYJIEUJqUY+hgTuibL0OPduOUiTjnvL0/sL8UCYKrm+GfDrRPFRT8FOQtjOypvyM7+xAFgDRkvOaatRcLCN+MxzLv3pTgdsXdWEIH3+V42OovpMoSeIUd+BETz6VrqmIgUdw9VijhZX2nf0=
+  - secure: VFMu/Wq+eaQ2H6vTf4pT3n1UrNLuptXoI6oWZ+6Bs+PNfh+VX4xjwNRxTMO2dRETmLLTx9RYycJzggnTyMJ5z9VnttCfqPeB+u4f0+chVMoALeu1pNYGlLsAmmBb203VeoOsimK41+L/K9gGGqEEjVr6+z/mT3/qIRojB9fKRFI=
