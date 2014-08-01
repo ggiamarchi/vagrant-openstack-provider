@@ -20,6 +20,10 @@ module VagrantPlugins
         @project_id = nil
         @endpoints = {}
       end
+
+      def reset
+        initialize
+      end
     end
 
     def self.session
