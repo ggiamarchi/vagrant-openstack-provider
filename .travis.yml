@@ -1,23 +1,27 @@
 language: ruby
-
 rvm:
-  - 1.9.3
-  - 2.0.0
-  - 2.1.0
-
+- 1.9.3
+- 2.0.0
+- 2.1.0
 before_install:
-  - cd source
-
+- cd source
 install:
-  - travis_retry bundle install
-  - travis_retry appraisal install
-
+- travis_retry bundle install
+- travis_retry appraisal install
 script:
-  - bundle exec rake rubocop
-  - appraisal rake spec
-
+- bundle exec rake rubocop
+- appraisal rake spec
 gemfile:
-  - Gemfile
-  - gemfiles/latest_stable.gemfile
-  - gemfiles/oldest_current.gemfile
-  - gemfiles/previous_release.gemfile
+- Gemfile
+- gemfiles/latest_stable.gemfile
+- gemfiles/oldest_current.gemfile
+- gemfiles/previous_release.gemfile
+env:
+  global:
+  - OS_AUTH_URL: https://cloud.numergy.com/identity/v2.0/tokens
+  - OS_NETWORK_URL: https://cloud.numergy.com/network/v2.0
+  - OS_FLAVOR: 2_vCPU_RAM_4G_HD_10G
+  - OS_FLOATING_IP: 185.39.216.103
+  - OS_USERNAME: vagrant-openstack@numergy.com
+  - OS_TENANT_NAME: Numergy-Dev:vagrant-openstack-plugin-test
+  - secure: YweVVeC/GUMyFuWLp2Qkcf0O/Fp3OYJIEUJqUY+hgTuibL0OPduOUiTjnvL0/sL8UCYKrm+GfDrRPFRT8FOQtjOypvyM7+xAFgDRkvOaatRcLCN+MxzLv3pTgdsXdWEIH3+V42OovpMoSeIUd+BETz6VrqmIgUdw9VijhZX2nf0=

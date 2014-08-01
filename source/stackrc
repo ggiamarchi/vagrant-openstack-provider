@@ -3,6 +3,7 @@
 #Provider examples:
 #Numergy
 export OS_AUTH_URL=https://cloud.numergy.com/identity/v2.0/tokens
+export OS_NETWORK_URL=https://cloud.numergy.com/network/v2.0
 #....
 
 if [ -z "$OS_USERNAME" ]; then
