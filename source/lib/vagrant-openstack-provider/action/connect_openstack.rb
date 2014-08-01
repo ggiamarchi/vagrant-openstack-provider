@@ -9,7 +9,7 @@ module VagrantPlugins
   module Openstack
     module Action
       class ConnectOpenstack
-        include VagrantPlugins::Openstack::Utils::RequestLogger
+        include VagrantPlugins::Openstack::HttpUtils::RequestLogger
 
         def initialize(app, env)
           @app = app

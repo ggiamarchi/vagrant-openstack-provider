@@ -1,7 +1,7 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 include VagrantPlugins::Openstack::Action
-include VagrantPlugins::Openstack::Utils
+include VagrantPlugins::Openstack::HttpUtils
 
 describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
 
@@ -36,6 +36,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
     Hash.new.tap do |env|
       env[:ui] = double('ui')
       env[:ui].stub(:info).with(anything)
+      env[:ui].stub(:warn).with(anything)
       env[:machine] = double('machine')
       env[:machine].stub(:provider_config) { config }
       env[:openstack_client] = double('openstack_client')
@@ -45,15 +46,108 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
 
   before :each do
     ConnectOpenstack.send(:public, *ConnectOpenstack.private_instance_methods)
+    VagrantPlugins::Openstack.session.reset
     @action = ConnectOpenstack.new(app, env)
   end
 
-  describe 'resolve_networks' do
+  describe 'read_endpoint_catalog' do
 
-    context 'with only ids of existing networks' do
-      it 'return the ids array' do
-        #        config.stub(:networks) { %w(net-id-1 net-id-2) }
-        #        @action.resolve_networks(env).should eq(%w(net-id-1 net-id-2))
+    context 'with compute and network services' do
+      it 'stores endpoints URL in session' do
+
+        catalog = [
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://nova/v2/projectId',
+                'id' => '1'
+              }
+            ],
+            'type' => 'compute',
+            'name' => 'nova'
+          },
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://neutron',
+                'id' => '2'
+              }
+            ],
+            'type' => 'network',
+            'name' => 'neutron'
+          }
+        ]
+
+        stub_request(:get, 'http://neutron/')
+            .with(header: { 'Accept' => 'application/json' })
+            .to_return(
+              status: 200,
+              body: '{
+                "versions": [
+                    {
+                        "status": "CURRENT",
+                        "id": "v2.0",
+                        "links": [
+                            {
+                                "href": "http://neutron/v2.0",
+                                "rel": "self"
+                            }
+                        ]
+                    }
+                  ]
+                }')
+
+        @action.read_endpoint_catalog(env, catalog)
+
+        expect(env[:openstack_client].session.endpoints)
+          .to eq(compute: 'http://nova/v2/projectId', network: 'http://neutron/v2.0')
+
+      end
+    end
+
+    context 'with multiple endpoints for a service' do
+      it 'takes the first one' do
+
+        catalog = [
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://neutron/alt',
+                'id' => '2'
+              },
+              {
+                'publicURL' => 'http://neutron',
+                'id' => '3'
+              }
+            ],
+            'type' => 'network',
+            'name' => 'neutron'
+          }
+        ]
+
+        stub_request(:get, 'http://neutron/alt')
+        .with(header: { 'Accept' => 'application/json' })
+        .to_return(
+            status: 200,
+            body: '{
+                "versions": [
+                    {
+                        "status": "CURRENT",
+                        "id": "v2.0",
+                        "links": [
+                            {
+                                "href": "http://neutron/v2.0",
+                                "rel": "self"
+                            }
+                        ]
+                    }
+                  ]
+                }')
+
+        ConnectOpenstack.new(app, env).read_endpoint_catalog(env, catalog)
+
+        expect(env[:openstack_client].session.endpoints).to eq(network: 'http://neutron/v2.0')
+
       end
     end
 
