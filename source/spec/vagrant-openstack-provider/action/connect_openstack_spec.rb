@@ -12,7 +12,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
   end
 
   let(:config) do
-    double('config').tap do |config|
+    double.tap do |config|
       config.stub(:openstack_auth_url) { 'http://keystoneAuthV2' }
       config.stub(:openstack_compute_url) { nil }
       config.stub(:openstack_network_url) { nil }
@@ -23,18 +23,27 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
   end
 
   let(:neutron) do
-    double('neutron').tap do |neutron|
+    double.tap do |neutron|
       neutron.stub(:get_api_version_list).with(anything) do
-        {
-
-        }
+        [
+          {
+            'status' => 'CURRENT',
+            'id' => 'v2.0',
+            'links' => [
+              {
+                'href' => 'http://neutron/v2.0',
+                'rel' => 'self'
+              }
+            ]
+          }
+        ]
       end
     end
   end
 
   let(:env) do
     Hash.new.tap do |env|
-      env[:ui] = double('ui')
+      env[:ui] = double
       env[:ui].stub(:info).with(anything)
       env[:ui].stub(:warn).with(anything)
       env[:machine] = double('machine')
@@ -44,17 +53,18 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
     end
   end
 
-  before :each do
+  before(:all) do
     ConnectOpenstack.send(:public, *ConnectOpenstack.private_instance_methods)
+  end
+
+  before :each do
     VagrantPlugins::Openstack.session.reset
     @action = ConnectOpenstack.new(app, env)
   end
 
-  describe 'read_endpoint_catalog' do
-
-    context 'with compute and network services' do
-      it 'stores endpoints URL in session' do
-
+  describe 'ConnectOpenstack' do
+    context 'with one endpoint by service' do
+      it 'read service catalog and stores endpoints URL in session' do
         catalog = [
           {
             'endpoints' => [
@@ -78,36 +88,21 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
           }
         ]
 
-        stub_request(:get, 'http://neutron/')
-            .with(header: { 'Accept' => 'application/json' })
-            .to_return(
-              status: 200,
-              body: '{
-                "versions": [
-                    {
-                        "status": "CURRENT",
-                        "id": "v2.0",
-                        "links": [
-                            {
-                                "href": "http://neutron/v2.0",
-                                "rel": "self"
-                            }
-                        ]
-                    }
-                  ]
-                }')
+        double.tap do |keystone|
+          keystone.stub(:authenticate).with(anything) { catalog }
+          env[:openstack_client].stub(:keystone) { keystone }
+        end
+        env[:openstack_client].stub(:neutron) { neutron }
 
-        @action.read_endpoint_catalog(env, catalog)
+        @action.call(env)
 
         expect(env[:openstack_client].session.endpoints)
           .to eq(compute: 'http://nova/v2/projectId', network: 'http://neutron/v2.0')
-
       end
     end
 
     context 'with multiple endpoints for a service' do
       it 'takes the first one' do
-
         catalog = [
           {
             'endpoints' => [
@@ -125,31 +120,71 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
           }
         ]
 
-        stub_request(:get, 'http://neutron/alt')
-        .with(header: { 'Accept' => 'application/json' })
-        .to_return(
-            status: 200,
-            body: '{
-                "versions": [
-                    {
-                        "status": "CURRENT",
-                        "id": "v2.0",
-                        "links": [
-                            {
-                                "href": "http://neutron/v2.0",
-                                "rel": "self"
-                            }
-                        ]
-                    }
-                  ]
-                }')
+        double.tap do |keystone|
+          keystone.stub(:authenticate).with(anything) { catalog }
+          env[:openstack_client].stub(:keystone) { keystone }
+        end
+        env[:openstack_client].stub(:neutron) { neutron }
 
-        ConnectOpenstack.new(app, env).read_endpoint_catalog(env, catalog)
+        @action.call(env)
 
         expect(env[:openstack_client].session.endpoints).to eq(network: 'http://neutron/v2.0')
-
       end
     end
 
+    context 'with multiple versions for network service' do
+
+      let(:neutron) do
+        double.tap do |neutron|
+          neutron.stub(:get_api_version_list).with(anything) do
+            [
+              {
+                'status' => 'CURRENT',
+                'id' => 'v2.0',
+                'links' => [
+                  {
+                    'href' => 'http://neutron/v2.0',
+                    'rel' => 'self'
+                  }
+                ]
+              },
+              {
+                'status' => '...',
+                'id' => 'v1.0',
+                'links' => [
+                  {
+                    'href' => 'http://neutron/v1.0',
+                    'rel' => 'self'
+                  }
+                ]
+              }
+            ]
+          end
+        end
+      end
+
+      it 'raise a MultipleApiVersion error' do
+        catalog = [
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://neutron',
+                'id' => '3'
+              }
+            ],
+            'type' => 'network',
+            'name' => 'neutron'
+          }
+        ]
+
+        double.tap do |keystone|
+          keystone.stub(:authenticate).with(anything) { catalog }
+          env[:openstack_client].stub(:keystone) { keystone }
+        end
+        env[:openstack_client].stub(:neutron) { neutron }
+
+        expect { @action.call(env) }.to raise_error(Errors::MultipleApiVersion)
+      end
+    end
   end
 end
