@@ -25,7 +25,7 @@ module VagrantPlugins
             override_endpoint_catalog_with_user_config(env)
             log_endpoint_catalog(env)
           end
-          @app.call(env)
+          @app.call(env) unless @app.nil?
         end
 
         private

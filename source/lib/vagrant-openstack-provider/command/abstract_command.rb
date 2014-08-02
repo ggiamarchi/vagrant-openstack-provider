@@ -16,9 +16,7 @@ module VagrantPlugins
             env[:ui] = @env.ui
           end
 
-          client = VagrantPlugins::Openstack
-          client.keystone.authenticate(env)
-          env[:openstack_client] = client
+          VagrantPlugins::Openstack::Action::ConnectOpenstack.new(nil, env).call(env)
 
           cmd(name, @argv, env)
         end
