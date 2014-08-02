@@ -59,17 +59,7 @@ module VagrantPlugins
             end
             fail Errors::MultipleApiVersion, api_name: 'Neutron', url_property: 'openstack_network_url', version_list: version_list
           end
-
-          links = versions.first['links']
-          if links.size > 1
-            link_list = ''
-            links.each do |link|
-              link_list << "#{link['href']}\n"
-            end
-            fail Errors::MultipleApiUrl, api_name: 'Neutron', url_property: 'openstack_network_url', url_list: link_list
-          end
-
-          client.session.endpoints[:network] = links.first['href']
+          client.session.endpoints[:network] = versions.first['links'].first['href']
         end
 
         def override_endpoint_catalog_with_user_config(env)

@@ -50,4 +50,42 @@ describe VagrantPlugins::Openstack::NeutronClient do
       end
     end
   end
+
+  describe 'get_api_version_list' do
+    context 'basic' do
+      it 'returns version list' do
+        stub_request(:get, 'http://neutron/')
+        .with(header: { 'Accept' => 'application/json' })
+        .to_return(
+          status: 200,
+          body: '{
+            "versions": [
+              {
+                "status": "...",
+                "id": "v1.0",
+                "links": [
+                  {
+                    "href": "http://neutron/v1.0",
+                    "rel": "self"
+                  }
+                ]
+              },
+              {
+                "status": "CURRENT",
+                "id": "v2.0",
+                "links": [
+                  {
+                    "href": "http://neutron/v2.0",
+                    "rel": "self"
+                  }
+                ]
+              }
+            ]}')
+
+        versions = @neutron_client.get_api_version_list(env)
+
+        expect(versions.size).to eq(2)
+      end
+    end
+  end
 end
