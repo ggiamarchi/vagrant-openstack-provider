@@ -13,6 +13,8 @@ export OS_SERVER_NAME=
 export OS_IMAGE=
 export OS_FLOATING_IP=
 
+ERROR_STATE=0
+
 cat > /tmp/images_with_ssh_user <<EOL
 ubuntu-12.04_x86-64_3.11;stack
 ubuntu-14.04_x86_64_LVM;stack
@@ -51,6 +53,7 @@ function logError() {
     action=$1
     shift
     log ERROR ${action} $*
+    ERROR_STATE=1
 }
 
 #
@@ -128,3 +131,5 @@ cat test.log
 echo ''
 echo '################################################################################################'
 echo ''
+
+exit ${ERROR_STATE}
