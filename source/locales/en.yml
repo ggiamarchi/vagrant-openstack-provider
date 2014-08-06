@@ -67,6 +67,12 @@ en:
         state: '%{state}', instead of properly booting. Run `vagrant status`
         to find out what can be done about this state, or `vagrant destroy`
         if you want to start over.
+      multiple_api_version: |-
+        Multiple version found for %{api_name} API
+
+        %{version_list}
+        You must specify the desired network API url by setting
+        the provider's property '%{url_property}'.
       no_matching_flavor: |-
         No matching flavor was found! Please check your flavor setting
         to make sure you have a valid flavor chosen.

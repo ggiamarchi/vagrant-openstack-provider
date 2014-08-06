@@ -20,6 +20,10 @@ module VagrantPlugins
         error_key(:bad_authentication_endpoint)
       end
 
+      class MultipleApiVersion < VagrantOpenstackError
+        error_key(:multiple_api_version)
+      end
+
       class CreateBadState < VagrantOpenstackError
         error_key(:create_bad_state)
       end
