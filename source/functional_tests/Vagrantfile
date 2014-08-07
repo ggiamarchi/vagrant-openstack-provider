@@ -19,14 +19,21 @@ Vagrant.configure("2") do |config|
     os.keypair_name           = ENV['OS_KEYPAIR_NAME']
     os.ssh_timeout            = ENV['OS_SSH_TIMEOUT'].to_i
     os.sync_method            = ENV['OS_SYNC_METHOD']
+    os.flavor                 = ENV['OS_FLAVOR']
+    os.image                  = ENV['OS_IMAGE']
+    os.ssh_username           = ENV['OS_SSH_USERNAME']
   end
 
-  config.vm.define 'test' do |test|
+  config.vm.define 'test-basic' do |test|
     test.vm.provider :openstack do |os|
-      os.floating_ip  = ENV['OS_FLOATING_IP']
-      os.flavor       = ENV['OS_FLAVOR']
-      os.image        = ENV['OS_IMAGE']
-      os.ssh_username = ENV['OS_SSH_USERNAME']
+      os.floating_ip = ENV['OS_FLOATING_IP']
+    end
+    test.vm.provision 'shell', inline: 'echo "SUCCESS" > /tmp/test_shell_provision'
+  end
+
+  config.vm.define 'test-floating-ip-pool' do |test|
+    test.vm.provider :openstack do |os|
+      os.floating_ip_pool = ENV['OS_FLOATING_IP_POOL']
     end
     test.vm.provision 'shell', inline: 'echo "SUCCESS" > /tmp/test_shell_provision'
   end

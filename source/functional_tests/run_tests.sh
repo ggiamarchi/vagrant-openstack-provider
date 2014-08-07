@@ -11,7 +11,6 @@ export OS_SSH_SHELL=bash
 export OS_SSH_USERNAME=
 export OS_SERVER_NAME=
 export OS_IMAGE=
-export OS_FLOATING_IP=
 
 ERROR_STATE=0
 
@@ -66,17 +65,18 @@ function logSuccess() {
 }
 
 runSingleTest() {
+    machine=${1}
 
     testSummary="${OS_SERVER_NAME} - ${OS_IMAGE} - ${OS_SSH_USERNAME}"
 
     logInfo 'START' ${testSummary}
 
-    bundle exec vagrant up --provider openstack 2>&1 | tee -a ${OS_SERVER_NAME}_up.log
+    bundle exec vagrant up ${machine} --provider openstack 2>&1 | tee -a ${OS_SERVER_NAME}_up.log
     if [ ${PIPESTATUS[0]} -ne 0 ] ; then
         logError 'UP' ${testSummary}
     else
         logSuccess 'UP' ${testSummary}
-        bundle exec vagrant ssh -c "cat /tmp/test_shell_provision" 2>&1 | tee -a ${OS_SERVER_NAME}_ssh.log
+        bundle exec vagrant ssh ${machine} -c "cat /tmp/test_shell_provision" 2>&1 | tee -a ${OS_SERVER_NAME}_ssh.log
         if [ ${PIPESTATUS[0]} -ne 0 ] ; then
             logError 'SSH' ${testSummary}
         else
@@ -84,7 +84,7 @@ runSingleTest() {
         fi
     fi
 
-    bundle exec vagrant destroy 2>&1 | tee -a ${OS_SERVER_NAME}_destroy.log
+    bundle exec vagrant destroy ${machine} 2>&1 | tee -a ${OS_SERVER_NAME}_destroy.log
     if [ ${PIPESTATUS[0]} -ne 0 ] ; then
         logError 'DESTROY' ${testSummary}
     else
@@ -100,26 +100,24 @@ runSingleTest() {
 # $2 - Floating IP tu use
 #
 function runAllTests() {
-    name=${1}
-    ip=${2}
-    nbIteration=${3}
+    ip=${1}
     i=1
     rm -f test.log ${name}_*.log
     touch test.log
-    for (( n=1 ; n<=${nbIteration} ; n++ )) ; do
-        nbTests=$(cat /tmp/images_with_ssh_user | wc -l)
-        for (( i=1 ; i<=${nbTests} ; i++ )) ; do
-            currentTest=$(cat /tmp/images_with_ssh_user | head -n ${i} | tail -n 1)
-            export OS_SERVER_NAME="${name}_${n}_${i}"
-            export OS_IMAGE=$(echo "${currentTest}" | cut -f1 -d";")
-            export OS_FLOATING_IP="${ip}"
-            export OS_SSH_USERNAME=$(echo "${currentTest}" | cut -f2 -d";")
-            runSingleTest
-        done
+    nbTests=$(cat /tmp/images_with_ssh_user | wc -l)
+    for (( i=1 ; i<=${nbTests} ; i++ )) ; do
+      for machine in $(bundle exec vagrant status | tail -n +8 | head -n -4 | awk '{print $1}') ; do
+        currentTest=$(cat /tmp/images_with_ssh_user | head -n ${i} | tail -n 1)
+        export OS_SERVER_NAME="${machine}_${i}"
+        export OS_IMAGE=$(echo "${currentTest}" | cut -f1 -d";")
+        export OS_FLOATING_IP="${ip}"
+        export OS_SSH_USERNAME=$(echo "${currentTest}" | cut -f2 -d";")
+        runSingleTest ${machine}
+      done
     done
 }
 
-runAllTests 'test' '185.39.216.103' 1
+runAllTests ${OS_FLOATING_IP}
 
 echo ''
 echo '################################################################################################'
