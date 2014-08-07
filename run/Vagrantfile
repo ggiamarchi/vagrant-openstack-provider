@@ -34,6 +34,7 @@ run() {
 }
 
 install() {
+  run "Add multiverse repository" sudo add-apt-repository multiverse
   run "Update apt repositories metadata" sudo apt-get update
   run "Install Git" sudo apt-get install -y git
   run "Install Ruby" sudo apt-get install -y ruby1.9.3
@@ -41,7 +42,7 @@ install() {
   run "" sudo ln -sf /usr/bin/gem1.9.3 /etc/alternatives/gem
   run "Install Bundler" sudo gem install bundler
   run "Install Appraisal" sudo gem install appraisal
-  run "Install Virtualbox" apt-get install -y virtualbox
+  run "Install VirtualBox" sudo apt-get install -y virtualbox
 }
 
 runTests() {
@@ -74,8 +75,8 @@ SCRIPT
 
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "ubuntu-precise_12.04_x64"
-  config.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/precise/current/precise-server-cloudimg-amd64-vagrant-disk1.box"
+  config.vm.box = "trusty64"
+  config.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
 
   config.vm.network "private_network", ip: "192.168.40.30"
 
