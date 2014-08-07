@@ -10,6 +10,7 @@ gem "vagrant", :git => "git://github.com/mitchellh/vagrant.git", :tag => "v1.4.3
 
 group :development do
   gem "coveralls", :require => false
+  gem "debugger"
 end
 
 gemspec :path => "../"
