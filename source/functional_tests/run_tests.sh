@@ -19,8 +19,7 @@ cat > /tmp/images_with_ssh_user <<EOL
 ubuntu-12.04_x86_64_HWE;stack
 ubuntu-14.04_x86_64_LVM;stack
 debian7_x86_64_LVM;stack
-rhel65_x86_64_LVM;root
-centos65_x86_64_LVM;root
+centos65_x86_64_LVM;stack
 EOL
 
 #
