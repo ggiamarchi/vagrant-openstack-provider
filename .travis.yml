@@ -12,6 +12,7 @@ install:
 script:
 - bundle exec rake rubocop
 - appraisal rake spec
+- VBoxManage --version
 - cd functional_tests && ./run_tests.sh
 gemfile:
 - Gemfile
