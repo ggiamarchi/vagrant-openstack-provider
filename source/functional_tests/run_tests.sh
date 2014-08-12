@@ -21,6 +21,11 @@ debian7_x86_64_LVM;stack
 centos65_x86_64_LVM;stack
 EOL
 
+cat > /tmp/vagrant_machines <<EOL
+test-basic
+test-floating-ip-pool
+EOL
+
 #
 # $1 - Log level
 # $2 - Action (e.g. UP, SSH, DESTROY)
@@ -106,7 +111,9 @@ function runAllTests() {
     touch test.log
     nbTests=$(cat /tmp/images_with_ssh_user | wc -l)
     for (( i=1 ; i<=${nbTests} ; i++ )) ; do
-      for machine in $(bundle exec vagrant status | tail -n +8 | head -n -4 | awk '{print $1}') ; do
+      #TODO(vagrant status does not support providers, see https://github.com/mitchellh/vagrant/issues/4173)
+      #for machine in $(bundle exec vagrant status | tail -n +8 | head -n -4 | awk '{print $1}') ; do
+      for machine in $(cat /tmp/vagrant_machines) ; do
         currentTest=$(cat /tmp/images_with_ssh_user | head -n ${i} | tail -n 1)
         export OS_SERVER_NAME="${machine}_${i}"
         export OS_IMAGE=$(echo "${currentTest}" | cut -f1 -d";")

@@ -5,14 +5,12 @@ rvm:
 - 2.1.0
 before_install:
 - cd source
-- sudo apt-get install -qq virtualbox
 install:
 - travis_retry bundle install
 - travis_retry appraisal install
 script:
 - bundle exec rake rubocop
 - appraisal rake spec
-- VBoxManage --version
 - cd functional_tests && ./run_tests.sh
 gemfile:
 - Gemfile
