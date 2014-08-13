@@ -59,6 +59,10 @@ module VagrantPlugins
       class UnableToResolveIP < VagrantOpenstackError
         error_key(:unable_to_resolve_ip)
       end
+
+      class UnableToResolveSSHKey < VagrantOpenstackError
+        error_key(:unable_to_resolve_ssh_key)
+      end
     end
   end
 end
