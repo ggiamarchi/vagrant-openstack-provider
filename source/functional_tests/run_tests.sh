@@ -70,6 +70,9 @@ function logSuccess() {
 }
 
 runSingleTest() {
+    if [ -d ".vagrant" ]; then
+      rm -rf .vagrant
+    fi
     machine=${1}
 
     testSummary="${OS_SERVER_NAME} - ${OS_IMAGE} - ${OS_SSH_USERNAME}"
