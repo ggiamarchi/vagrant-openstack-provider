@@ -5,6 +5,7 @@ rvm:
 - 2.1.0
 before_install:
 - cd source
+- ssh-keygen -P "" -f functional_tests/for_vagrant_test
 install:
 - travis_retry bundle install
 - travis_retry appraisal install
@@ -26,4 +27,5 @@ env:
   - OS_FLOATING_IP_POOL: PublicNetwork-01
   - OS_USERNAME: vagrant-openstack@numergy.com
   - OS_TENANT_NAME: Numergy-Dev:vagrant-openstack-plugin-test
+  - OS_PUBLIC_KEY_PATH: for_vagrant_test.pub
   - secure: Ddlq2qIMjZAgvmzJIcEmcUbPJGQI/RHReV5EqrliS/tyUTOkYhdGNVoiss8OB+zGneyshltVwFaa+NsLj5+nr6AlqLG5oiHmQfNd5XgiSr/uOOIxZ2EgyRfXKQFu+ABBcxpYHCl0/tmeETVhv0c8k5at7QHP4VOEfkRM88J7DJE=
