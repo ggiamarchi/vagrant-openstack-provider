@@ -42,11 +42,10 @@ module VagrantPlugins
             env[:ui].clear_line
 
             # Wait for SSH to become available
-            host = env[:machine].provider_config.floating_ip
             ssh_timeout = env[:machine].provider_config.ssh_timeout
-            unless port_open?(env, host, 22, ssh_timeout)
+            unless port_open?(env, floating_ip, 22, ssh_timeout)
               env[:ui].error(I18n.t('vagrant_openstack.timeout'))
-              fail Errors::SshUnavailable, host: host, timeout: ssh_timeout
+              fail Errors::SshUnavailable, host: floating_ip, timeout: ssh_timeout
             end
 
             @logger.info 'The server is ready'
