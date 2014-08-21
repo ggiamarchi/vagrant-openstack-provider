@@ -109,6 +109,7 @@ vagrant will authenticate against the UK authentication endpoint.
   be the matching pair for the private key configured with `config.ssh.private_key_path` on Vagrant.
 * `ssh_username` - Username used by Vagrant for ssh login.
 * `floating_ip` - The floating IP to associate with the VM. This IP must be formerly allocated.
+* `floating_ip_pool` - The floating IP Pool from which a floating IP will be allocated to be associated with the VM. alternative to the `floating_ip` option.
 * `server_name` - The name of the server within Openstack Cloud. This
   defaults to the name of the Vagrant machine (via `config.vm.define`), but
   can be overridden with this.
