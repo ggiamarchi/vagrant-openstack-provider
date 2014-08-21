@@ -16,6 +16,8 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
       config.stub(:password) { 'password' }
       config.stub(:floating_ip) { nil }
       config.stub(:floating_ip_pool) { nil }
+      config.stub(:keypair_name) { nil }
+      config.stub(:public_key_path) { nil }
     end
   end
 
@@ -103,6 +105,39 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
           end
           expect { @action.resolve_floating_ip(env) }.to raise_error(Errors::UnableToResolveFloatingIP)
         end
+      end
+    end
+  end
+
+  describe 'resolve_keypair' do
+    context 'with keypair_name provided' do
+      it 'return the provided keypair_name' do
+        config.stub(:keypair_name) { 'my-keypair' }
+        @action.resolve_keypair(env).should eq('my-keypair')
+      end
+    end
+
+    context 'with keypair_name and public_key_path provided' do
+      it 'return the provided keypair_name' do
+        config.stub(:keypair_name) { 'my-keypair' }
+        config.stub(:public_key_path) { '/path/to/key' }
+        @action.resolve_keypair(env).should eq('my-keypair')
+      end
+    end
+
+    context 'with public_key_path provided' do
+      it 'return the keypair_name created into nova' do
+        config.stub(:public_key_path) { '/path/to/key' }
+        nova.stub(:import_keypair).with(env, '/path/to/key') { 'my-keypair-imported' }
+        @action.resolve_keypair(env).should eq('my-keypair-imported')
+      end
+    end
+
+    context 'with no keypair_name and no public_key_path provided' do
+      it 'raises an error' do
+        config.stub(:keypair_name) { nil }
+        config.stub(:public_key_path) { nil }
+        expect { @action.resolve_keypair(env) }.to raise_error
       end
     end
   end

@@ -85,6 +85,11 @@ module VagrantPlugins
       # @return [Array]
       attr_accessor :networks
 
+      # Public key path to create OpenStack keypair
+      #
+      # @return [Array]
+      attr_accessor :public_key_path
+
       def initialize
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
@@ -103,6 +108,7 @@ module VagrantPlugins
         @floating_ip_pool = UNSET_VALUE
         @sync_method = UNSET_VALUE
         @networks = []
+        @public_key_path = UNSET_VALUE
       end
 
       # rubocop:disable Style/CyclomaticComplexity
@@ -121,6 +127,7 @@ module VagrantPlugins
         @floating_ip_pool = nil if @floating_ip_pool == UNSET_VALUE
         @sync_method = 'rsync' if @sync_method == UNSET_VALUE
         @keypair_name = nil if @keypair_name == UNSET_VALUE
+        @public_key_path = nil if @public_key_path == UNSET_VALUE
 
         # The SSH values by default are nil, and the top-level config
         # `config.ssh` values are used.
@@ -139,7 +146,7 @@ module VagrantPlugins
 
         errors << I18n.t('vagrant_openstack.config.password_required') unless @password
         errors << I18n.t('vagrant_openstack.config.username_required') unless @username
-        errors << I18n.t('vagrant_openstack.config.keypair_name_required') unless @keypair_name
+        errors << I18n.t('vagrant_openstack.config.keypair_name_required') unless @keypair_name || @public_key_path
 
         {
           openstack_compute_url: @openstack_compute_url,

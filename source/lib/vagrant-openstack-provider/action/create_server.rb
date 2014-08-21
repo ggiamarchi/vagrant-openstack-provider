@@ -23,7 +23,8 @@ module VagrantPlugins
           flavor = resolve_flavor(env)
           image = resolve_image(env)
           networks = resolve_networks(env)
-          server_id = create_server(env, flavor, image, networks)
+          keypair_name = resolve_keypair(env)
+          server_id = create_server(env, flavor, image, networks, keypair_name)
 
           # Store the ID right away so we can track it
           env[:machine].id = server_id
@@ -84,6 +85,14 @@ module VagrantPlugins
           fail Errors::UnableToResolveFloatingIP
         end
 
+        def resolve_keypair(env)
+          config = env[:machine].provider_config
+          nova = env[:openstack_client].nova
+          return config.keypair_name if config.keypair_name
+          return nova.import_keypair(env, config.public_key_path) if config.public_key_path
+          fail Errors::UnableToResolveSSHKey
+        end
+
         def resolve_flavor(env)
           @logger.info 'Resolving flavor'
           config = env[:machine].provider_config
@@ -135,7 +144,7 @@ module VagrantPlugins
           networks
         end
 
-        def create_server(env, flavor, image, networks)
+        def create_server(env, flavor, image, networks, keypair_name)
           config = env[:machine].provider_config
           nova = env[:openstack_client].nova
           server_name = config.server_name || env[:machine].name
@@ -147,7 +156,7 @@ module VagrantPlugins
           env[:ui].info(" -- FlavorRef      : #{flavor.id}")
           env[:ui].info(" -- Image          : #{image.name}")
           env[:ui].info(" -- ImageRef       : #{image.id}")
-          env[:ui].info(" -- KeyPair        : #{config.keypair_name}")
+          env[:ui].info(" -- KeyPair        : #{keypair_name}")
           unless networks.empty?
             if networks.size == 1
               env[:ui].info(" -- Network        : #{config.networks[0]}")
@@ -159,11 +168,11 @@ module VagrantPlugins
           log = "Lauching server '#{server_name}' in project '#{config.tenant_name}' "
           log << "with flavor '#{flavor.name}' (#{flavor.id}), "
           log << "image '#{image.name}' (#{image.id}) "
-          log << "and keypair '#{config.keypair_name}'"
+          log << "and keypair '#{keypair_name}'"
 
           @logger.info(log)
 
-          nova.create_server(env, server_name, image.id, flavor.id, networks, config.keypair_name)
+          nova.create_server(env, server_name, image.id, flavor.id, networks, keypair_name)
         end
 
         def waiting_for_server_to_be_build(env, server_id)

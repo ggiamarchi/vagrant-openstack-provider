@@ -107,6 +107,7 @@ openstack authentication endpoint for all regions with the exception of :lon. IF
 vagrant will authenticate against the UK authentication endpoint.
 * `keypair_name` - The name of the key pair register in nova to associate with the VM. The public key should
   be the matching pair for the private key configured with `config.ssh.private_key_path` on Vagrant.
+* `public_key_path` - if `keypair_name` is not provided, the path to the public key will be used by vagrant to generate a keypair on the OpenStack cloud. The keypair will be destroyed when the VM is destroyed.
 * `ssh_username` - Username used by Vagrant for ssh login.
 * `floating_ip` - The floating IP to associate with the VM. This IP must be formerly allocated.
 * `floating_ip_pool` - The floating IP Pool from which a floating IP will be allocated to be associated with the VM. alternative to the `floating_ip` option.

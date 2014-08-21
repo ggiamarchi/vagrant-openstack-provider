@@ -20,5 +20,11 @@ Dir[
   'lib/vagrant-openstack-provider/action/*.rb'].each { |file| require file[4, file.length - 1] }
 
 require 'webmock/rspec'
+require 'fakefs/safe'
+require 'fakefs/spec_helpers'
+
+RSpec.configure do |config|
+  config.include FakeFS::SpecHelpers, fakefs: true
+end
 
 I18n.load_path << File.expand_path('locales/en.yml', Pathname.new(File.expand_path('../../../', __FILE__)))
