@@ -21,19 +21,21 @@ Vagrant.configure('2') do |config|
     os.flavor                 = ENV['OS_FLAVOR']
     os.image                  = ENV['OS_IMAGE']
     os.ssh_username           = ENV['OS_SSH_USERNAME']
+    os.keypair_name           = ENV['OS_KEYPAIR_NAME']
+    os.floating_ip_pool = ENV['OS_FLOATING_IP_POOL']
   end
 
   config.vm.define 'test-basic' do |test|
     test.vm.provider :openstack do |os|
-      os.keypair_name = ENV['OS_KEYPAIR_NAME']
-      os.floating_ip  = ENV['OS_FLOATING_IP']
+      os.floating_ip      = ENV['OS_FLOATING_IP']
+      os.floating_ip_pool = nil
     end
     test.vm.provision 'shell', inline: 'echo "SUCCESS" > /tmp/test_shell_provision'
   end
 
   config.vm.define 'test-floating-ip-pool' do |test|
     test.vm.provider :openstack do |os|
-      os.keypair_name     = ENV['OS_KEYPAIR_NAME']
+      os.floating_ip      = nil
       os.floating_ip_pool = ENV['OS_FLOATING_IP_POOL']
     end
     test.vm.provision 'shell', inline: 'echo "SUCCESS" > /tmp/test_shell_provision'
@@ -41,16 +43,14 @@ Vagrant.configure('2') do |config|
 
   config.vm.define 'test-ssh-public-key-path' do |test|
     test.vm.provider :openstack do |os|
+      os.keypair_name     = nil
       os.public_key_path  = ENV['OS_PUBLIC_KEY_PATH']
-      os.floating_ip_pool = ENV['OS_FLOATING_IP_POOL']
     end
     test.vm.provision 'shell', inline: 'echo "SUCCESS" > /tmp/test_shell_provision'
   end
 
   config.vm.define 'test-availabilty-zone' do |test|
     test.vm.provider :openstack do |os|
-      os.public_key_path  = ENV['OS_PUBLIC_KEY_PATH']
-      os.floating_ip_pool = ENV['OS_FLOATING_IP_POOL']
       os.availability_zone = ENV['OS_AZ']
     end
     test.vm.provision 'shell', inline: 'echo "SUCCESS" > /tmp/test_shell_provision'

@@ -24,6 +24,7 @@ EOL
 cat > /tmp/vagrant_machines <<EOL
 test-basic
 test-floating-ip-pool
+test-ssh-public-key-path
 test-availabilty-zone
 EOL
 
