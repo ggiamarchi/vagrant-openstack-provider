@@ -121,6 +121,16 @@ module VagrantPlugins
         delete(env, "#{@session.endpoints[:compute]}/os-keypairs/#{keyname}") if keyname.start_with?('vagrant-generated-')
       end
 
+      def get_floating_ip_pools(env)
+        floating_ips = get(env, "#{@session.endpoints[:compute]}/os-floating-ip-pools")
+        JSON.parse(floating_ips)['floating_ip_pools']
+      end
+
+      def get_floating_ips(env)
+        floating_ips = get(env, "#{@session.endpoints[:compute]}/os-floating-ips")
+        JSON.parse(floating_ips)['floating_ips']
+      end
+
       private
 
       VM_STATES =
