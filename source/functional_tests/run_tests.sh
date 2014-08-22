@@ -37,7 +37,7 @@ function log() {
     [ $# -lt 3 ] && echo "Logger error..." >&2 && exit 1
     level=$1   ; shift
     action=$1  ; shift
-    printf "$(date '+%Y-%m-%d %H:%M:%S') | %10s | %10s | %s\n" ${level} ${action} "$*" | tee -a test.log
+    printf "$(date '+%Y-%m-%d %H:%M:%S') | %10s | %10s | %s\n" "${level}" "${action}" "$*" | tee -a test.log
 }
 
 #
@@ -47,7 +47,7 @@ function log() {
 function logInfo() {
     action=$1
     shift
-    log INFO ${action} $*
+    log INFO "${action}" "$*"
 }
 
 #
@@ -57,7 +57,7 @@ function logInfo() {
 function logError() {
     action=$1
     shift
-    log ERROR ${action} $*
+    log ERROR "${action}" "$*"
     ERROR_STATE=1
 }
 
@@ -68,7 +68,7 @@ function logError() {
 function logSuccess() {
     action=$1
     shift
-    log SUCCESS ${action} $*
+    log SUCCESS "${action}" "$*"
 }
 
 runSingleTest() {
@@ -79,29 +79,29 @@ runSingleTest() {
 
     testSummary="${OS_SERVER_NAME} - ${OS_IMAGE} - ${OS_SSH_USERNAME}"
 
-    logInfo 'START' ${testSummary}
+    logInfo 'START' "${testSummary}"
 
-    bundle exec vagrant up ${machine} --provider openstack 2>&1 | tee -a ${OS_SERVER_NAME}_up.log
-    if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-        logError 'UP' ${testSummary}
+    bundle exec vagrant up "${machine}" --provider openstack 2>&1 | tee -a "${OS_SERVER_NAME}_up.log"
+    if [ "${PIPESTATUS[0]}" -ne 0 ] ; then
+        logError 'UP' "${testSummary}"
     else
-        logSuccess 'UP' ${testSummary}
-        bundle exec vagrant ssh ${machine} -c "cat /tmp/test_shell_provision" 2>&1 | tee -a ${OS_SERVER_NAME}_ssh.log
-        if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-            logError 'SSH' ${testSummary}
+        logSuccess 'UP' "${testSummary}"
+        bundle exec vagrant ssh "${machine}" -c "cat /tmp/test_shell_provision" 2>&1 | tee -a "${OS_SERVER_NAME}_ssh.log"
+        if [ "${PIPESTATUS[0]}" -ne 0 ] ; then
+            logError 'SSH' "${testSummary}"
         else
-            logSuccess 'SSH' ${testSummary}
+            logSuccess 'SSH' "${testSummary}"
         fi
     fi
 
-    bundle exec vagrant destroy ${machine} 2>&1 | tee -a ${OS_SERVER_NAME}_destroy.log
-    if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-        logError 'DESTROY' ${testSummary}
+    bundle exec vagrant destroy "${machine}" 2>&1 | tee -a "${OS_SERVER_NAME}_destroy.log"
+    if [ "${PIPESTATUS[0]}" -ne 0 ] ; then
+        logError 'DESTROY' "${testSummary}"
     else
-        logSuccess 'DESTROY' ${testSummary}
+        logSuccess 'DESTROY' "${testSummary}"
     fi
 
-    logInfo 'END' ${testSummary}
+    logInfo 'END' "${testSummary}"
 
 }
 
@@ -112,24 +112,25 @@ runSingleTest() {
 function runAllTests() {
     ip=${1}
     i=1
-    rm -f test.log ${name}_*.log
+    rm -f test.log "${name}_*.log"
     touch test.log
-    nbTests=$(cat /tmp/images_with_ssh_user | wc -l)
-    for (( i=1 ; i<=${nbTests} ; i++ )) ; do
+    nbTests=$(wc -l < /tmp/images_with_ssh_user)
+    for (( i=1 ; i<=nbTests ; i++ )) ; do
       #TODO(vagrant status does not support providers, see https://github.com/mitchellh/vagrant/issues/4173)
       #for machine in $(bundle exec vagrant status | tail -n +8 | head -n -4 | awk '{print $1}') ; do
-      for machine in $(cat /tmp/vagrant_machines) ; do
-        currentTest=$(cat /tmp/images_with_ssh_user | head -n ${i} | tail -n 1)
+      while IFS= read -r machine
+      do
+        currentTest=$(head -n ${i} < /tmp/images_with_ssh_user | tail -n 1)
         export OS_SERVER_NAME="${machine}_${i}"
         export OS_IMAGE=$(echo "${currentTest}" | cut -f1 -d";")
         export OS_FLOATING_IP="${ip}"
         export OS_SSH_USERNAME=$(echo "${currentTest}" | cut -f2 -d";")
-        runSingleTest ${machine}
-      done
+        runSingleTest "${machine}"
+      done < /tmp/vagrant_machines
     done
 }
 
-runAllTests ${OS_FLOATING_IP}
+runAllTests "${OS_FLOATING_IP}"
 
 echo ''
 echo '################################################################################################'
