@@ -20,6 +20,7 @@ describe VagrantPlugins::Openstack::Config do
     its(:rsync_includes) { should be_nil }
     its(:keypair_name) { should be_nil }
     its(:public_key_path) { should be_nil }
+    its(:availability_zone) { should be_nil }
     its(:ssh_username) { should be_nil }
   end
 
@@ -34,6 +35,7 @@ describe VagrantPlugins::Openstack::Config do
       :username,
       :keypair_name,
       :ssh_username,
+      :availability_zone,
       :public_key_path].each do |attribute|
       it "should not default #{attribute} if overridden" do
         subject.send("#{attribute}=".to_sym, 'foo')

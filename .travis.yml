@@ -28,4 +28,5 @@ env:
   - OS_USERNAME: vagrant-openstack@numergy.com
   - OS_TENANT_NAME: Numergy-Dev:vagrant-openstack-plugin-test
   - OS_PUBLIC_KEY_PATH: for_vagrant_test.pub
+  - OS_AZ: IDF-01
   - secure: Ddlq2qIMjZAgvmzJIcEmcUbPJGQI/RHReV5EqrliS/tyUTOkYhdGNVoiss8OB+zGneyshltVwFaa+NsLj5+nr6AlqLG5oiHmQfNd5XgiSr/uOOIxZ2EgyRfXKQFu+ABBcxpYHCl0/tmeETVhv0c8k5at7QHP4VOEfkRM88J7DJE=

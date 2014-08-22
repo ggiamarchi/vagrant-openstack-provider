@@ -14,10 +14,27 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
       config.stub(:tenant_name) { 'testTenant' }
       config.stub(:username) { 'username' }
       config.stub(:password) { 'password' }
+      config.stub(:server_name) { 'testName' }
+      config.stub(:availability_zone) { 'AZ-01' }
       config.stub(:floating_ip) { nil }
       config.stub(:floating_ip_pool) { nil }
       config.stub(:keypair_name) { nil }
       config.stub(:public_key_path) { nil }
+      config.stub(:networks) { nil }
+    end
+  end
+
+  let(:image) do
+    double('image').tap do |image|
+      image.stub(:name) { 'image_name' }
+      image.stub(:id) { 'image123' }
+    end
+  end
+
+  let(:flavor) do
+    double('flavor').tap do |flavor|
+      flavor.stub(:name) { 'flavor_name'  }
+      flavor.stub(:id) { 'flavor123' }
     end
   end
 
@@ -52,6 +69,31 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
   before :each do
     CreateServer.send(:public, *CreateServer.private_instance_methods)
     @action = CreateServer.new(nil, nil)
+  end
+
+  describe 'create_server' do
+    context 'with all options specified' do
+      it 'calls nova with all the options' do
+        nova.stub(:create_server).with(
+        env,
+        name: 'testName',
+        flavor_ref: flavor.id,
+        image_ref: image.id,
+        networks: ['test-networks'],
+        keypair: 'test-keypair',
+        availability_zone: 'test-az') do '1234'
+        end
+
+        options = {
+          flavor: flavor,
+          image: image,
+          networks: ['test-networks'],
+          keypair_name: 'test-keypair',
+          availability_zone: 'test-az'
+        }
+        expect(@action.create_server(env, options)).to eq '1234'
+      end
+    end
   end
 
   describe 'resolve_floating_ip' do

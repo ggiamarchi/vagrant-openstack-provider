@@ -46,15 +46,16 @@ module VagrantPlugins
         JSON.parse(images_json)['images'].map { |fl| Item.new(fl['id'], fl['name']) }
       end
 
-      def create_server(env, name, image_ref, flavor_ref, networks, keypair)
+      def create_server(env, options)
         server = {}.tap do |s|
-          s['name'] = name
-          s['imageRef'] = image_ref
-          s['flavorRef'] = flavor_ref
-          s['key_name'] = keypair
-          unless networks.nil? || networks.empty?
+          s['name'] = options[:name]
+          s['imageRef'] = options[:image_ref]
+          s['flavorRef'] = options[:flavor_ref]
+          s['key_name'] = options[:keypair]
+          s['availability_zone'] = options[:availability_zone] unless options[:availability_zone].nil?
+          unless options[:networks].nil? || options[:networks].empty?
             s['networks'] = []
-            networks.each do |uuid|
+            options[:networks].each do |uuid|
               s['networks'] << { uuid: uuid }
             end
           end

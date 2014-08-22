@@ -90,6 +90,11 @@ module VagrantPlugins
       # @return [Array]
       attr_accessor :public_key_path
 
+      # Availability Zone
+      #
+      # @return [String]
+      attr_accessor :availability_zone
+
       def initialize
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
@@ -107,6 +112,7 @@ module VagrantPlugins
         @floating_ip = UNSET_VALUE
         @floating_ip_pool = UNSET_VALUE
         @sync_method = UNSET_VALUE
+        @availability_zone = UNSET_VALUE
         @networks = []
         @public_key_path = UNSET_VALUE
       end
@@ -128,6 +134,7 @@ module VagrantPlugins
         @sync_method = 'rsync' if @sync_method == UNSET_VALUE
         @keypair_name = nil if @keypair_name == UNSET_VALUE
         @public_key_path = nil if @public_key_path == UNSET_VALUE
+        @availability_zone = nil if @availability_zone == UNSET_VALUE
 
         # The SSH values by default are nil, and the top-level config
         # `config.ssh` values are used.

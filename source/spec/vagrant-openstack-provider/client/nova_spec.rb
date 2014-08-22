@@ -101,7 +101,7 @@ describe VagrantPlugins::Openstack::NovaClient do
               })
             .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
 
-        instance_id = @nova_client.create_server(env, 'inst', 'img', 'flav', nil, 'key')
+        instance_id = @nova_client.create_server(env, name: 'inst', image_ref: 'img', flavor_ref: 'flav', networks: nil, keypair: 'key')
 
         expect(instance_id).to eq('o1o2o3')
       end
@@ -120,7 +120,27 @@ describe VagrantPlugins::Openstack::NovaClient do
                   })
           .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
 
-          instance_id = @nova_client.create_server(env, 'inst', 'img', 'flav', %w(net1 net2), 'key')
+          instance_id = @nova_client.create_server(env, name: 'inst', image_ref: 'img', flavor_ref: 'flav', networks: %w(net1 net2), keypair: 'key')
+
+          expect(instance_id).to eq('o1o2o3')
+        end
+      end
+
+      context 'with availability_zone' do
+        it 'returns new instance id' do
+
+          stub_request(:post, 'http://nova/a1b2c3/servers')
+          .with(
+              body: '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key","availability_zone":"avz"}}',
+              headers:
+                  {
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                    'X-Auth-Token' => '123456'
+                  })
+          .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
+
+          instance_id = @nova_client.create_server(env, name: 'inst', image_ref: 'img', flavor_ref: 'flav', keypair: 'key', availability_zone: 'avz')
 
           expect(instance_id).to eq('o1o2o3')
         end

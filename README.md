@@ -121,6 +121,7 @@ vagrant will authenticate against the UK authentication endpoint.
   include rsync, you must set this parameter to "none".
 * `rsync_includes` - If `sync_method` is set to "rsync", this parameter give the list of local folders to sync
   on the remote VM.
+* `availability_zone` - Nova Availability zone used when creating VM
 
 These can be set like typical provider-specific configuration:
 

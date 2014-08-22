@@ -20,11 +20,14 @@ module VagrantPlugins
 
           nova = env[:openstack_client].nova
 
-          flavor = resolve_flavor(env)
-          image = resolve_image(env)
-          networks = resolve_networks(env)
-          keypair_name = resolve_keypair(env)
-          server_id = create_server(env, flavor, image, networks, keypair_name)
+          options = {
+            flavor: resolve_flavor(env),
+            image: resolve_image(env),
+            networks: resolve_networks(env),
+            keypair_name: resolve_keypair(env),
+            availability_zone: env[:machine].provider_config.availability_zone
+          }
+          server_id = create_server(env, options)
 
           # Store the ID right away so we can track it
           env[:machine].id = server_id
@@ -144,7 +147,7 @@ module VagrantPlugins
           networks
         end
 
-        def create_server(env, flavor, image, networks, keypair_name)
+        def create_server(env, options)
           config = env[:machine].provider_config
           nova = env[:openstack_client].nova
           server_name = config.server_name || env[:machine].name
@@ -152,27 +155,36 @@ module VagrantPlugins
           env[:ui].info(I18n.t('vagrant_openstack.launching_server'))
           env[:ui].info(" -- Tenant         : #{config.tenant_name}")
           env[:ui].info(" -- Name           : #{server_name}")
-          env[:ui].info(" -- Flavor         : #{flavor.name}")
-          env[:ui].info(" -- FlavorRef      : #{flavor.id}")
-          env[:ui].info(" -- Image          : #{image.name}")
-          env[:ui].info(" -- ImageRef       : #{image.id}")
-          env[:ui].info(" -- KeyPair        : #{keypair_name}")
-          unless networks.empty?
-            if networks.size == 1
-              env[:ui].info(" -- Network        : #{config.networks[0]}")
+          env[:ui].info(" -- Flavor         : #{options[:flavor].name}")
+          env[:ui].info(" -- FlavorRef      : #{options[:flavor].id}")
+          env[:ui].info(" -- Image          : #{options[:image].name}")
+          env[:ui].info(" -- ImageRef       : #{options[:image].id}")
+          env[:ui].info(" -- KeyPair        : #{options[:keypair_name]}")
+          unless options[:networks].empty?
+            if options[:networks].size == 1
+              env[:ui].info(" -- Network        : #{options[:networks][0]}")
             else
-              env[:ui].info(" -- Networks       : #{config.networks}")
+              env[:ui].info(" -- Networks       : #{options[:networks]}")
             end
           end
 
           log = "Lauching server '#{server_name}' in project '#{config.tenant_name}' "
-          log << "with flavor '#{flavor.name}' (#{flavor.id}), "
-          log << "image '#{image.name}' (#{image.id}) "
-          log << "and keypair '#{keypair_name}'"
+          log << "with flavor '#{options[:flavor].name}' (#{options[:flavor].id}), "
+          log << "image '#{options[:image].name}' (#{options[:image].id}) "
+          log << "and keypair '#{options[:keypair_name]}'"
 
           @logger.info(log)
 
-          nova.create_server(env, server_name, image.id, flavor.id, networks, keypair_name)
+          create_opts = {
+            name: server_name,
+            image_ref: options[:image].id,
+            flavor_ref: options[:flavor].id,
+            keypair: options[:keypair_name],
+            availability_zone: options[:availability_zone],
+            networks: options[:networks]
+          }
+
+          nova.create_server(env, create_opts)
         end
 
         def waiting_for_server_to_be_build(env, server_id)
