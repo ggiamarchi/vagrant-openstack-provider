@@ -95,10 +95,15 @@ module VagrantPlugins
           b.use ConnectOpenstack
 
           b.use Call, ReadState do |env, b2|
-            if env[:machine_state_id] == :not_created
+            case env[:machine_state_id]
+            when :not_created
               b2.use Provision
               b2.use SyncFolders
               b2.use CreateServer
+            when :shutoff
+              b2.use StartServer
+            when :suspended
+              b2.use Resume
             else
               b2.use Message, I18n.t('vagrant_openstack.already_created')
             end
@@ -159,8 +164,17 @@ module VagrantPlugins
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
-            if env[:machine_state_id] == :not_created
+            case env[:machine_state_id]
+            when :not_created
               b2.use Message, I18n.t('vagrant_openstack.not_created')
+            when :suspended
+              b2.use Resume
+              b2.use WaitForServerToBeActive
+              b2.use StopServer
+              b2.use WaitForServerToStop
+              b2.use StartServer
+            when :shutoff
+              b2.use StartServer
             else
               b2.use StopServer
               b2.use WaitForServerToStop
@@ -184,6 +198,7 @@ module VagrantPlugins
       autoload :Suspend, action_root.join('suspend')
       autoload :Resume, action_root.join('resume')
       autoload :WaitForServerToStop, action_root.join('wait_stop')
+      autoload :WaitForServerToBeActive, action_root.join('wait_active')
     end
   end
 end
