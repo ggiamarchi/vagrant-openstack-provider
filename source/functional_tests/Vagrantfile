@@ -22,7 +22,7 @@ Vagrant.configure('2') do |config|
     os.image                  = ENV['OS_IMAGE']
     os.ssh_username           = ENV['OS_SSH_USERNAME']
     os.keypair_name           = ENV['OS_KEYPAIR_NAME']
-    os.floating_ip_pool = ENV['OS_FLOATING_IP_POOL']
+    os.floating_ip_pool       = ENV['OS_FLOATING_IP_POOL']
   end
 
   config.vm.define 'test-basic' do |test|

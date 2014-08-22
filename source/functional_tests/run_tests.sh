@@ -2,9 +2,6 @@
 
 export VAGRANT_OPENSTACK_LOG=debug
 
-export OS_KEYPAIR_NAME=vagrant-openstack
-export OS_KEYPAIR_PRIVATE_KEY=keys/vagrant-openstack
-
 export OS_SSH_TIMEOUT=600
 export OS_SYNC_METHOD=none
 export OS_SSH_SHELL=bash
