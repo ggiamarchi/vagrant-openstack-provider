@@ -5,28 +5,14 @@ rvm:
 - 2.1.0
 before_install:
 - cd source
-- ssh-keygen -P "" -f functional_tests/for_vagrant_test
 install:
 - travis_retry bundle install
 - travis_retry appraisal install
 script:
 - bundle exec rake rubocop
 - appraisal rake spec
-- cd functional_tests && ./run_tests.sh
 gemfile:
 - Gemfile
 - gemfiles/latest_stable.gemfile
 - gemfiles/oldest_current.gemfile
 - gemfiles/previous_release.gemfile
-env:
-  global:
-  - OS_AUTH_URL: https://cloud.numergy.com/identity/v2.0/tokens
-  - OS_NETWORK_URL: https://cloud.numergy.com/network/v2.0
-  - OS_FLAVOR: 2_vCPU_RAM_4G_HD_10G
-  - OS_FLOATING_IP: 185.39.216.103
-  - OS_FLOATING_IP_POOL: PublicNetwork-01
-  - OS_USERNAME: vagrant-openstack@numergy.com
-  - OS_TENANT_NAME: Numergy-Dev:vagrant-openstack-plugin-test
-  - OS_PUBLIC_KEY_PATH: for_vagrant_test.pub
-  - OS_AZ: IDF-01
-  - secure: Ddlq2qIMjZAgvmzJIcEmcUbPJGQI/RHReV5EqrliS/tyUTOkYhdGNVoiss8OB+zGneyshltVwFaa+NsLj5+nr6AlqLG5oiHmQfNd5XgiSr/uOOIxZ2EgyRfXKQFu+ABBcxpYHCl0/tmeETVhv0c8k5at7QHP4VOEfkRM88J7DJE=
