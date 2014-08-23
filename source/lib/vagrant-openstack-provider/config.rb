@@ -170,7 +170,7 @@ module VagrantPlugins
 
       def valid_uri?(value)
         uri = URI.parse value
-        uri.kind_of?(URI::HTTP)
+        uri.is_a?(URI::HTTP)
       end
     end
   end
