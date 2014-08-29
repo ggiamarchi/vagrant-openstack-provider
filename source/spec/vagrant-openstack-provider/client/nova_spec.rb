@@ -16,6 +16,12 @@ describe VagrantPlugins::Openstack::NovaClient do
     end
   end
 
+  let(:file) do
+    double('file').tap do |file|
+      file.stub(:read) { ssh_key_content }
+    end
+  end
+
   let(:env) do
     Hash.new.tap do |env|
       env[:ui] = double('ui')
@@ -167,10 +173,11 @@ describe VagrantPlugins::Openstack::NovaClient do
     end
   end
 
-  describe 'import_keypair' do
+  describe 'import_keypair_from_file' do
     context 'with token and project_id acquainted' do
       it 'returns newly created keypair name' do
-        File.open(filename, 'w') { |f| f.write ssh_key_content }
+        File.should_receive(:exist?).with(filename).and_return(true)
+        File.should_receive(:open).with(filename).and_return(file)
         Kernel.stub!(:rand).and_return(2_036_069_739_008)
 
         stub_request(:post, 'http://nova/a1b2c3/os-keypairs')
@@ -187,7 +194,7 @@ describe VagrantPlugins::Openstack::NovaClient do
                 }
               }')
 
-        @nova_client.import_keypair(env, filename)
+        @nova_client.import_keypair_from_file(env, filename)
 
       end
     end

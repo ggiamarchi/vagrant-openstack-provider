@@ -1,6 +1,7 @@
 require 'log4r'
 require 'socket'
 require 'timeout'
+require 'sshkey'
 
 require 'vagrant/util/retryable'
 
@@ -92,8 +93,16 @@ module VagrantPlugins
           config = env[:machine].provider_config
           nova = env[:openstack_client].nova
           return config.keypair_name if config.keypair_name
-          return nova.import_keypair(env, config.public_key_path) if config.public_key_path
-          fail Errors::UnableToResolveSSHKey
+          return nova.import_keypair_from_file(env, config.public_key_path) if config.public_key_path
+          generate_keypair(env)
+        end
+
+        def generate_keypair(env)
+          key = SSHKey.generate
+          nova = env[:openstack_client].nova
+          generated_keyname = nova.import_keypair(env, key.ssh_public_key)
+          File.write("#{env[:machine].data_dir}/#{generated_keyname}", key.private_key)
+          generated_keyname
         end
 
         def resolve_flavor(env)

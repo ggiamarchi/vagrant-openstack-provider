@@ -1,4 +1,5 @@
 require 'vagrant'
+require 'colorize'
 
 module VagrantPlugins
   module Openstack
@@ -148,12 +149,18 @@ module VagrantPlugins
         @rsync_includes << inc
       end
 
-      def validate(_machine)
+      def validate(machine)
         errors = _detected_errors
 
         errors << I18n.t('vagrant_openstack.config.password_required') unless @password
         errors << I18n.t('vagrant_openstack.config.username_required') unless @username
-        errors << I18n.t('vagrant_openstack.config.keypair_name_required') unless @keypair_name || @public_key_path
+
+        if machine.config.ssh.private_key_path
+          # Waiting for https://github.com/mitchellh/vagrant/issues/4388 to improve this
+          puts I18n.t('vagrant_openstack.config.keypair_name_required').yellow unless @keypair_name || @public_key_path
+        else
+          errors << I18n.t('vagrant_openstack.config.private_key_missing') if @keypair_name || @public_key_path
+        end
 
         {
           openstack_compute_url: @openstack_compute_url,
@@ -170,7 +177,7 @@ module VagrantPlugins
 
       def valid_uri?(value)
         uri = URI.parse value
-        uri.kind_of?(URI::HTTP)
+        uri.is_a?(URI::HTTP)
       end
     end
   end

@@ -57,8 +57,15 @@ describe VagrantPlugins::Openstack::Config do
     let(:validation_errors) { subject.validate(machine)['Openstack Provider'] }
     let(:error_message) { double('error message') }
 
+    let(:config) { double('config') }
+    let(:ssh) { double('ssh') }
+
     before(:each) do
+      error_message.stub(:yellow) { 'Yellowed Error message ' }
       machine.stub_chain(:env, :root_path).and_return '/'
+      ssh.stub(:private_key_path) { 'private key path' }
+      config.stub(:ssh) { ssh }
+      machine.stub(:config) { config }
       subject.username = 'foo'
       subject.password = 'bar'
       subject.keypair_name = 'keypair'
@@ -78,18 +85,21 @@ describe VagrantPlugins::Openstack::Config do
         validation_errors.first.should == error_message
       end
     end
+
     context 'with good values' do
       it 'should validate' do
         validation_errors.should be_empty
       end
     end
 
-    context 'the keypair name and public_key_path' do
-      it 'should error if not given' do
-        subject.keypair_name = nil
-        subject.public_key_path = nil
-        I18n.should_receive(:t).with('vagrant_openstack.config.keypair_name_required').and_return error_message
-        validation_errors.first.should == error_message
+    context 'private_key_path is not set' do
+      context 'keypair_name or public_key_path is set' do
+        it 'should error if not given' do
+          ssh.stub(:private_key_path) { nil }
+          subject.public_key_path = 'public_key'
+          I18n.should_receive(:t).with('vagrant_openstack.config.private_key_missing').and_return error_message
+          validation_errors.first.should == error_message
+        end
       end
     end
 
