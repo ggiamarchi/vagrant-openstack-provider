@@ -543,6 +543,72 @@ describe VagrantPlugins::Openstack::NovaClient do
         expect { @nova_client.add_floating_ip(env, 'o1o2o3', '1.2.3.4') }.to raise_error(RuntimeError)
       end
     end
+  end
 
+  describe 'get_floating_ip_pools' do
+    context 'with token and project_id acquainted' do
+      it 'should return floating ip pool' do
+
+        stub_request(:get, 'http://nova/a1b2c3/os-floating-ip-pools')
+          .with(headers: { 'Accept' => 'application/json', 'X-Auth-Token' => '123456' })
+          .to_return(status: 200, body: '
+            {
+              "floating_ip_pools": [
+                {
+                  "name": "pool1"
+                },
+                {
+                  "name": "pool2"
+                }
+              ]
+            }
+          ')
+
+        pools = @nova_client.get_floating_ip_pools(env)
+
+        expect(pools[0]['name']).to eq('pool1')
+        expect(pools[1]['name']).to eq('pool2')
+      end
+    end
+  end
+
+  describe 'get_floating_ips' do
+    context 'with token and project_id acquainted' do
+      it 'should return floating ip list' do
+
+        stub_request(:get, 'http://nova/a1b2c3/os-floating-ips')
+          .with(headers: { 'Accept' => 'application/json', 'X-Auth-Token' => '123456' })
+          .to_return(status: 200, body: '
+            {
+              "floating_ips": [
+                {
+                  "fixed_ip": null,
+                  "id": 1,
+                  "instance_id": null,
+                  "ip": "10.10.10.1",
+                  "pool": "pool1"
+                },
+                {
+                  "fixed_ip": null,
+                  "id": 2,
+                  "instance_id": "inst001",
+                  "ip": "10.10.10.2",
+                  "pool": "pool2"
+                }
+              ]
+            }
+          ')
+
+        ips = @nova_client.get_floating_ips(env)
+
+        expect(ips[0]['ip']).to eq('10.10.10.1')
+        expect(ips[0]['instance_id']).to eq(nil)
+        expect(ips[0]['pool']).to eq('pool1')
+
+        expect(ips[1]['ip']).to eq('10.10.10.2')
+        expect(ips[1]['instance_id']).to eq('inst001')
+        expect(ips[1]['pool']).to eq('pool2')
+      end
+    end
   end
 end

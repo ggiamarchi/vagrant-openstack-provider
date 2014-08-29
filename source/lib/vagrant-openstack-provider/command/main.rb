@@ -4,7 +4,8 @@ module VagrantPlugins
       COMMANDS = [
         { name: :'image-list', file: 'image_list' , clazz: 'ImageList' },
         { name: :'flavor-list', file: 'flavor_list', clazz: 'FlavorList' },
-        { name: :'network-list', file: 'network_list', clazz: 'NetworkList' }
+        { name: :'network-list', file: 'network_list', clazz: 'NetworkList' },
+        { name: :'floatingip-list', file: 'floatingip_list', clazz: 'FloatingIpList' }
       ]
 
       class Main < Vagrant.plugin('2', :command)

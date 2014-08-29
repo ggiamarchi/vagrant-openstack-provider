@@ -19,6 +19,7 @@ module VagrantPlugins
           VagrantPlugins::Openstack::Action::ConnectOpenstack.new(nil, env).call(env)
 
           cmd(name, @argv, env)
+          @env.ui.info('')
         end
 
         def cmd(_name, _argv, _env)
