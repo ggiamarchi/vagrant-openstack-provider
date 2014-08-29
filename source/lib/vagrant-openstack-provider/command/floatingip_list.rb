@@ -20,13 +20,13 @@ module VagrantPlugins
           floating_ip_pools.each do |floating_ip_pool|
             rows << [floating_ip_pool['name']]
           end
-          display_table(['Floating IP pools'], rows)
+          display_table(env, ['Floating IP pools'], rows)
 
           rows = []
           floating_ips.each do |floating_ip|
             rows << [floating_ip['id'], floating_ip['ip'], floating_ip['pool'], floating_ip['instance_id']]
           end
-          display_table(['Id', 'IP', 'Pool', 'Instance id'], rows)
+          display_table(env, ['Id', 'IP', 'Pool', 'Instance id'], rows)
         end
       end
     end

@@ -13,7 +13,7 @@ module VagrantPlugins
         def cmd(name, argv, env)
           fail Errors::NoArgRequiredForCommand, cmd: name unless argv.size == 1
           flavors = env[:openstack_client].nova.get_all_flavors(env)
-          display_item_list(flavors)
+          display_item_list(env, flavors)
         end
       end
     end

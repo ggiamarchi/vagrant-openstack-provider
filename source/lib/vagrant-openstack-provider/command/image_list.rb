@@ -13,7 +13,7 @@ module VagrantPlugins
         def cmd(name, argv, env)
           fail Errors::NoArgRequiredForCommand, cmd: name unless argv.size == 1
           images = env[:openstack_client].nova.get_all_images(env)
-          display_item_list(images)
+          display_item_list(env, images)
         end
       end
     end
