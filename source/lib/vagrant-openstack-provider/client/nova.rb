@@ -97,20 +97,23 @@ module VagrantPlugins
              { addFloatingIp: { address: floating_ip } }.to_json)
       end
 
-      def import_keypair(env, public_key_path)
-        fail "File specified in public_key_path #{public_key_path} doesn't exist" unless File.exist?(public_key_path)
-        file = File.open(public_key_path)
-        contents = file.read
+      def import_keypair(env, public_key)
         keyname = "vagrant-generated-#{Kernel.rand(36**8).to_s(36)}"
 
         key_details = post(env, "#{@session.endpoints[:compute]}/os-keypairs",
                            { keypair:
                              {
                                name: keyname,
-                               public_key: contents
+                               public_key: public_key
                              }
                            }.to_json)
         JSON.parse(key_details)['keypair']['name']
+      end
+
+      def import_keypair_from_file(env, public_key_path)
+        fail "File specified in public_key_path #{public_key_path} doesn't exist" unless File.exist?(public_key_path)
+        file = File.open(public_key_path)
+        import_keypair(env, file.read)
       end
 
       def delete_keypair_if_vagrant(env, server_id)

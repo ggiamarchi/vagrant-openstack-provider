@@ -43,6 +43,7 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
       env[:machine] = double('machine')
       env[:machine].stub(:provider_config) { config }
       env[:machine].stub(:id) { '1234' }
+      env[:machine].stub(:data_dir) { '/data/dir' }
       env[:openstack_client] = double('openstack_client')
       env[:openstack_client].stub(:neutron) { neutron }
       env[:openstack_client].stub(:nova) { nova }
@@ -56,9 +57,31 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
 
   describe 'read_ssh_info' do
     context 'with config.floating_ip specified' do
-      it 'return the specified floating ip' do
-        config.stub(:floating_ip) { '80.80.80.80' }
-        @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'sshuser')
+      context 'with keypair_name specified' do
+        it 'returns the specified floating ip' do
+          config.stub(:floating_ip) { '80.80.80.80' }
+          config.stub(:keypair_name) { 'my_keypair' }
+          @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'sshuser')
+        end
+      end
+
+      context 'with public_key_path specified' do
+        it 'returns the specified floating ip' do
+          config.stub(:floating_ip) { '80.80.80.80' }
+          config.stub(:keypair_name) { nil }
+          config.stub(:public_key_path) { '/public/key/path' }
+          @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'sshuser')
+        end
+      end
+
+      context 'with neither keypair_name nor public_key_path specified' do
+        it 'returns the specified floating ip ' do
+          config.stub(:floating_ip) { '80.80.80.80' }
+          config.stub(:keypair_name) { nil }
+          config.stub(:public_key_path) { nil }
+          @action.stub(:get_keypair_name) { 'my_keypair_name' }
+          @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'sshuser', private_key_path: '/data/dir/my_keypair_name')
+        end
       end
     end
   end
@@ -78,6 +101,7 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
             }
           }
         end
+        config.stub(:keypair_name) { 'my_keypair' }
         @action.read_ssh_info(env).should eq(host: '12.12.12.12', port: 22, username: 'sshuser')
       end
     end

@@ -1,10 +1,12 @@
 require 'vagrant-openstack-provider/spec_helper'
+require 'sshkey'
 
 include VagrantPlugins::Openstack::Action
 include VagrantPlugins::Openstack::HttpUtils
 include VagrantPlugins::Openstack::Domain
 
 describe VagrantPlugins::Openstack::Action::CreateServer do
+  include FakeFS::SpecHelpers
 
   let(:config) do
     double('config').tap do |config|
@@ -28,6 +30,13 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
     double('image').tap do |image|
       image.stub(:name) { 'image_name' }
       image.stub(:id) { 'image123' }
+    end
+  end
+
+  let(:ssh_key) do
+    double('ssh_key').tap do |key|
+      key.stub(:ssh_public_key) { 'ssh public key' }
+      key.stub(:private_key) { 'private key' }
     end
   end
 
@@ -60,6 +69,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
       env[:ui].stub(:info).with(anything)
       env[:machine] = double('machine')
       env[:machine].stub(:provider_config) { config }
+      env[:machine].stub(:data_dir) { '/data/dir' }
       env[:openstack_client] = double('openstack_client')
       env[:openstack_client].stub(:neutron) { neutron }
       env[:openstack_client].stub(:nova) { nova }
@@ -170,17 +180,27 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
     context 'with public_key_path provided' do
       it 'return the keypair_name created into nova' do
         config.stub(:public_key_path) { '/path/to/key' }
-        nova.stub(:import_keypair).with(env, '/path/to/key') { 'my-keypair-imported' }
+        nova.stub(:import_keypair_from_file).with(env, '/path/to/key') { 'my-keypair-imported' }
         @action.resolve_keypair(env).should eq('my-keypair-imported')
       end
     end
 
     context 'with no keypair_name and no public_key_path provided' do
-      it 'raises an error' do
+      it 'generates a new keypair and return the keypair name imported into nova' do
         config.stub(:keypair_name) { nil }
         config.stub(:public_key_path) { nil }
-        expect { @action.resolve_keypair(env) }.to raise_error
+        @action.stub(:generate_keypair) { 'my-keypair-imported' }
+        @action.resolve_keypair(env).should eq('my-keypair-imported')
       end
+    end
+  end
+
+  describe 'generate_keypair' do
+    it 'returns a generated keypair name imported into nova' do
+      nova.stub(:import_keypair) { 'my-keypair-imported' }
+      SSHKey.stub(:generate) { ssh_key }
+      File.should_receive(:write).with('/data/dir/my-keypair-imported', 'private key')
+      @action.generate_keypair(env).should eq('my-keypair-imported')
     end
   end
 

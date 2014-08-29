@@ -47,6 +47,7 @@ install() {
 
 runTests() {
   run "" cd /vagrant-openstack
+  run "Run 'bundle update'" bundle update
   run "Run 'bundle install'" bundle install
   run "Run 'bundle exec rake" bundle exec rake
   #run "Run 'appraisal install'" appraisal install

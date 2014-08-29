@@ -53,7 +53,13 @@ en:
       metadata_must_be_hash: |-
         Metadata must be a hash.
       keypair_name_required: |-
-        keypair_name or a public_key_path are required.
+        Warning! You have specified ssh.private_key_path in your Vagrant configuration.
+        but nor keypair_name neither public_key_path are present. The openstack provider
+        will automatically generate a new keypair and your configuration option
+        ssh.private_key_path will be overriden
+      private_key_missing: |-
+        config.ssh.private_key_path is required when either keypair_name or
+        public_key_path is set in Vagrantfile
 
     errors:
       default: |-

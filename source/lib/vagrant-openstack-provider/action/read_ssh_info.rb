@@ -22,11 +22,13 @@ module VagrantPlugins
 
         def read_ssh_info(env)
           config = env[:machine].provider_config
-          {
+          hash = {
             host: get_ip_address(env),
             port: 22,
             username: config.ssh_username
           }
+          hash[:private_key_path] = "#{env[:machine].data_dir}/#{get_keypair_name(env)}" unless config.keypair_name || config.public_key_path
+          hash
         end
 
         def get_ip_address(env)
@@ -38,6 +40,10 @@ module VagrantPlugins
             end
           end
           fail Errors::UnableToResolveIP
+        end
+
+        def get_keypair_name(env)
+          env[:openstack_client].nova.get_server_details(env, env[:machine].id)['key_name']
         end
       end
     end
