@@ -1,3 +1,23 @@
+# 0.3.0 (August 29, 2014)
+
+FEATURES:
+
+  - Automatic generation of SSH keys [#68](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/68)
+  - Make keypair optional in provider's configuration [#54](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/54)
+  - Allow setting a floating ip pool rather than a fixed ip [#50](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/50)
+  - Implement custom "list" actions [#35](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/35)
+  - Enable "availability_zone" configuration [#27](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/27)
+
+IMPROVEMENTS:
+
+  - Log action steps and client calls with requests and responses [#58](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/58)
+
+BUG FIXES:
+
+  - When`vagrant reload` an existing but stoped machine it does not start [#57](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/57)
+  - When`vagrant up` an existing but stoped machine it does not start [#56](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/56)
+  - Network api URL resolve from keystone catalog is not working [#49](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/49)
+
 # 0.2.0 (June 26, 2014)
 
 FEATURES:
