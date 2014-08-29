@@ -113,7 +113,7 @@ vagrant will authenticate against the UK authentication endpoint.
 * `openstack_compute_url` - The compute URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 * `openstack_network_url` - The network URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 
-### VM Configurations
+### VM Configuration
 
 * `server_name` - The name of the server within Openstack Cloud. This
   defaults to the name of the Vagrant machine (via `config.vm.define`), but
@@ -154,7 +154,7 @@ end
 * `public_key_path` - if `keypair_name` is not provided, the path to the public key will be used by vagrant to generate a keypair on the OpenStack cloud. The keypair will be destroyed when the VM is destroyed.
 * `ssh_username` - Username used by Vagrant for ssh login.
 
-if neither `keypair_name` nor `public_key_path` are set, vagrant will generate a new ssh key and automatically import it in Openstack.
+If neither `keypair_name` nor `public_key_path` are set, vagrant will generate a new ssh key and automatically import it in Openstack.
 
 ### Synced folders
 
