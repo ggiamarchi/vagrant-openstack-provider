@@ -13,7 +13,12 @@ module VagrantPlugins
         def cmd(name, argv, env)
           fail Errors::NoArgRequiredForCommand, cmd: name unless argv.size == 1
           flavors = env[:openstack_client].nova.get_all_flavors(env)
-          display_item_list(env, flavors)
+
+          rows = []
+          flavors.each do |f|
+            rows << [f.id, f.name, f.vcpus, f.ram, f.disk]
+          end
+          display_table(env, ['Id', 'Name', 'vCPU', 'RAM (Mo)', 'Disk size (Go)'], rows)
         end
       end
     end
