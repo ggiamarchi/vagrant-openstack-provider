@@ -11,7 +11,7 @@ module VagrantPlugins
           I18n.t('vagrant_openstack.command.flavor_list_synopsis')
         end
         def cmd(name, argv, env)
-          fail Errors::NoArgRequiredForCommand, cmd: name unless argv.size == 1
+          fail Errors::NoArgRequiredForCommand, cmd: name unless argv.size == 0 || argv == ['--']
           flavors = env[:openstack_client].nova.get_all_flavors(env)
 
           rows = []
