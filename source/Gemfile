@@ -19,7 +19,3 @@ group :development do
   gem 'coveralls', require: false
   gem 'debugger'
 end
-
-group :plugins do
-  gem "vagrant-openstack-provider", path: "."
-end
