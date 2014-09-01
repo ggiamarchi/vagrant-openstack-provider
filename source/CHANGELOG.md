@@ -5,6 +5,10 @@ BUG FIXES:
    - The provider fails to load colorize gem [#76](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/76)
    - Sub-command arguments management have change in vagrant 1.5 [#77](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/77)
 
+IMPROVEMENTS:
+
+   - Show more informations for command flavor-list [#52](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/52) 
+
 # 0.3.0 (August 29, 2014)
 
 FEATURES:
