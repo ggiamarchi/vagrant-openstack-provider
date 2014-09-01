@@ -1,8 +1,9 @@
-# 0.3.1 (September 1, 2014)
+# 0.3.2 (September 1, 2014)
 
 BUG FIXES:
 
    - The provider fails to load colorize gem [#76](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/76)
+   - Sub-command arguments management have change in vagrant 1.5 [#77](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/77)
 
 # 0.3.0 (August 29, 2014)
 
