@@ -11,6 +11,11 @@ Gem::Specification.new do |gem|
   gem.summary       = 'Enables Vagrant to manage machines in Openstack Cloud.'
   gem.homepage      = 'https://github.com/ggiamarchi/vagrant-openstack'
 
+  gem.add_dependency 'restclient', '0.10.0'
+  gem.add_dependency 'terminal-table', '1.4.5'
+  gem.add_dependency 'sshkey', '1.6.1'
+  gem.add_dependency 'colorize', '0.7.3'
+
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec', '~> 2.13.0'
   gem.add_development_dependency 'aruba'
