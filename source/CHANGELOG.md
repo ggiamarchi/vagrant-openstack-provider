@@ -1,3 +1,9 @@
+# 0.3.1 (September 1, 2014)
+
+BUG FIXES:
+
+   - The provider fails to load colorize gem [#76](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/76)
+
 # 0.3.0 (August 29, 2014)
 
 FEATURES:
