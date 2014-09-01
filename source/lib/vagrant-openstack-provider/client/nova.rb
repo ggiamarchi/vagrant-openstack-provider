@@ -18,8 +18,10 @@ module VagrantPlugins
       end
 
       def get_all_flavors(env)
-        flavors_json = get(env, "#{@session.endpoints[:compute]}/flavors")
-        JSON.parse(flavors_json)['flavors'].map { |fl| Item.new(fl['id'], fl['name']) }
+        flavors_json = get(env, "#{@session.endpoints[:compute]}/flavors/detail")
+        JSON.parse(flavors_json)['flavors'].map do |fl|
+          Flavor.new(fl['id'], fl['name'], fl['vcpus'], fl['ram'], fl['disk'])
+        end
       end
 
       def get_all_floating_ips(env)

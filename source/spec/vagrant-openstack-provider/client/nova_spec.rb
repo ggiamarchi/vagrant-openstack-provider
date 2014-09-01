@@ -45,7 +45,7 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'get_all_flavors' do
     context 'with token and project_id acquainted' do
       it 'returns all flavors' do
-        stub_request(:get, 'http://nova/a1b2c3/flavors')
+        stub_request(:get, 'http://nova/a1b2c3/flavors/detail')
             .with(
               headers:
               {
@@ -54,15 +54,17 @@ describe VagrantPlugins::Openstack::NovaClient do
               })
             .to_return(
               status: 200,
-              body: '{ "flavors": [ { "id": "f1", "name": "flavor1"}, { "id": "f2", "name": "flavor2"} ] }')
+              body: '{
+                "flavors": [
+                  { "id": "f1", "name": "flavor1", "vcpus":"1", "ram": "1024", "disk": "10"},
+                  { "id": "f2", "name": "flavor2", "vcpus":"2", "ram": "2048", "disk": "20"}
+                ]}')
 
         flavors = @nova_client.get_all_flavors(env)
 
         expect(flavors.length).to eq(2)
-        expect(flavors[0].id).to eq('f1')
-        expect(flavors[0].name).to eq('flavor1')
-        expect(flavors[1].id).to eq('f2')
-        expect(flavors[1].name).to eq('flavor2')
+        expect(flavors[0]).to eq(Flavor.new('f1', 'flavor1', '1', '1024', '10'))
+        expect(flavors[1]).to eq(Flavor.new('f2', 'flavor2', '2', '2048', '20'))
       end
     end
   end
