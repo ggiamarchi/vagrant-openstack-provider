@@ -24,6 +24,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
       config.stub(:keypair_name) { nil }
       config.stub(:public_key_path) { nil }
       config.stub(:networks) { nil }
+      config.stub(:volumes) { nil }
     end
   end
 
@@ -64,6 +65,22 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
     end
   end
 
+  let(:cinder) do
+    double('cinder').tap do |cinder|
+      cinder.stub(:get_all_volumes).with(anything) do
+        [Volume.new('001', 'vol-01', '1', 'available', 'true', nil, nil),
+         Volume.new('002', 'vol-02', '2', 'available', 'true', nil, nil),
+         Volume.new('003', 'vol-03', '3', 'available', 'true', nil, nil),
+         Volume.new('004', 'vol-04', '4', 'available', 'false', nil, nil),
+         Volume.new('005', 'vol-05', '5', 'available', 'false', nil, nil),
+         Volume.new('006', 'vol-06', '6', 'available', 'false', nil, nil),
+         Volume.new('007', 'vol-07-08', '6', 'available', 'false', nil, nil),
+         Volume.new('008', 'vol-07-08', '6', 'available', 'false', nil, nil)]
+
+      end
+    end
+  end
+
   let(:env) do
     Hash.new.tap do |env|
       env[:ui] = double('ui')
@@ -74,6 +91,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
       env[:openstack_client] = double('openstack_client')
       env[:openstack_client].stub(:neutron) { neutron }
       env[:openstack_client].stub(:nova) { nova }
+      env[:openstack_client].stub(:cinder) { cinder }
     end
   end
 
@@ -99,6 +117,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
           flavor: flavor,
           image: image,
           networks: ['test-networks'],
+          volumes: [{ id: '001', device: :auto }, { id: '002', device: '/dev/vdc' }],
           keypair_name: 'test-keypair',
           availability_zone: 'test-az'
         }
@@ -269,5 +288,96 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
       end
     end
 
+  end
+
+  describe 'resolve_volumes' do
+    context 'with volume attached in all possible ways' do
+      it 'returns normalized volume list' do
+
+        config.stub(:volumes) do
+          ['001',
+           'vol-02',
+           { id: '003', device: '/dev/vdz' },
+           { name: 'vol-04', device: '/dev/vdy' },
+           { name: 'vol-05' },
+           { id: '006' }]
+        end
+
+        expect(@action.resolve_volumes(env)).to eq [{ id: '001', device: nil },
+                                                    { id: '002', device: nil },
+                                                    { id: '003', device: '/dev/vdz' },
+                                                    { id: '004', device: '/dev/vdy' },
+                                                    { id: '005', device: nil },
+                                                    { id: '006', device: nil }]
+      end
+    end
+
+    context 'with invalid volume object' do
+      it 'raises an error' do
+        config.stub(:volumes) { [1] }
+        expect { @action.resolve_volumes(env) }.to raise_error(Errors::InvalidVolumeObject)
+      end
+    end
+
+    context 'with string that is neither an id nor name matching a volume' do
+      it 'raises an error' do
+        config.stub(:volumes) { ['not-exist'] }
+        expect { @action.resolve_volumes(env) }.to raise_error(Errors::UnresolvedVolume)
+      end
+    end
+
+    context 'with hash containing a bad id' do
+      it 'raises an error' do
+        config.stub(:volumes) { [{ id: 'not-exist' }] }
+        expect { @action.resolve_volumes(env) }.to raise_error(Errors::UnresolvedVolumeId)
+      end
+    end
+
+    context 'with hash containing a bad name' do
+      it 'raises an error' do
+        config.stub(:volumes) { [{ name: 'not-exist' }] }
+        expect { @action.resolve_volumes(env) }.to raise_error(Errors::UnresolvedVolumeName)
+      end
+    end
+
+    context 'with empty hash' do
+      it 'raises an error' do
+        config.stub(:volumes) { [{}] }
+        expect { @action.resolve_volumes(env) }.to raise_error(Errors::ConflictVolumeNameId)
+      end
+    end
+
+    context 'with hash containing both id and name' do
+      it 'raises an error' do
+        config.stub(:volumes) { [{ id: '001', name: 'vol-01' }] }
+        expect { @action.resolve_volumes(env) }.to raise_error(Errors::ConflictVolumeNameId)
+      end
+    end
+
+    context 'with hash containing both id and name' do
+      it 'raises an error' do
+        config.stub(:volumes) { [{ id: '001', name: 'vol-01' }] }
+        expect { @action.resolve_volumes(env) }.to raise_error(Errors::ConflictVolumeNameId)
+      end
+    end
+
+    context 'with hash containing a name matching more than one volume' do
+      it 'raises an error' do
+        config.stub(:volumes) { [{ name: 'vol-07-08' }] }
+        expect { @action.resolve_volumes(env) }.to raise_error(Errors::MultipleVolumeName)
+      end
+    end
+  end
+
+  describe 'attach_volumes' do
+    context 'with volume attached in all possible ways' do
+      it 'returns normalized volume list' do
+        nova.stub(:attach_volume).with(anything, anything, anything, anything) {}
+        nova.should_receive(:attach_volume).with(env, 'server-01', '001', nil)
+        nova.should_receive(:attach_volume).with(env, 'server-01', '002', '/dev/vdb')
+
+        @action.attach_volumes(env, 'server-01', [{ id: '001', device: nil }, { id: '002', device: '/dev/vdb' }])
+      end
+    end
   end
 end

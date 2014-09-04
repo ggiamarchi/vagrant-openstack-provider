@@ -18,6 +18,11 @@ module VagrantPlugins
       #
       attr_accessor :openstack_network_url
 
+      # The block storage service url to access Openstack. If nil, it will read from
+      # hypermedia catalog form REST API
+      #
+      attr_accessor :openstack_volume_url
+
       # The authentication endpoint. This defaults to Openstack's global authentication endpoint.
       attr_accessor :openstack_auth_url
 
@@ -92,6 +97,11 @@ module VagrantPlugins
       # @return [Array]
       attr_accessor :networks
 
+      # Volumes list that will be attached to the VM
+      #
+      # @return [Array]
+      attr_accessor :volumes
+
       # Public key path to create OpenStack keypair
       #
       # @return [Array]
@@ -106,6 +116,7 @@ module VagrantPlugins
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
         @openstack_network_url = UNSET_VALUE
+        @openstack_volume_url = UNSET_VALUE
         @openstack_auth_url = UNSET_VALUE
         @flavor = UNSET_VALUE
         @image = UNSET_VALUE
@@ -122,6 +133,7 @@ module VagrantPlugins
         @sync_method = UNSET_VALUE
         @availability_zone = UNSET_VALUE
         @networks = []
+        @volumes = []
         @public_key_path = UNSET_VALUE
       end
 
@@ -130,6 +142,7 @@ module VagrantPlugins
         @password = nil if @password == UNSET_VALUE
         @openstack_compute_url = nil if @openstack_compute_url == UNSET_VALUE
         @openstack_network_url = nil if @openstack_network_url == UNSET_VALUE
+        @openstack_volume_url = nil if @openstack_volume_url == UNSET_VALUE
         @openstack_auth_url = nil if @openstack_auth_url == UNSET_VALUE
         @flavor = nil if @flavor == UNSET_VALUE
         @image = nil if @image == UNSET_VALUE
@@ -150,6 +163,7 @@ module VagrantPlugins
         @ssh_username = nil if @ssh_username == UNSET_VALUE
         @ssh_timeout = 180 if @ssh_timeout == UNSET_VALUE
         @networks = nil if @networks.empty?
+        @volumes = nil if @volumes.empty?
       end
       # rubocop:enable Style/CyclomaticComplexity
 
@@ -173,6 +187,7 @@ module VagrantPlugins
         {
           openstack_compute_url: @openstack_compute_url,
           openstack_network_url: @openstack_network_url,
+          openstack_volume_url: @openstack_volume_url,
           openstack_auth_url: @openstack_auth_url
         }.each_pair do |key, value|
           errors << I18n.t('vagrant_openstack.config.invalid_uri', key: key, uri: value) unless value.nil? || valid_uri?(value)

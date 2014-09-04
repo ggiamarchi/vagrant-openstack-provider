@@ -19,6 +19,7 @@ cloud.
 * Automatic SSH key generation and Nova public key provisioning
 * Automatic floating IP allocation and association
 * Provision the instances with any built-in Vagrant provisioner
+* Attach Cinder volumes to the instances
 * Minimal synced folder support via `rsync`
 * Custom sub-commands within Vagrant CLI to query Openstack objects
 
@@ -115,8 +116,9 @@ This provider exposes quite a few provider-specific configuration options:
 * `openstack_auth_url` - The endpoint to authentication against. By default, vagrant will use the global
 openstack authentication endpoint for all regions with the exception of :lon. IF :lon region is specified
 vagrant will authenticate against the UK authentication endpoint.
-* `openstack_compute_url` - The compute URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
-* `openstack_network_url` - The network URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
+* `openstack_compute_url` - The compute service URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
+* `openstack_network_url` - The network service URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
+* `openstack_volume_url` - The block storage URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 
 ### VM Configuration
 
@@ -140,7 +142,7 @@ supported with `vagrant-openstack`, currently. If any of these are
 specified, Vagrant will emit a warning, but will otherwise boot
 the Openstack server.
 
-You can provide network id or name. However, in Openstack the network name is not unique, thus if there is two networks with
+You can provide network id or name. However, in Openstack a network name is not unique, thus if there is two networks with
 the same name in your project the plugin will fail. If so, you have to use only ids.
 
 Here's an example which adds two Cloud Networks. The first by id and the second by name.
@@ -150,6 +152,38 @@ config.vm.provider :openstack do |os|
   ...
   os.networks = ['443aff42-be57-effb-ad30-c097c1e4503f', 'backend-network']
   ...
+end
+```
+
+#### Volumes
+
+* `volumes` - Volume list that have to be attached to the server. You can provide volume id or name. However, in Openstack
+a volume name is not unique, thus if there is two volumes with the same name in your project the plugin will fail. If so,
+you have to use only ids. Optionally, you can specify the device that will be assigned to the volume.
+
+Here comes an example that show six volumes attached to a server :
+ 
+```ruby
+config.vm.provider :openstack do |os|
+ ...
+os.volumes = [
+  '619e027c-f4a9-493d-8c15-c89de81cb949',
+  'vol-name-02',
+  {
+    id: '410096ff-ef71-4ca4-8006-e5bd9e99239a',
+    device: '/dev/vdc'
+  },
+  {
+    name: 'vol-name-04',
+    device: '/dev/vde'
+  },
+  {
+    name: 'vol-name-05'
+  },
+  {
+    id: '9e419e91-8f66-4803-bc45-4600182cfd8d'
+  }
+]
 end
 ```
 
