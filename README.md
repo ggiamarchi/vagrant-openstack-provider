@@ -122,6 +122,7 @@ vagrant will authenticate against the UK authentication endpoint.
 * `image` - The name of the image to use for the VM
 * `floating_ip` - The floating IP to associate with the VM. This IP must be formerly allocated.
 * `floating_ip_pool` - The floating IP Pool from which a floating IP will be allocated to be associated with the VM. alternative to the `floating_ip` option.
+* `floating_ip_pool_always_allocate` - if set to true, vagrant will always reallocate floating ip instead of trying to reuse unassigned ones
 * `availability_zone` - Nova Availability zone used when creating VM
 
 #### Networks

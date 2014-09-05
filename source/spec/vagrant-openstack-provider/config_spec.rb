@@ -22,6 +22,7 @@ describe VagrantPlugins::Openstack::Config do
     its(:public_key_path) { should be_nil }
     its(:availability_zone) { should be_nil }
     its(:ssh_username) { should be_nil }
+    its(:floating_ip_pool_always_allocate) { should be_false }
   end
 
   describe 'overriding defaults' do
