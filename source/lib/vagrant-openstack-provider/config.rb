@@ -76,6 +76,12 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :floating_ip_pool
 
+      # if set to true, vagrant will always allocate floating ip instead of trying to reuse unassigned ones
+      # default to false
+      #
+      # @return [Boolean]
+      attr_accessor :floating_ip_pool_always_allocate
+
       # Sync folder method. Can be either "rsync" or "none"
       #
       # @return [String]
@@ -112,6 +118,7 @@ module VagrantPlugins
         @ssh_timeout = UNSET_VALUE
         @floating_ip = UNSET_VALUE
         @floating_ip_pool = UNSET_VALUE
+        @floating_ip_pool_always_allocate = UNSET_VALUE
         @sync_method = UNSET_VALUE
         @availability_zone = UNSET_VALUE
         @networks = []
@@ -132,6 +139,7 @@ module VagrantPlugins
         @rsync_includes = nil if @rsync_includes.empty?
         @floating_ip = nil if @floating_ip == UNSET_VALUE
         @floating_ip_pool = nil if @floating_ip_pool == UNSET_VALUE
+        @floating_ip_pool_always_allocate = false if floating_ip_pool_always_allocate == UNSET_VALUE
         @sync_method = 'rsync' if @sync_method == UNSET_VALUE
         @keypair_name = nil if @keypair_name == UNSET_VALUE
         @public_key_path = nil if @public_key_path == UNSET_VALUE

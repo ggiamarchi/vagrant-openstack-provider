@@ -20,6 +20,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
       config.stub(:availability_zone) { 'AZ-01' }
       config.stub(:floating_ip) { nil }
       config.stub(:floating_ip_pool) { nil }
+      config.stub(:floating_ip_pool_always_allocate) { false }
       config.stub(:keypair_name) { nil }
       config.stub(:public_key_path) { nil }
       config.stub(:networks) { nil }
@@ -116,13 +117,31 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
 
     context 'with config.floating_pool specified' do
       context 'if any ip in the same pool is available' do
-        it 'return one of the available ips' do
-          nova.stub(:get_all_floating_ips).with(anything) do
-            [FloatingIP.new('80.81.82.84', 'pool-1', '1234'),
-             FloatingIP.new('80.81.82.83', 'pool-1', nil)]
+        context 'with config.floating_pool_always_allocate true' do
+          it 'allocate a new floating_ip from the pool' do
+            config.stub(:floating_ip_pool_always_allocate) { true }
+            nova.stub(:get_all_floating_ips).with(anything) do
+              [FloatingIP.new('80.81.82.84', 'pool-1', '1234'),
+               FloatingIP.new('80.81.82.83', 'pool-1', nil)]
+            end
+            nova.stub(:allocate_floating_ip).with(env, 'pool-1') do
+              FloatingIP.new('80.81.82.84', 'pool-1', nil)
+            end
+            config.stub(:floating_ip_pool) { 'pool-1' }
+            @action.resolve_floating_ip(env).should eq('80.81.82.84')
           end
-          config.stub(:floating_ip_pool) { 'pool-1' }
-          @action.resolve_floating_ip(env).should eq('80.81.82.83')
+        end
+
+        context 'with config.floating_pool_always_allocate false' do
+          it 'return one of the available ips' do
+            config.stub(:floating_ip_pool_always_allocate) { false }
+            nova.stub(:get_all_floating_ips).with(anything) do
+              [FloatingIP.new('80.81.82.84', 'pool-1', '1234'),
+               FloatingIP.new('80.81.82.83', 'pool-1', nil)]
+            end
+            config.stub(:floating_ip_pool) { 'pool-1' }
+            @action.resolve_floating_ip(env).should eq('80.81.82.83')
+          end
         end
       end
 

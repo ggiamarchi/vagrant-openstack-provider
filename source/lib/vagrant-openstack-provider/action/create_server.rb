@@ -79,7 +79,7 @@ module VagrantPlugins
           if config.floating_ip_pool
             floating_ips.each do |single|
               return single.ip if single.pool == config.floating_ip_pool && single.instance_id.nil?
-            end
+            end unless config.floating_ip_pool_always_allocate
             return nova.allocate_floating_ip(env, config.floating_ip_pool).ip
           else
             floating_ips.each do |ip|
