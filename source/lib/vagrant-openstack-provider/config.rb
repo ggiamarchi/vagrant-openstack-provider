@@ -76,7 +76,7 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :floating_ip_pool
 
-      # if set to true, vagrant will always reallocate floating ip instead of trying to reuse unassigned ones
+      # if set to true, vagrant will always allocate floating ip instead of trying to reuse unassigned ones
       # default to false
       #
       # @return [Boolean]
