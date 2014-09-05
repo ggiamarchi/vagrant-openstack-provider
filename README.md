@@ -12,10 +12,15 @@ cloud.
 
 ## Features
 
-* Boot Openstack Cloud instances.
-* SSH into the instances.
-* Provision the instances with any built-in Vagrant provisioner.
-* Minimal synced folder support via `rsync`.
+* Create and boot Openstack instances
+* Halt and reboot instances
+* Suspend and resume instances
+* SSH into the instances
+* Automatic SSH key generation and Nova public key provisioning
+* Automatic floating IP allocation and association
+* Provision the instances with any built-in Vagrant provisioner
+* Minimal synced folder support via `rsync`
+* Custom sub-commands within Vagrant CLI to query Openstack objects
 
 ## Usage
 
@@ -60,7 +65,7 @@ your information where necessary.
 
 This Vagrantfile shows the minimal needed configuration.
 
-```
+```ruby
 require 'vagrant-openstack-provider'
 
 Vagrant.configure('2') do |config|
