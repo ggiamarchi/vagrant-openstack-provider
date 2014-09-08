@@ -133,6 +133,17 @@ module VagrantPlugins
         JSON.parse(floating_ips)['floating_ips']
       end
 
+      def attach_volume(env, server_id, volume_id, device = nil)
+        attachment = post(env, "#{@session.endpoints[:compute]}/servers/#{server_id}/os-volume_attachments",
+                          {
+                            volumeAttachment: {
+                              volumeId: volume_id,
+                              device: device
+                            }
+                          }.to_json)
+        JSON.parse(attachment)['volumeAttachment']
+      end
+
       private
 
       VM_STATES =

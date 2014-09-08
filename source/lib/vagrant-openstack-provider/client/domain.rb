@@ -11,6 +11,14 @@ module VagrantPlugins
           @id = id
           @name = name
         end
+
+        def ==(other)
+          other.class == self.class && other.state == state
+        end
+
+        def state
+          [@id, @name]
+        end
       end
 
       class Flavor < Item
@@ -36,10 +44,6 @@ module VagrantPlugins
           super(id, name)
         end
 
-        def ==(other)
-          other.class == self.class && other.state == state
-        end
-
         protected
 
         def state
@@ -53,6 +57,62 @@ module VagrantPlugins
           @ip = ip
           @pool = pool
           @instance_id = instance_id
+        end
+      end
+
+      class Volume < Item
+        #
+        # Size in Gigaoctet
+        #
+        attr_accessor :size
+
+        #
+        # Status (e.g. 'Available', 'In-use')
+        #
+        attr_accessor :status
+
+        #
+        # Whether volume is bootable or not
+        #
+        attr_accessor :bootable
+
+        #
+        # instance id volume is attached to
+        #
+        attr_accessor :instance_id
+
+        #
+        # device (e.g. /dev/sdb) if attached
+        #
+        attr_accessor :device
+
+        # rubocop:disable Style/ParameterLists
+        def initialize(id, name, size, status, bootable, instance_id, device)
+          @size = size
+          @status = status
+          @bootable = bootable
+          @instance_id = instance_id
+          @device = device
+          super(id, name)
+        end
+        # rubocop:enable Style/ParameterLists
+
+        def to_s
+          {
+            id: @id,
+            name: @name,
+            size: @size,
+            status: @status,
+            bootable: @bootable,
+            instance_id: @instance_id,
+            device: @device
+          }
+        end
+
+        protected
+
+        def state
+          [@id, @name, @size, @status, @bootable, @instance_id, @device]
         end
       end
     end

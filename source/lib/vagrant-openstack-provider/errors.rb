@@ -63,6 +63,30 @@ module VagrantPlugins
       class UnableToResolveSSHKey < VagrantOpenstackError
         error_key(:unable_to_resolve_ssh_key)
       end
+
+      class InvalidVolumeObject < VagrantOpenstackError
+        error_key(:invalid_volume_format)
+      end
+
+      class UnresolvedVolume < VagrantOpenstackError
+        error_key(:unresolved_volume)
+      end
+
+      class UnresolvedVolumeId < VagrantOpenstackError
+        error_key(:unresolved_volume_id)
+      end
+
+      class UnresolvedVolumeName < VagrantOpenstackError
+        error_key(:unresolved_volume_name)
+      end
+
+      class ConflictVolumeNameId < VagrantOpenstackError
+        error_key(:conflict_volume_name_id)
+      end
+
+      class MultipleVolumeName < VagrantOpenstackError
+        error_key(:multiple_volume_name)
+      end
     end
   end
 end

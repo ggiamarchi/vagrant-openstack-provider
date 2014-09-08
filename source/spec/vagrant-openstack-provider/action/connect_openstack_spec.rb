@@ -16,6 +16,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
       config.stub(:openstack_auth_url) { 'http://keystoneAuthV2' }
       config.stub(:openstack_compute_url) { nil }
       config.stub(:openstack_network_url) { nil }
+      config.stub(:openstack_volume_url) { nil }
       config.stub(:tenant_name) { 'testTenant' }
       config.stub(:username) { 'username' }
       config.stub(:password) { 'password' }

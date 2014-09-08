@@ -25,6 +25,7 @@ module VagrantPlugins
             flavor: resolve_flavor(env),
             image: resolve_image(env),
             networks: resolve_networks(env),
+            volumes: resolve_volumes(env),
             keypair_name: resolve_keypair(env),
             availability_zone: env[:machine].provider_config.availability_zone
           }
@@ -41,6 +42,8 @@ module VagrantPlugins
             env[:ui].info(I18n.t('vagrant_openstack.using_floating_ip', floating_ip: floating_ip))
             nova.add_floating_ip(env, server_id, floating_ip)
           end
+
+          attach_volumes(env, server_id, options[:volumes]) unless options[:volumes].empty?
 
           unless env[:interrupted]
             # Clear the line one more time so the progress is removed
@@ -156,24 +159,85 @@ module VagrantPlugins
           networks
         end
 
+        def resolve_volumes(env)
+          @logger.info 'Resolving volume(s)'
+          config = env[:machine].provider_config
+          return [] if config.volumes.nil? || config.volumes.empty?
+          env[:ui].info(I18n.t('vagrant_openstack.finding_volumes'))
+
+          volume_list = env[:openstack_client].cinder.get_all_volumes(env)
+          volume_ids = volume_list.map { |v| v.id }
+
+          @logger.debug(volume_list)
+
+          volumes = []
+          config.volumes.each do |volume|
+            case volume
+            when String
+              volumes << resolve_volume_from_string(volume, volume_list)
+            when Hash
+              volumes << resolve_volume_from_hash(volume, volume_list, volume_ids)
+            else
+              fail Errors::InvalidVolumeObject, volume: volume
+            end
+          end
+          @logger.debug("Resolved volumes : #{volumes.to_json}")
+          volumes
+        end
+
+        def resolve_volume_from_string(volume, volume_list)
+          found_volume = find_matching(volume_list, volume)
+          fail Errors::UnresolvedVolume, volume: volume if found_volume.nil?
+          { id: found_volume.id, device: nil }
+        end
+
+        def resolve_volume_from_hash(volume, volume_list, volume_ids)
+          device = nil
+          device = volume[:device] if volume.key?(:device)
+          if volume.key?(:id)
+            fail Errors::ConflictVolumeNameId, volume: volume if volume.key?(:name)
+            volume_id = volume[:id]
+            fail Errors::UnresolvedVolumeId, id: volume_id unless volume_ids.include? volume_id
+          elsif volume.key?(:name)
+            volume_list.each do |v|
+              next unless v.name.eql? volume[:name]
+              fail Errors::MultipleVolumeName, name: volume[:name] unless volume_id.nil?
+              volume_id = v.id
+            end
+            fail Errors::UnresolvedVolumeName, name: volume[:name] unless volume_ids.include? volume_id
+          else
+            fail Errors::ConflictVolumeNameId, volume: volume
+          end
+          { id: volume_id, device: device }
+        end
+
         def create_server(env, options)
           config = env[:machine].provider_config
           nova = env[:openstack_client].nova
           server_name = config.server_name || env[:machine].name
 
           env[:ui].info(I18n.t('vagrant_openstack.launching_server'))
-          env[:ui].info(" -- Tenant         : #{config.tenant_name}")
-          env[:ui].info(" -- Name           : #{server_name}")
-          env[:ui].info(" -- Flavor         : #{options[:flavor].name}")
-          env[:ui].info(" -- FlavorRef      : #{options[:flavor].id}")
-          env[:ui].info(" -- Image          : #{options[:image].name}")
-          env[:ui].info(" -- ImageRef       : #{options[:image].id}")
-          env[:ui].info(" -- KeyPair        : #{options[:keypair_name]}")
+          env[:ui].info(" -- Tenant          : #{config.tenant_name}")
+          env[:ui].info(" -- Name            : #{server_name}")
+          env[:ui].info(" -- Flavor          : #{options[:flavor].name}")
+          env[:ui].info(" -- FlavorRef       : #{options[:flavor].id}")
+          env[:ui].info(" -- Image           : #{options[:image].name}")
+          env[:ui].info(" -- ImageRef        : #{options[:image].id}")
+          env[:ui].info(" -- KeyPair         : #{options[:keypair_name]}")
+
           unless options[:networks].empty?
             if options[:networks].size == 1
-              env[:ui].info(" -- Network        : #{options[:networks][0]}")
+              env[:ui].info(" -- Network         : #{options[:networks][0]}")
             else
-              env[:ui].info(" -- Networks       : #{options[:networks]}")
+              env[:ui].info(" -- Networks        : #{options[:networks]}")
+            end
+          end
+
+          unless options[:volumes].empty?
+            options[:volumes].each do |volume|
+              device = volume[:device]
+              device = :auto if device.nil?
+              env[:ui].info(" -- Volume attached : #{volume[:id]} => #{device}")
             end
           end
 
@@ -205,6 +269,15 @@ module VagrantPlugins
               sleep 3
               @logger.debug('Waiting for server to be ACTIVE')
             end
+          end
+        end
+
+        def attach_volumes(env, server_id, volumes)
+          @logger.info("Attaching volumes #{volumes} to server #{server_id}")
+          nova = env[:openstack_client].nova
+          volumes.each do |volume|
+            @logger.debug("Attaching volumes #{volume}")
+            nova.attach_volume(env, server_id, volume[:id], volume[:device])
           end
         end
 
@@ -241,7 +314,7 @@ module VagrantPlugins
             return single if single.name == name
             return single if name.is_a?(Regexp) && name =~ single.name
           end
-          @logger.error "Flavor '#{name}' not found"
+          @logger.error "Element '#{name}' not found in collection #{collection}"
           nil
         end
       end

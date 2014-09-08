@@ -12,6 +12,8 @@ en:
       Finding image for server...
     finding_networks: |-
       Finding network(s) for server...
+    finding_volumes: |-
+      Finding volume(s) to attach on server...
     launching_server: |-
       Launching a server with the following settings...
     not_created: |-
@@ -106,6 +108,18 @@ en:
         Vagrant was unable to resolve a valid ip to ssh on your OpenStack instance.
       unable_to_resolve_ssh_key: |-
         Vagrant was unable to resolve a valid ssh key to connect to your OpenStack instance. Please specify in your Vagrantfile either `public_key_path` or `keypair_name`.
+      invalid_volume_format: |-
+        Volume '%{volume}' is not valid.
+      unresolved_volume: |-
+        No matching volume with id or name '%{volume}'
+      unresolved_volume_id: |-
+        No matching volume with id '%{id}'
+      unresolved_volume_name: |-
+        No matching volume with name '%{name}'
+      conflict_volume_name_id: |-
+        One (and only one) of 'id' or 'name' must be specified in volume definition : %{volume}
+      multiple_volume_name: |-
+        More than one volume exists with name '%{name}'. In the case you can't use name in volume definition. Please, use id instead.
 
     states:
       short_active: |-

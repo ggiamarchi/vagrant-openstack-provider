@@ -5,6 +5,7 @@ require 'json'
 require 'vagrant-openstack-provider/client/keystone'
 require 'vagrant-openstack-provider/client/nova'
 require 'vagrant-openstack-provider/client/neutron'
+require 'vagrant-openstack-provider/client/cinder'
 
 module VagrantPlugins
   module Openstack
@@ -40,6 +41,10 @@ module VagrantPlugins
 
     def self.neutron
       Openstack::NeutronClient.instance
+    end
+
+    def self.cinder
+      Openstack::CinderClient.instance
     end
   end
 end
