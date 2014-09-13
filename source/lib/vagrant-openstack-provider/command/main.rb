@@ -5,7 +5,8 @@ module VagrantPlugins
         { name: :'image-list', file: 'image_list' , clazz: 'ImageList' },
         { name: :'flavor-list', file: 'flavor_list', clazz: 'FlavorList' },
         { name: :'network-list', file: 'network_list', clazz: 'NetworkList' },
-        { name: :'floatingip-list', file: 'floatingip_list', clazz: 'FloatingIpList' }
+        { name: :'floatingip-list', file: 'floatingip_list', clazz: 'FloatingIpList' },
+        { name: :'volume-list', file: 'volume_list', clazz: 'VolumeList' }
       ]
 
       class Main < Vagrant.plugin('2', :command)

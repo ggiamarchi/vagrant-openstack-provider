@@ -219,3 +219,5 @@ en:
         List private networks in project
       flaotingip_list_synopsis : |-
         List floating IP and floating IP pools
+      volume_list_synopsis : |-
+        List existing volumes

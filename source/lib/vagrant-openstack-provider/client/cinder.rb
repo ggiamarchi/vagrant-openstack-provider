@@ -19,10 +19,20 @@ module VagrantPlugins
 
       def get_all_volumes(env)
         volumes_json = get(env, "#{@session.endpoints[:volume]}/volumes/detail")
-        JSON.parse(volumes_json)['volumes'].map do |v|
-          name = v['display_name']
-          name = v['name'] if name.nil? # To be compatible with cinder api v1 and v2
-          Volume.new(v['id'], name, v['size'], v['status'], v['bootable'], v['instance_id'], v['device'])
+        JSON.parse(volumes_json)['volumes'].map do |volume|
+          name = volume['display_name']
+          name = volume['name'] if name.nil? # To be compatible with cinder api v1 and v2
+          case volume['attachments'].size
+          when 0
+            @logger.debug "No attachment found for volume #{volume['id']}"
+          else
+            attachment = volume['attachments'][0]
+            server_id = attachment['server_id']
+            device = attachment['device']
+            @logger.warn "Found #{attachment.size} attachments for volume #{volume['id']} : " if attachment.size > 1
+            @logger.debug "Attachment found for volume #{volume['id']} : #{attachment.to_json}"
+          end
+          Volume.new(volume['id'], name, volume['size'], volume['status'], volume['bootable'], server_id, device)
         end
       end
     end
