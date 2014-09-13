@@ -3,17 +3,6 @@ require 'vagrant-openstack-provider/spec_helper'
 describe VagrantPlugins::Openstack::Command::FloatingIpList do
   describe 'cmd' do
 
-    let(:config) do
-      double('config').tap do |config|
-        config.stub(:openstack_auth_url) { 'http://keystoneAuthV2' }
-        config.stub(:openstack_compute_url) { nil }
-        config.stub(:openstack_network_url) { nil }
-        config.stub(:tenant_name) { 'testTenant' }
-        config.stub(:username) { 'username' }
-        config.stub(:password) { 'password' }
-      end
-    end
-
     let(:nova) do
       double('nova').tap do |nova|
         nova.stub(:get_floating_ip_pools) do
@@ -61,6 +50,8 @@ describe VagrantPlugins::Openstack::Command::FloatingIpList do
     end
 
     it 'should get floating ip and floating ip pool from server' do
+      nova.should_receive(:get_floating_ip_pools).with(env)
+      nova.should_receive(:get_floating_ips).with(env)
       @floating_ip_list_cmd.cmd('floatingip-list', ['--'], env)
     end
   end
