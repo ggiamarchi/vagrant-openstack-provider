@@ -51,7 +51,11 @@ module VagrantPlugins
       def create_server(env, options)
         server = {}.tap do |s|
           s['name'] = options[:name]
-          s['imageRef'] = options[:image_ref]
+          if options[:image_ref].nil?
+            s['block_device_mapping'] = [{ volume_id: options[:volume_boot][:id], device_name: options[:volume_boot][:device] }]
+          else
+            s['imageRef'] = options[:image_ref]
+          end
           s['flavorRef'] = options[:flavor_ref]
           s['key_name'] = options[:keypair]
           s['availability_zone'] = options[:availability_zone] unless options[:availability_zone].nil?

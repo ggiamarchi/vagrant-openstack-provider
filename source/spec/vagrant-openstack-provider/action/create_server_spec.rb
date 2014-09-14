@@ -108,6 +108,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
         name: 'testName',
         flavor_ref: flavor.id,
         image_ref: image.id,
+        volume_boot: nil,
         networks: ['test-networks'],
         keypair: 'test-keypair',
         availability_zone: 'test-az') do '1234'
@@ -288,6 +289,92 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
       end
     end
 
+  end
+
+  describe 'resolve_volume_boot' do
+    context 'with string volume id' do
+      it 'returns normalized volume' do
+        config.stub(:volume_boot) { '001' }
+        expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+      end
+    end
+
+    context 'with string volume name' do
+      it 'returns normalized volume' do
+        config.stub(:volume_boot) { 'vol-01' }
+        expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+      end
+    end
+
+    context 'with hash volume id' do
+      it 'returns normalized volume' do
+        config.stub(:volume_boot) { { id: '001' } }
+        expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+      end
+    end
+
+    context 'with hash volume name' do
+      it 'returns normalized volume' do
+        config.stub(:volume_boot) { { name: 'vol-01' } }
+        expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+      end
+    end
+
+    context 'with hash volume id and device' do
+      it 'returns normalized volume' do
+        config.stub(:volume_boot) { { id: '001', device: 'vdb' } }
+        expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vdb'
+      end
+    end
+
+    context 'with hash volume name and device' do
+      it 'returns normalized volume' do
+        config.stub(:volume_boot) { { name: 'vol-01', device: 'vdb' } }
+        expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vdb'
+      end
+    end
+
+    context 'with empty hash' do
+      it 'raises an error' do
+        config.stub(:volume_boot) { {} }
+        expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictVolumeNameId)
+      end
+    end
+
+    context 'with invalid volume object' do
+      it 'raises an error' do
+        config.stub(:volume_boot) { 1 }
+        expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::InvalidVolumeObject)
+      end
+    end
+
+    context 'with hash containing a bad id' do
+      it 'raises an error' do
+        config.stub(:volume_boot) { { id: 'not-exist' } }
+        expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::UnresolvedVolumeId)
+      end
+    end
+
+    context 'with hash containing a bad name' do
+      it 'raises an error' do
+        config.stub(:volume_boot) { { name: 'not-exist' } }
+        expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::UnresolvedVolumeName)
+      end
+    end
+
+    context 'with hash containing both id and name' do
+      it 'raises an error' do
+        config.stub(:volume_boot) { { id: '001', name: 'vol-01' } }
+        expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictVolumeNameId)
+      end
+    end
+
+    context 'with hash containing a name matching more than one volume' do
+      it 'raises an error' do
+        config.stub(:volume_boot) { { name: 'vol-07-08' } }
+        expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::MultipleVolumeName)
+      end
+    end
   end
 
   describe 'resolve_volumes' do
