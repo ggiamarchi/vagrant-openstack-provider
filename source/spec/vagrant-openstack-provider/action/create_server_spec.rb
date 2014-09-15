@@ -100,6 +100,23 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
     @action = CreateServer.new(nil, nil)
   end
 
+  describe 'call' do
+    context 'with both image and volume_boot specified' do
+      it 'should raise an error' do
+        config.stub(:image) { 'linux-image' }
+        config.stub(:volume_boot) { 'linux-volume' }
+        expect { @action.call(env) }.to raise_error Errors::ConflictBootOption
+      end
+    end
+    context 'with neither image nor volume_boot specified' do
+      it 'should raise an error' do
+        config.stub(:image) { nil }
+        config.stub(:volume_boot) { nil }
+        expect { @action.call(env) }.to raise_error Errors::MissingBootOption
+      end
+    end
+  end
+
   describe 'create_server' do
     context 'with all options specified' do
       it 'calls nova with all the options' do

@@ -19,6 +19,11 @@ module VagrantPlugins
         def call(env)
           @logger.info 'Start create server action'
 
+          config = env[:machine].provider_config
+
+          fail Errors::MissingBootOption if config.image.nil? && config.volume_boot.nil?
+          fail Errors::ConflictBootOption unless config.image.nil? || config.volume_boot.nil?
+
           nova = env[:openstack_client].nova
 
           options = {
@@ -30,9 +35,6 @@ module VagrantPlugins
             keypair_name: resolve_keypair(env),
             availability_zone: env[:machine].provider_config.availability_zone
           }
-
-          fail Errors::MissingBootOption if options[:image].nil? && options[:volume_boot].nil?
-          fail Errors::ConflictBootOption unless options[:image].nil? || options[:volume_boot].nil?
 
           server_id = create_server(env, options)
 
