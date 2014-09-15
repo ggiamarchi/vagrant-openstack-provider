@@ -39,8 +39,7 @@ describe VagrantPlugins::Openstack::CinderClient do
                       "size": "2",
                       "status": "available",
                       "bootable": "true",
-                      "instance_id": null,
-                      "device": "/dev/vdb"
+                      "attachments": []
                     },
                     {
                       "id": "654",
@@ -48,8 +47,12 @@ describe VagrantPlugins::Openstack::CinderClient do
                       "size": "4",
                       "status": "in-use",
                       "bootable": "false",
-                      "instance_id": "inst-01",
-                      "device": "/dev/vdc"
+                      "attachments": [
+                        {
+                          "server_id": "inst-01",
+                          "device": "/dev/vdc"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -57,7 +60,7 @@ describe VagrantPlugins::Openstack::CinderClient do
 
         volumes = @cinder_client.get_all_volumes(env)
 
-        expect(volumes).to eq [Volume.new('987', 'vol-01', '2', 'available', 'true', nil, '/dev/vdb'),
+        expect(volumes).to eq [Volume.new('987', 'vol-01', '2', 'available', 'true', nil, nil),
                                Volume.new('654', 'vol-02', '4', 'in-use', 'false', 'inst-01', '/dev/vdc')]
       end
     end
@@ -83,8 +86,7 @@ describe VagrantPlugins::Openstack::CinderClient do
                       "size": "2",
                       "status": "available",
                       "bootable": "true",
-                      "instance_id": null,
-                      "device": "/dev/vdb"
+                      "attachments": []
                     },
                     {
                       "id": "654",
@@ -92,16 +94,19 @@ describe VagrantPlugins::Openstack::CinderClient do
                       "size": "4",
                       "status": "in-use",
                       "bootable": "false",
-                      "instance_id": "inst-01",
-                      "device": "/dev/vdc"
+                      "attachments": [
+                        {
+                          "server_id": "inst-01",
+                          "device": "/dev/vdc"
+                        }
+                      ]
                     }
                   ]
-                }
-              ')
+                }')
 
         volumes = @cinder_client.get_all_volumes(env)
 
-        expect(volumes).to eq [Volume.new('987', 'vol-01', '2', 'available', 'true', nil, '/dev/vdb'),
+        expect(volumes).to eq [Volume.new('987', 'vol-01', '2', 'available', 'true', nil, nil),
                                Volume.new('654', 'vol-02', '4', 'in-use', 'false', 'inst-01', '/dev/vdc')]
       end
     end

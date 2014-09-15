@@ -106,7 +106,7 @@ module VagrantPlugins
             bootable: @bootable,
             instance_id: @instance_id,
             device: @device
-          }
+          }.to_json
         end
 
         protected

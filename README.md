@@ -228,7 +228,7 @@ Available subcommands:
      flavor-list          List available flavors
      network-list         List private networks in project
      floatingip-list      List floating IP and floating IP pools
-
+     volume-list          List existing volumes
 ```
 
 For instance `vagrant openstack image-list` lists images available in Glance.
