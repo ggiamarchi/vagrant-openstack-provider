@@ -2,8 +2,9 @@ source 'https://rubygems.org'
 
 gemspec
 
+gem 'json', '1.7.7'
 gem 'appraisal', '1.0.0'
-gem 'restclient', '0.10.0'
+gem 'rest-client', '~> 1.6.0'
 gem 'terminal-table', '1.4.5'
 gem 'webmock', '~> 1.18.0', group: [:test]
 gem 'rubocop', '0.23.0', require: false
@@ -18,8 +19,4 @@ group :development do
   # Vagrant environment itself using `vagrant plugin`.
   gem 'coveralls', require: false
   gem 'debugger'
-end
-
-group :plugins do
-  gem "vagrant-openstack-provider", path: "."
 end

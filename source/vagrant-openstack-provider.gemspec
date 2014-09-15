@@ -9,9 +9,10 @@ Gem::Specification.new do |gem|
   gem.email         = ['guillaume.giamarchi@gmail.com', 'vey.julien@gmail.com']
   gem.description   = 'Enables Vagrant to manage machines in Openstack Cloud.'
   gem.summary       = 'Enables Vagrant to manage machines in Openstack Cloud.'
-  gem.homepage      = 'https://github.com/ggiamarchi/vagrant-openstack'
+  gem.homepage      = 'https://github.com/ggiamarchi/vagrant-openstack-provider'
 
-  gem.add_dependency 'restclient', '0.10.0'
+  gem.add_dependency 'json', '1.7.7'
+  gem.add_dependency 'rest-client', '~> 1.6.0'
   gem.add_dependency 'terminal-table', '1.4.5'
   gem.add_dependency 'sshkey', '1.6.1'
   gem.add_dependency 'colorize', '0.7.3'
