@@ -128,7 +128,11 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
         volume_boot: nil,
         networks: ['test-networks'],
         keypair: 'test-keypair',
-        availability_zone: 'test-az') do '1234'
+        availability_zone: 'test-az',
+        scheduler_hints: 'test-sched-hints',
+        security_groups: ['test-sec-groups'],
+        user_data: 'test-user_data',
+        metadata: 'test-metadata') do '1234'
         end
 
         options = {
@@ -137,8 +141,13 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
           networks: ['test-networks'],
           volumes: [{ id: '001', device: :auto }, { id: '002', device: '/dev/vdc' }],
           keypair_name: 'test-keypair',
-          availability_zone: 'test-az'
+          availability_zone: 'test-az',
+          scheduler_hints: 'test-sched-hints',
+          security_groups: ['test-sec-groups'],
+          user_data: 'test-user_data',
+          metadata: 'test-metadata'
         }
+
         expect(@action.create_server(env, options)).to eq '1234'
       end
     end

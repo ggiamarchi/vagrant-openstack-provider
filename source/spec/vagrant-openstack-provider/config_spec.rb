@@ -23,6 +23,10 @@ describe VagrantPlugins::Openstack::Config do
     its(:availability_zone) { should be_nil }
     its(:ssh_username) { should be_nil }
     its(:floating_ip_pool_always_allocate) { should be_false }
+    its(:scheduler_hints) { should be_nil }
+    its(:security_groups) { should be_nil }
+    its(:user_data) { should be_nil }
+    its(:metadata) { should be_nil }
   end
 
   describe 'overriding defaults' do
@@ -36,6 +40,11 @@ describe VagrantPlugins::Openstack::Config do
       :username,
       :keypair_name,
       :ssh_username,
+      :floating_ip_pool_always_allocate,
+      :scheduler_hints,
+      :security_groups,
+      :user_data,
+      :metadata,
       :availability_zone,
       :public_key_path].each do |attribute|
       it "should not default #{attribute} if overridden" do
