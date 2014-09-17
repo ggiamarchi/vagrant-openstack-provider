@@ -62,6 +62,10 @@ en:
       private_key_missing: |-
         config.ssh.private_key_path is required when either keypair_name or
         public_key_path is set in Vagrantfile
+      ssh_username_deprecated: |-
+        ssh_username provider config is deprecated for vagrant-openstack provider.
+        If you are using it, it will continue to work but we recommend to switch to the
+        standard vagrant configuration option `config.ssh.username` instead
 
     errors:
       default: |-
