@@ -87,6 +87,14 @@ module VagrantPlugins
       class MultipleVolumeName < VagrantOpenstackError
         error_key(:multiple_volume_name)
       end
+
+      class MissingBootOption < VagrantOpenstackError
+        error_key(:missing_boot_option)
+      end
+
+      class ConflictBootOption < VagrantOpenstackError
+        error_key(:conflict_boot_option)
+      end
     end
   end
 end

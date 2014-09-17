@@ -19,6 +19,7 @@ cloud.
 * Automatic SSH key generation and Nova public key provisioning
 * Automatic floating IP allocation and association
 * Provision the instances with any built-in Vagrant provisioner
+* Boot instance from volume
 * Attach Cinder volumes to the instances
 * Minimal synced folder support via `rsync`
 * Custom sub-commands within Vagrant CLI to query Openstack objects
@@ -186,6 +187,8 @@ os.volumes = [
 ]
 end
 ```
+
+* `volume_boot` - Volume to boot the VM from. When booting from an existing volume, `image` is not necessary and must not be provided.
 
 ### SSH-key authentication
 

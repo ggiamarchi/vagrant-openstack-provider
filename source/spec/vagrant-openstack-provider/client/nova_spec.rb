@@ -154,6 +154,25 @@ describe VagrantPlugins::Openstack::NovaClient do
         end
       end
 
+      context 'with volume_boot' do
+        it 'returns new instance id' do
+
+          stub_request(:post, 'http://nova/a1b2c3/servers')
+          .with(
+              body: '{"server":{"name":"inst","block_device_mapping":[{"volume_id":"vol","device_name":"vda"}],"flavorRef":"flav","key_name":"key"}}',
+              headers:
+                  {
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                    'X-Auth-Token' => '123456'
+                  })
+          .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
+
+          instance_id = @nova_client.create_server(env, name: 'inst', volume_boot: { id: 'vol', device: 'vda' }, flavor_ref: 'flav', keypair: 'key')
+
+          expect(instance_id).to eq('o1o2o3')
+        end
+      end
     end
   end
 

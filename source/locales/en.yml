@@ -120,6 +120,10 @@ en:
         One (and only one) of 'id' or 'name' must be specified in volume definition : %{volume}
       multiple_volume_name: |-
         More than one volume exists with name '%{name}'. In the case you can't use name in volume definition. Please, use id instead.
+      missing_boot_option: |-
+        Either 'image' or 'volume_boot' configuration must be provided
+      conflict_boot_option: |-
+        Only one of 'image' and 'volume_boot' configuration must be provided
 
     states:
       short_active: |-

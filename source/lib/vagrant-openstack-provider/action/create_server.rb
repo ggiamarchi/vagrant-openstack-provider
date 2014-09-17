@@ -19,16 +19,23 @@ module VagrantPlugins
         def call(env)
           @logger.info 'Start create server action'
 
+          config = env[:machine].provider_config
+
+          fail Errors::MissingBootOption if config.image.nil? && config.volume_boot.nil?
+          fail Errors::ConflictBootOption unless config.image.nil? || config.volume_boot.nil?
+
           nova = env[:openstack_client].nova
 
           options = {
             flavor: resolve_flavor(env),
             image: resolve_image(env),
+            volume_boot: resolve_volume_boot(env),
             networks: resolve_networks(env),
             volumes: resolve_volumes(env),
             keypair_name: resolve_keypair(env),
             availability_zone: env[:machine].provider_config.availability_zone
           }
+
           server_id = create_server(env, options)
 
           # Store the ID right away so we can track it
@@ -123,6 +130,7 @@ module VagrantPlugins
         def resolve_image(env)
           @logger.info 'Resolving image'
           config = env[:machine].provider_config
+          return nil if config.image.nil?
           nova = env[:openstack_client].nova
           env[:ui].info(I18n.t('vagrant_openstack.finding_image'))
           images = nova.get_all_images(env)
@@ -159,6 +167,22 @@ module VagrantPlugins
           networks
         end
 
+        def resolve_volume_boot(env)
+          @logger.info 'Resolving image'
+          config = env[:machine].provider_config
+          return nil if config.volume_boot.nil?
+
+          volume_list = env[:openstack_client].cinder.get_all_volumes(env)
+          volume_ids = volume_list.map { |v| v.id }
+
+          @logger.debug(volume_list)
+
+          volume = resolve_volume(config.volume_boot, volume_list, volume_ids)
+          device = volume[:device].nil? ? 'vda' : volume[:device]
+
+          { id: volume[:id], device: device }
+        end
+
         def resolve_volumes(env)
           @logger.info 'Resolving volume(s)'
           config = env[:machine].provider_config
@@ -172,17 +196,16 @@ module VagrantPlugins
 
           volumes = []
           config.volumes.each do |volume|
-            case volume
-            when String
-              volumes << resolve_volume_from_string(volume, volume_list)
-            when Hash
-              volumes << resolve_volume_from_hash(volume, volume_list, volume_ids)
-            else
-              fail Errors::InvalidVolumeObject, volume: volume
-            end
+            volumes << resolve_volume(volume, volume_list, volume_ids)
           end
           @logger.debug("Resolved volumes : #{volumes.to_json}")
           volumes
+        end
+
+        def resolve_volume(volume, volume_list, volume_ids)
+          return resolve_volume_from_string(volume, volume_list) if volume.is_a? String
+          return resolve_volume_from_hash(volume, volume_list, volume_ids) if volume.is_a? Hash
+          fail Errors::InvalidVolumeObject, volume: volume
         end
 
         def resolve_volume_from_string(volume, volume_list)
@@ -221,8 +244,11 @@ module VagrantPlugins
           env[:ui].info(" -- Name            : #{server_name}")
           env[:ui].info(" -- Flavor          : #{options[:flavor].name}")
           env[:ui].info(" -- FlavorRef       : #{options[:flavor].id}")
-          env[:ui].info(" -- Image           : #{options[:image].name}")
-          env[:ui].info(" -- ImageRef        : #{options[:image].id}")
+          unless options[:image].nil?
+            env[:ui].info(" -- Image           : #{options[:image].name}")
+            env[:ui].info(" -- ImageRef        : #{options[:image].id}")
+          end
+          env[:ui].info(" -- Boot volume     : #{options[:volume_boot][:id]} (#{options[:volume_boot][:device]})") unless options[:volume_boot].nil?
           env[:ui].info(" -- KeyPair         : #{options[:keypair_name]}")
 
           unless options[:networks].empty?
@@ -243,14 +269,19 @@ module VagrantPlugins
 
           log = "Lauching server '#{server_name}' in project '#{config.tenant_name}' "
           log << "with flavor '#{options[:flavor].name}' (#{options[:flavor].id}), "
-          log << "image '#{options[:image].name}' (#{options[:image].id}) "
+          unless options[:image].nil?
+            log << "image '#{options[:image].name}' (#{options[:image].id}) "
+          end
           log << "and keypair '#{options[:keypair_name]}'"
 
           @logger.info(log)
 
+          image_ref = options[:image].id unless options[:image].nil?
+
           create_opts = {
             name: server_name,
-            image_ref: options[:image].id,
+            image_ref: image_ref,
+            volume_boot: options[:volume_boot],
             flavor_ref: options[:flavor].id,
             keypair: options[:keypair_name],
             availability_zone: options[:availability_zone],
