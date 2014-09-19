@@ -33,7 +33,11 @@ module VagrantPlugins
             networks: resolve_networks(env),
             volumes: resolve_volumes(env),
             keypair_name: resolve_keypair(env),
-            availability_zone: env[:machine].provider_config.availability_zone
+            availability_zone: env[:machine].provider_config.availability_zone,
+            scheduler_hints: env[:machine].provider_config.scheduler_hints,
+            security_groups: env[:machine].provider_config.security_groups,
+            user_data: env[:machine].provider_config.user_data,
+            metadata: env[:machine].provider_config.metadata
           }
 
           server_id = create_server(env, options)
@@ -285,7 +289,11 @@ module VagrantPlugins
             flavor_ref: options[:flavor].id,
             keypair: options[:keypair_name],
             availability_zone: options[:availability_zone],
-            networks: options[:networks]
+            networks: options[:networks],
+            scheduler_hints: options[:scheduler_hints],
+            security_groups: options[:security_groups],
+            user_data: options[:user_data],
+            metadata: options[:metadata]
           }
 
           nova.create_server(env, create_opts)

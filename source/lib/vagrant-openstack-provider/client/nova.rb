@@ -59,6 +59,9 @@ module VagrantPlugins
           s['flavorRef'] = options[:flavor_ref]
           s['key_name'] = options[:keypair]
           s['availability_zone'] = options[:availability_zone] unless options[:availability_zone].nil?
+          s['security_groups'] = options[:security_groups] unless options[:security_groups].nil?
+          s['user_data'] = options[:user_data] unless options[:user_data].nil?
+          s['metadata'] = options[:metadata] unless options[:metadata].nil?
           unless options[:networks].nil? || options[:networks].empty?
             s['networks'] = []
             options[:networks].each do |uuid|
@@ -66,7 +69,9 @@ module VagrantPlugins
             end
           end
         end
-        server = post(env, "#{@session.endpoints[:compute]}/servers", { server: server }.to_json)
+        object = { server: server }
+        object[:scheduler_hints] = options[:scheduler_hints] unless options[:scheduler_hints].nil?
+        server = post(env, "#{@session.endpoints[:compute]}/servers", object.to_json)
         JSON.parse(server)['server']['id']
       end
 

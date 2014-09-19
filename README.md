@@ -74,7 +74,7 @@ Vagrant.configure('2') do |config|
 
   config.vm.box = 'dummy-openstack'
   config.vm.box_url = 'https://github.com/ggiamarchi/vagrant-openstack/raw/master/source/dummy.box'
-  
+
   config.vm.provider :openstack do |os|
     os.openstack_auth_url = 'http://keystone-server.net/v2.0/tokens'
     os.username           = 'openstackUser'
@@ -132,6 +132,10 @@ vagrant will authenticate against the UK authentication endpoint.
 * `floating_ip_pool` - The floating IP Pool from which a floating IP will be allocated to be associated with the VM. alternative to the `floating_ip` option.
 * `floating_ip_pool_always_allocate` - if set to true, vagrant will always allocate floating ip instead of trying to reuse unassigned ones
 * `availability_zone` - Nova Availability zone used when creating VM
+* `security_groups` - List of strings representing the security groups to apply. e.g. ['ssh', 'http']
+* `user_data` - String of User data to be sent to the newly created OpenStack instance. Use this e.g. to inject a script at boot time.
+* `metadata` - A Hash of metadata that will be sent to the instance for configuration e.g. `os.metadata  = { 'key' => 'value' }`
+* `scheduler_hints` - Pass hints to the OpenStack scheduler, e.g. { "cell": "some cell name" }
 
 #### Networks
 

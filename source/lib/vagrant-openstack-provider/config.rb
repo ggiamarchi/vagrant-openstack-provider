@@ -116,6 +116,26 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :availability_zone
 
+      # Pass hints to the OpenStack scheduler, e.g. { "cell": "some cell name" }
+      attr_accessor :scheduler_hints
+
+      # List of strings representing the security groups to apply.
+      # e.g. ['ssh', 'http']
+      #
+      # @return [Array[String]]
+      attr_accessor :security_groups
+
+      # User data to be sent to the newly created OpenStack instance. Use this
+      # e.g. to inject a script at boot time.
+      #
+      # @return [String]
+      attr_accessor :user_data
+
+      # A Hash of metadata that will be sent to the instance for configuration
+      #
+      # @return [Hash]
+      attr_accessor :metadata
+
       def initialize
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
@@ -140,6 +160,10 @@ module VagrantPlugins
         @networks = []
         @volumes = []
         @public_key_path = UNSET_VALUE
+        @scheduler_hints = UNSET_VALUE
+        @security_groups = UNSET_VALUE
+        @user_data = UNSET_VALUE
+        @metadata = UNSET_VALUE
       end
 
       # rubocop:disable Style/CyclomaticComplexity
@@ -163,6 +187,10 @@ module VagrantPlugins
         @keypair_name = nil if @keypair_name == UNSET_VALUE
         @public_key_path = nil if @public_key_path == UNSET_VALUE
         @availability_zone = nil if @availability_zone == UNSET_VALUE
+        @scheduler_hints = nil if @scheduler_hints == UNSET_VALUE
+        @security_groups = nil if @security_groups == UNSET_VALUE
+        @user_data = nil if @user_data == UNSET_VALUE
+        @metadata = nil if @metadata == UNSET_VALUE
 
         # The SSH values by default are nil, and the top-level config
         # `config.ssh` values are used.
