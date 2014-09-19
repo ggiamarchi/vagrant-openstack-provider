@@ -1,3 +1,9 @@
+# 0.3.3 (September 19, 2014)
+
+BUG FIXES:
+
+   - Fix rest-client dependency error [#95](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/95)
+
 # 0.3.2 (September 1, 2014)
 
 BUG FIXES:
