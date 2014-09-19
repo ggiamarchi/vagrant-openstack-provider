@@ -66,6 +66,8 @@ en:
         ssh_username provider config is deprecated for vagrant-openstack provider.
         If you are using it, it will continue to work but we recommend to switch to the
         standard vagrant configuration option `config.ssh.username` instead
+      ssh_username_required: |-
+        vagrant standard configuration option `ssh.username` is required
 
     errors:
       default: |-
@@ -128,6 +130,8 @@ en:
         Either 'image' or 'volume_boot' configuration must be provided
       conflict_boot_option: |-
         Only one of 'image' and 'volume_boot' configuration must be provided
+      ssh_username_missing: |-
+        Vagrant was unable to resolve which ssh username to use to connect to the machine. Please provide config parameter `ssh.username`
 
     states:
       short_active: |-
