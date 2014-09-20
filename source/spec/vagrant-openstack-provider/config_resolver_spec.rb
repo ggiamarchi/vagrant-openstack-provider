@@ -106,6 +106,39 @@ describe VagrantPlugins::Openstack::ConfigResolver do
     end
   end
 
+  describe 'resolve_image' do
+    context 'with id' do
+      it 'returns the specified flavor' do
+        config.stub(:image) { 'img-001' }
+        nova.stub(:get_all_images).with(anything) do
+          [Item.new('img-001', 'image-01'),
+           Item.new('img-002', 'image-02')]
+        end
+        @action.resolve_image(env).should eq(Item.new('img-001', 'image-01'))
+      end
+    end
+    context 'with name' do
+      it 'returns the specified flavor' do
+        config.stub(:image) { 'image-02' }
+        nova.stub(:get_all_images).with(anything) do
+          [Item.new('img-001', 'image-01'),
+           Item.new('img-002', 'image-02')]
+        end
+        @action.resolve_image(env).should eq(Item.new('img-002', 'image-02'))
+      end
+    end
+    context 'with invalid identifier' do
+      it 'raise an error' do
+        config.stub(:image) { 'not-existing' }
+        nova.stub(:get_all_images).with(anything) do
+          [Item.new('img-001', 'image-01'),
+           Item.new('img-002', 'image-02')]
+        end
+        expect { @action.resolve_image(env) }.to raise_error(Errors::NoMatchingImage)
+      end
+    end
+  end
+
   describe 'resolve_floating_ip' do
     context 'with config.floating_ip specified' do
       it 'return the specified floating ip' do
