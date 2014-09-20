@@ -230,7 +230,7 @@ describe VagrantPlugins::Openstack::NovaClient do
       it 'returns newly created keypair name' do
         File.should_receive(:exist?).with(filename).and_return(true)
         File.should_receive(:open).with(filename).and_return(file)
-        Kernel.stub!(:rand).and_return(2_036_069_739_008)
+        Kernel.stub(:rand).and_return(2_036_069_739_008)
 
         stub_request(:post, 'http://nova/a1b2c3/os-keypairs')
             .with(
@@ -413,7 +413,8 @@ describe VagrantPlugins::Openstack::NovaClient do
 
         floating_ips = @nova_client.get_all_floating_ips(env)
 
-        expect(floating_ips).to have(2).items
+        expect(floating_ips).not_to be_nil
+        expect(floating_ips.size).to eq(2)
         expect(floating_ips[0].ip).to eql('185.39.216.45')
         expect(floating_ips[0].instance_id).to eql('1234')
         expect(floating_ips[0].pool).to eql('PublicNetwork-01')
