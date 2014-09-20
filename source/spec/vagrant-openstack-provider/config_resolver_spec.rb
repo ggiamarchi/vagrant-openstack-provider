@@ -73,6 +73,39 @@ describe VagrantPlugins::Openstack::ConfigResolver do
     @action = ConfigResolver.new
   end
 
+  describe 'resolve_flavor' do
+    context 'with id' do
+      it 'returns the specified flavor' do
+        config.stub(:flavor) { 'fl-001' }
+        nova.stub(:get_all_flavors).with(anything) do
+          [Flavor.new('fl-001', 'flavor-01', 2, 1024, 10),
+           Flavor.new('fl-002', 'flavor-02', 4, 2048, 50)]
+        end
+        @action.resolve_flavor(env).should eq(Flavor.new('fl-001', 'flavor-01', 2, 1024, 10))
+      end
+    end
+    context 'with name' do
+      it 'returns the specified flavor' do
+        config.stub(:flavor) { 'flavor-02' }
+        nova.stub(:get_all_flavors).with(anything) do
+          [Flavor.new('fl-001', 'flavor-01', 2, 1024, 10),
+           Flavor.new('fl-002', 'flavor-02', 4, 2048, 50)]
+        end
+        @action.resolve_flavor(env).should eq(Flavor.new('fl-002', 'flavor-02', 4, 2048, 50))
+      end
+    end
+    context 'with invalid identifier' do
+      it 'raise an error' do
+        config.stub(:flavor) { 'not-existing' }
+        nova.stub(:get_all_flavors).with(anything) do
+          [Flavor.new('fl-001', 'flavor-01', 2, 1024, 10),
+           Flavor.new('fl-002', 'flavor-02', 4, 2048, 50)]
+        end
+        expect { @action.resolve_flavor(env) }.to raise_error(Errors::NoMatchingFlavor)
+      end
+    end
+  end
+
   describe 'resolve_floating_ip' do
     context 'with config.floating_ip specified' do
       it 'return the specified floating ip' do
