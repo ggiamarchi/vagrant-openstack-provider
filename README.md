@@ -73,8 +73,10 @@ require 'vagrant-openstack-provider'
 
 Vagrant.configure('2') do |config|
 
-  config.vm.box = 'dummy-openstack'
-  config.vm.box_url = 'https://github.com/ggiamarchi/vagrant-openstack/raw/master/source/dummy.box'
+  config.vm.box       = 'dummy-openstack'
+  config.vm.box_url   = 'https://github.com/ggiamarchi/vagrant-openstack/raw/master/source/dummy.box'
+
+  config.ssh.username = 'stack'
 
   config.vm.provider :openstack do |os|
     os.openstack_auth_url = 'http://keystone-server.net/v2.0/tokens'
@@ -84,7 +86,6 @@ Vagrant.configure('2') do |config|
     os.flavor             = 'm1.small'
     os.image              = 'ubuntu'
     os.floating_ip_pool   = 'publicNetwork'
-    os.ssh_username       = 'stack'
   end
 end
 ```
@@ -168,7 +169,7 @@ a volume name is not unique, thus if there is two volumes with the same name in 
 you have to use only ids. Optionally, you can specify the device that will be assigned to the volume.
 
 Here comes an example that show six volumes attached to a server :
- 
+
 ```ruby
 config.vm.provider :openstack do |os|
  ...
@@ -200,7 +201,6 @@ end
 * `keypair_name` - The name of the key pair register in nova to associate with the VM. The public key should
   be the matching pair for the private key configured with `config.ssh.private_key_path` on Vagrant.
 * `public_key_path` - if `keypair_name` is not provided, the path to the public key will be used by vagrant to generate a keypair on the OpenStack cloud. The keypair will be destroyed when the VM is destroyed.
-* `ssh_username` - Username used by Vagrant for ssh login.
 
 If neither `keypair_name` nor `public_key_path` are set, vagrant will generate a new ssh key and automatically import it in Openstack.
 
@@ -220,6 +220,14 @@ the remote machine over SSH.
 This is good enough for all built-in Vagrant provisioners (shell,
 chef, and puppet) to work!
 
+## Vagrant standard configuration
+
+There are some standard configuration options that this provider takes into account when
+creating and connecting to OpenStack machines
+
+* `ssh.username` - Username used by vagrant for SSH login
+* `ssh.port` - Default SSH port is 22. If set, this option will override the default for SSH login
+* `ssh.private_key_path` - If set, vagrant will use this private key path to SSH on the machine. If you set this option, the `public_key_path` option of the provider should be set.
 
 ## Custom commands
 

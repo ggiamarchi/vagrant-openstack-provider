@@ -74,6 +74,7 @@ describe VagrantPlugins::Openstack::Config do
       error_message.stub(:yellow) { 'Yellowed Error message ' }
       machine.stub_chain(:env, :root_path).and_return '/'
       ssh.stub(:private_key_path) { 'private key path' }
+      ssh.stub(:username) { 'ssh username' }
       config.stub(:ssh) { ssh }
       machine.stub(:config) { config }
       subject.username = 'foo'
@@ -92,6 +93,15 @@ describe VagrantPlugins::Openstack::Config do
         subject.nonsense1 = true
         subject.nonsense2 = false
         I18n.should_receive(:t).with('vagrant.config.common.bad_field', fields: 'nonsense1, nonsense2').and_return error_message
+        validation_errors.first.should == error_message
+      end
+    end
+
+    context 'with no ssh username provider' do
+      it 'should raise an error' do
+        ssh.stub(:username) { nil }
+        subject.ssh_username = nil
+        I18n.should_receive(:t).with('vagrant_openstack.config.ssh_username_required').and_return error_message
         validation_errors.first.should == error_message
       end
     end

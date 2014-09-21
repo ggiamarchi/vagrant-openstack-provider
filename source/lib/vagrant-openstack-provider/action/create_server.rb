@@ -62,7 +62,7 @@ module VagrantPlugins
 
             # Wait for SSH to become available
             ssh_timeout = env[:machine].provider_config.ssh_timeout
-            unless port_open?(env, floating_ip, 22, ssh_timeout)
+            unless port_open?(env, floating_ip, resolve_ssh_port(env), ssh_timeout)
               env[:ui].error(I18n.t('vagrant_openstack.timeout'))
               fail Errors::SshUnavailable, host: floating_ip, timeout: ssh_timeout
             end
@@ -75,6 +75,12 @@ module VagrantPlugins
         end
 
         private
+
+        def resolve_ssh_port(env)
+          machine_config = env[:machine].config
+          return machine_config.ssh.port if machine_config.ssh.port
+          22
+        end
 
         # 1. if floating_ip is set, use it
         # 2. if floating_ip_pool is set

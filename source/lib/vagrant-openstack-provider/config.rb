@@ -211,6 +211,8 @@ module VagrantPlugins
         errors << I18n.t('vagrant_openstack.config.password_required') unless @password
         errors << I18n.t('vagrant_openstack.config.username_required') unless @username
 
+        validate_ssh_username(machine, errors)
+
         if machine.config.ssh.private_key_path
           puts I18n.t('vagrant_openstack.config.keypair_name_required').yellow unless @keypair_name || @public_key_path
         else
@@ -227,6 +229,11 @@ module VagrantPlugins
         end
 
         { 'Openstack Provider' => errors }
+      end
+
+      def validate_ssh_username(machine, errors)
+        puts I18n.t('vagrant_openstack.config.ssh_username_deprecated').yellow if @ssh_username
+        errors << I18n.t('vagrant_openstack.config.ssh_username_required') unless @ssh_username || machine.config.ssh.username
       end
 
       private
