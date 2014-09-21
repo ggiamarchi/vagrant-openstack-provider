@@ -12,10 +12,14 @@ module VagrantPlugins
       class CreateServer
         include Vagrant::Util::Retryable
 
-        def initialize(app, _env)
+        def initialize(app, _env, resolver = nil)
           @app = app
           @logger = Log4r::Logger.new('vagrant_openstack::action::create_server')
-          @resolver = VagrantPlugins::Openstack::ConfigResolver.new
+          if resolver.nil?
+            @resolver = VagrantPlugins::Openstack::ConfigResolver.new
+          else
+            @resolver = resolver
+          end
         end
 
         def call(env)
@@ -25,8 +29,6 @@ module VagrantPlugins
 
           fail Errors::MissingBootOption if config.image.nil? && config.volume_boot.nil?
           fail Errors::ConflictBootOption unless config.image.nil? || config.volume_boot.nil?
-
-          nova = env[:openstack_client].nova
 
           options = {
             flavor: @resolver.resolve_flavor(env),
@@ -48,30 +50,9 @@ module VagrantPlugins
           env[:machine].id = server_id
 
           waiting_for_server_to_be_build(env, server_id)
-
-          floating_ip = @resolver.resolve_floating_ip(env)
-          if floating_ip && !floating_ip.empty?
-            @logger.info "Using floating IP #{floating_ip}"
-            env[:ui].info(I18n.t('vagrant_openstack.using_floating_ip', floating_ip: floating_ip))
-            nova.add_floating_ip(env, server_id, floating_ip)
-          end
-
+          floating_ip = assign_floating_ip(env, server_id)
           attach_volumes(env, server_id, options[:volumes]) unless options[:volumes].empty?
-
-          unless env[:interrupted]
-            # Clear the line one more time so the progress is removed
-            env[:ui].clear_line
-
-            # Wait for SSH to become available
-            ssh_timeout = env[:machine].provider_config.ssh_timeout
-            unless port_open?(env, floating_ip, resolve_ssh_port(env), ssh_timeout)
-              env[:ui].error(I18n.t('vagrant_openstack.timeout'))
-              fail Errors::SshUnavailable, host: floating_ip, timeout: ssh_timeout
-            end
-
-            @logger.info 'The server is ready'
-            env[:ui].info(I18n.t('vagrant_openstack.ready'))
-          end
+          waiting_for_server_to_be_reachable(env, floating_ip)
 
           @app.call(env)
         end
@@ -148,22 +129,45 @@ module VagrantPlugins
         def waiting_for_server_to_be_build(env, server_id)
           @logger.info 'Waiting for the server to be built...'
           env[:ui].info(I18n.t('vagrant_openstack.waiting_for_build'))
-          nova = env[:openstack_client].nova
           timeout(200) do
-            while nova.get_server_details(env, server_id)['status'] != 'ACTIVE'
+            while env[:openstack_client].nova.get_server_details(env, server_id)['status'] != 'ACTIVE'
               sleep 3
               @logger.debug('Waiting for server to be ACTIVE')
             end
           end
         end
 
+        def assign_floating_ip(env, server_id)
+          floating_ip = @resolver.resolve_floating_ip(env)
+          if floating_ip && !floating_ip.empty?
+            @logger.info "Using floating IP #{floating_ip}"
+            env[:ui].info(I18n.t('vagrant_openstack.using_floating_ip', floating_ip: floating_ip))
+            env[:openstack_client].nova.add_floating_ip(env, server_id, floating_ip)
+          end
+          floating_ip
+        end
+
         def attach_volumes(env, server_id, volumes)
           @logger.info("Attaching volumes #{volumes} to server #{server_id}")
-          nova = env[:openstack_client].nova
           volumes.each do |volume|
             @logger.debug("Attaching volumes #{volume}")
-            nova.attach_volume(env, server_id, volume[:id], volume[:device])
+            env[:openstack_client].nova.attach_volume(env, server_id, volume[:id], volume[:device])
           end
+        end
+
+        def waiting_for_server_to_be_reachable(env, ip)
+          return if env[:interrupted]
+
+          env[:ui].clear_line
+
+          ssh_timeout = env[:machine].provider_config.ssh_timeout
+          unless port_open?(env, ip, resolve_ssh_port(22), ssh_timeout)
+            env[:ui].error(I18n.t('vagrant_openstack.timeout'))
+            fail Errors::SshUnavailable, host: ip, timeout: ssh_timeout
+          end
+
+          @logger.info 'The server is ready'
+          env[:ui].info(I18n.t('vagrant_openstack.ready'))
         end
 
         def port_open?(env, ip, port, timeout)
