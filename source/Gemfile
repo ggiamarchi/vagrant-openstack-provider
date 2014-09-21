@@ -18,5 +18,8 @@ group :development do
   # gem dependency because we expect to be installed within the
   # Vagrant environment itself using `vagrant plugin`.
   gem 'coveralls', require: false
+end
+
+group :debug do
   gem 'debugger'
 end

@@ -6,13 +6,6 @@ rvm:
 before_install:
 - cd source
 install:
-- travis_retry bundle install
-- travis_retry appraisal install
+- travis_retry bundle install --without debug
 script:
-- bundle exec rake rubocop
-- appraisal rake spec
-gemfile:
-- Gemfile
-- gemfiles/latest_stable.gemfile
-- gemfiles/oldest_current.gemfile
-- gemfiles/previous_release.gemfile
+- bundle exec rake
