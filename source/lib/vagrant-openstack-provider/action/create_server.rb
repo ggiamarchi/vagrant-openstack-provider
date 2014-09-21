@@ -59,12 +59,6 @@ module VagrantPlugins
 
         private
 
-        def resolve_ssh_port(env)
-          machine_config = env[:machine].config
-          return machine_config.ssh.port if machine_config.ssh.port
-          22
-        end
-
         def create_server(env, options)
           config = env[:machine].provider_config
           nova = env[:openstack_client].nova
@@ -161,7 +155,7 @@ module VagrantPlugins
           env[:ui].clear_line
 
           ssh_timeout = env[:machine].provider_config.ssh_timeout
-          unless port_open?(env, ip, resolve_ssh_port(22), ssh_timeout)
+          unless port_open?(env, ip, @resolver.resolve_ssh_port(env), ssh_timeout)
             env[:ui].error(I18n.t('vagrant_openstack.timeout'))
             fail Errors::SshUnavailable, host: ip, timeout: ssh_timeout
           end

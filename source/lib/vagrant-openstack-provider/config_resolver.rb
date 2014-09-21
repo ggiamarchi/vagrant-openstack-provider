@@ -5,6 +5,12 @@ module VagrantPlugins
         @logger = Log4r::Logger.new('vagrant_openstack::action::config_resolver')
       end
 
+      def resolve_ssh_port(env)
+        machine_config = env[:machine].config
+        return machine_config.ssh.port if machine_config.ssh.port
+        22
+      end
+
       def resolve_flavor(env)
         @logger.info 'Resolving flavor'
         config = env[:machine].provider_config
