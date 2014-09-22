@@ -49,9 +49,28 @@ describe VagrantPlugins::Openstack::Command::FloatingIpList do
       @floating_ip_list_cmd = VagrantPlugins::Openstack::Command::FloatingIpList.new(nil, env)
     end
 
-    it 'should get floating ip and floating ip pool from server' do
+    it 'prints floating ip and floating ip pool from server' do
       nova.should_receive(:get_floating_ip_pools).with(env)
       nova.should_receive(:get_floating_ips).with(env)
+
+      expect(env[:ui]).to receive(:info).with('
++-------------------+
+| Floating IP pools |
++-------------------+
+| pool1             |
+| pool2             |
++-------------------+
+').ordered
+
+      expect(env[:ui]).to receive(:info).with('
++----+------------+-------+-------------+
+| Id | IP         | Pool  | Instance id |
++----+------------+-------+-------------+
+| 1  | 10.10.10.1 | pool1 |             |
+| 2  | 10.10.10.2 | pool2 | inst001     |
++----+------------+-------+-------------+
+').ordered
+
       @floating_ip_list_cmd.cmd('floatingip-list', ['--'], env)
     end
   end
