@@ -1,3 +1,24 @@
+# 0.4.0 (September 23, 2014)
+
+FEATURES:
+
+  - Enable "metadata" in config for nova create server [#25](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/25)
+  - Enable "user_data" in config for nova create server [#78](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/78)
+  - Enable "security_groups" in config for nova create server [#82](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/82)
+  - Enable "scheduler_hints" in config for nova create server [#83](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/83)
+  - Allow attaching an existing volume to the vagrant instance [#24](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/24)
+  - Allow booting instance from volume [#44](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/44)
+  - Add subcommand volume-list [#75](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/75)
+
+IMPROVEMENTS:
+
+  - Add config param floating_ip_pool_always_allocate [#61](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/61)
+
+BUG FIXES:
+
+  - Enable config option to override SSH port [#88](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/88)
+
+
 # 0.3.3 (September 19, 2014)
 
 BUG FIXES:
