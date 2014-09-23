@@ -25,8 +25,16 @@ describe VagrantPlugins::Openstack::Command::FloatingIpList do
       @volume_list_cmd = VagrantPlugins::Openstack::Command::VolumeList.new(nil, env)
     end
 
-    it 'should get volumes list from server' do
+    it 'prints volumes list from server' do
       cinder.should_receive(:get_all_volumes).with(env)
+      expect(env[:ui]).to receive(:info).with('
++-----+--------+-----------+-----------+-------------------------------------+
+| Id  | Name   | Size (Go) | Status    | Attachment (instance id and device) |
++-----+--------+-----------+-----------+-------------------------------------+
+| 987 | vol-01 | 2         | available |                                     |
+| 654 | vol-02 | 4         | in-use    | inst-01 (/dev/vdc)                  |
++-----+--------+-----------+-----------+-------------------------------------+
+')
       @volume_list_cmd.cmd('volume-list', [], env)
     end
   end

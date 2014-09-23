@@ -18,8 +18,10 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'colorize', '0.7.3'
 
   gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'rspec', '~> 2.13.0'
-  gem.add_development_dependency 'aruba'
+  gem.add_development_dependency 'rspec', '~> 3.1.0'
+  gem.add_development_dependency 'rspec-its', '~> 1.0.1'
+  gem.add_development_dependency 'webmock', '~> 1.18.0'
+  gem.add_development_dependency 'fakefs', '~> 0.5.2'
 
   gem.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
   gem.executables   = gem.files.grep(/^bin\//).map { |f| File.basename(f) }

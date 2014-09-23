@@ -22,7 +22,7 @@ describe VagrantPlugins::Openstack::Config do
     its(:public_key_path) { should be_nil }
     its(:availability_zone) { should be_nil }
     its(:ssh_username) { should be_nil }
-    its(:floating_ip_pool_always_allocate) { should be_false }
+    its(:floating_ip_pool_always_allocate) { should eq(false) }
     its(:scheduler_hints) { should be_nil }
     its(:security_groups) { should be_nil }
     its(:user_data) { should be_nil }

@@ -1,14 +1,21 @@
 require 'log4r'
 
+require 'vagrant-openstack-provider/config_resolver'
+
 module VagrantPlugins
   module Openstack
     module Action
       # This action reads the SSH info for the machine and puts it into the
       # `:machine_ssh_info` key in the environment.
       class ReadSSHInfo
-        def initialize(app, _env)
+        def initialize(app, _env, resolver = nil)
           @app    = app
           @logger = Log4r::Logger.new('vagrant_openstack::action::read_ssh_info')
+          if resolver.nil?
+            @resolver = VagrantPlugins::Openstack::ConfigResolver.new
+          else
+            @resolver = resolver
+          end
         end
 
         def call(env)
@@ -24,17 +31,11 @@ module VagrantPlugins
           config = env[:machine].provider_config
           hash = {
             host: get_ip_address(env),
-            port: resolve_ssh_port(env),
+            port: @resolver.resolve_ssh_port(env),
             username: resolve_ssh_username(env)
           }
           hash[:private_key_path] = "#{env[:machine].data_dir}/#{get_keypair_name(env)}" unless config.keypair_name || config.public_key_path
           hash
-        end
-
-        def resolve_ssh_port(env)
-          machine_config = env[:machine].config
-          return machine_config.ssh.port if machine_config.ssh.port
-          22
         end
 
         def resolve_ssh_username(env)

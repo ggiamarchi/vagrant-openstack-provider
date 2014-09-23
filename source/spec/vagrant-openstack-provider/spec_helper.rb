@@ -13,12 +13,14 @@ end
 
 Dir[
   'lib/vagrant-openstack-provider/config.rb',
+  'lib/vagrant-openstack-provider/config_resolver.rb',
   'lib/vagrant-openstack-provider/errors.rb',
   'lib/vagrant-openstack-provider/provider.rb',
   'lib/vagrant-openstack-provider/client/*.rb',
   'lib/vagrant-openstack-provider/command/*.rb',
   'lib/vagrant-openstack-provider/action/*.rb'].each { |file| require file[4, file.length - 1] }
 
+require 'rspec/its'
 require 'webmock/rspec'
 require 'fakefs/safe'
 require 'fakefs/spec_helpers'
