@@ -1,11 +1,15 @@
 language: ruby
 rvm:
-- 1.9.3
-- 2.0.0
-- 2.1.0
+  - 2.0.0
+  - 2.1.0
 before_install:
-- cd source
+  - gem install bundler -v 1.6.6
+  - cd source
 install:
-- travis_retry bundle install --without debug
+  - travis_retry bundle _1.6.6_ install --without debug
 script:
-- bundle exec rake
+  - bundle _1.6.6_ exec rake
+gemfile:
+  - gemfiles/minimal_release.gemfile
+  - gemfiles/previous_release.gemfile
+  - gemfiles/latest_stable.gemfile
