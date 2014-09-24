@@ -268,8 +268,17 @@ $ vagrant openstack image-list
 To work on the `vagrant-openstack` plugin, clone this repository out, and use
 [Bundler](http://gembundler.com) to get the dependencies:
 
+Note: Vagrant 1.6 requires bundler version < 1.7. We recommend using last 1.6
+version.
+
 ```
-$ bundle
+$ gem install bundler -v 1.6.6
+```
+
+Install the plugin dependencies
+
+```
+$ bundle install
 ```
 
 Once you have the dependencies, verify the unit tests pass with `rake`:
