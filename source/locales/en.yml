@@ -136,8 +136,8 @@ en:
         Vagrant was unable to find the OpenStack instance used for your vagrant machine.
         This can happen when the instance has been deleted via OpenStack APIs or OpenStack
         Dashboard instead of using vagrant commands.
-        We recommend to delete your .vagrant directory at the root of your projet to reset
-        vagrant to its original state: `rm -rf .vagrant`. 
+        We recommend using the command `vagrant openstack reset` to reset
+        vagrant to a clear state
 
     states:
       short_active: |-
@@ -239,3 +239,5 @@ en:
         List floating IP and floating IP pools
       volume_list_synopsis : |-
         List existing volumes
+      reset : |-
+        Reset Vagrant OpenStack provider to a clear state
