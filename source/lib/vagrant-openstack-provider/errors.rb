@@ -99,6 +99,10 @@ module VagrantPlugins
       class NoMatchingSshUsername < VagrantOpenstackError
         error_key(:ssh_username_missing)
       end
+
+      class InstanceNotFound < VagrantOpenstackError
+        error_key(:instance_not_found)
+      end
     end
   end
 end

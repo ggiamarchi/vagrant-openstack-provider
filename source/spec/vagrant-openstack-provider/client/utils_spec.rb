@@ -128,19 +128,37 @@ describe VagrantPlugins::Openstack::HttpUtils do
     end
 
     context 'response code is 404' do
-      it 'should return raise a VagrantOpenstackError with conflict message' do
-        mock_resp = double.tap do |mock|
-          mock.stub(:code).and_return(404)
-          mock.stub(:headers)
-          mock.stub(:to_s).and_return('{ "itemNotFound": { "message": "Error... Not found" } }')
-        end
-        begin
-          @utils.handle_response(mock_resp)
-          fail
-        rescue Errors::VagrantOpenstackError => e
-          expect(e.message).to eq('Error... Not found')
+      context 'message is Instance not found' do
+        it 'should return raise an InstanceNotFoundError' do
+          mock_resp = double.tap do |mock|
+            mock.stub(:code).and_return(404)
+            mock.stub(:headers)
+            mock.stub(:to_s).and_return('{ "itemNotFound": { "message": "Instance could not be found" } }')
+          end
+          begin
+            @utils.handle_response(mock_resp)
+            fail
+          rescue Errors::InstanceNotFound
+            nil
+          end
         end
       end
+      context 'message is not Instance not found' do
+        it 'should return raise a VagrantOpenstackError with conflict message' do
+          mock_resp = double.tap do |mock|
+            mock.stub(:code).and_return(404)
+            mock.stub(:headers)
+            mock.stub(:to_s).and_return('{ "itemNotFound": { "message": "Error... Not found" } }')
+          end
+          begin
+            @utils.handle_response(mock_resp)
+            fail
+          rescue Errors::VagrantOpenstackError => e
+            expect(e.message).to eq('Error... Not found')
+          end
+        end
+      end
+
     end
 
     context 'response code is 409' do
