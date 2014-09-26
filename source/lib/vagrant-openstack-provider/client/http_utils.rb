@@ -71,18 +71,11 @@ module VagrantPlugins
           response
         when 401
           fail Errors::AuthenticationRequired
-        when 404
+        when 400, 404, 409
           message = JSON.parse(response.to_s)[ERRORS[response.code.to_s]]['message']
-          if message == 'Instance could not be found'
-            fail Errors::InstanceNotFound
-          else
-            fail Errors::VagrantOpenstackError, message: message
-          end
-        when 400, 409
-          message = JSON.parse(response.to_s)[ERRORS[response.code.to_s]]['message']
-          fail Errors::VagrantOpenstackError, message: message
+          fail Errors::VagrantOpenstackError, message: message, code: response.code
         else
-          fail Errors::VagrantOpenstackError, message: response.to_s
+          fail Errors::VagrantOpenstackError, message: response.to_s, code: response.code
         end
       end
 

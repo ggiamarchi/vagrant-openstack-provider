@@ -76,36 +76,49 @@ module VagrantPlugins
       end
 
       def delete_server(env, server_id)
-        delete(env, "#{@session.endpoints[:compute]}/servers/#{server_id}")
+        instance_exists do
+          delete(env, "#{@session.endpoints[:compute]}/servers/#{server_id}")
+        end
       end
 
       def suspend_server(env, server_id)
-        change_server_state(env, server_id, :suspend)
+        instance_exists do
+          change_server_state(env, server_id, :suspend)
+        end
       end
 
       def resume_server(env, server_id)
-        # TODO(julienvey) check status before (if pause->unpause, if suspend->resume...)
-        change_server_state(env, server_id, :resume)
+        instance_exists do
+          change_server_state(env, server_id, :resume)
+        end
       end
 
       def stop_server(env, server_id)
-        change_server_state(env, server_id, :stop)
+        instance_exists do
+          change_server_state(env, server_id, :stop)
+        end
       end
 
       def start_server(env, server_id)
-        change_server_state(env, server_id, :start)
+        instance_exists do
+          change_server_state(env, server_id, :start)
+        end
       end
 
       def get_server_details(env, server_id)
-        server_details = get(env, "#{@session.endpoints[:compute]}/servers/#{server_id}")
-        JSON.parse(server_details)['server']
+        instance_exists do
+          server_details = get(env, "#{@session.endpoints[:compute]}/servers/#{server_id}")
+          JSON.parse(server_details)['server']
+        end
       end
 
       def add_floating_ip(env, server_id, floating_ip)
-        check_floating_ip(env, floating_ip)
+        instance_exists do
+          check_floating_ip(env, floating_ip)
 
-        post(env, "#{@session.endpoints[:compute]}/servers/#{server_id}/action",
-             { addFloatingIp: { address: floating_ip } }.to_json)
+          post(env, "#{@session.endpoints[:compute]}/servers/#{server_id}/action",
+               { addFloatingIp: { address: floating_ip } }.to_json)
+        end
       end
 
       def import_keypair(env, public_key)
@@ -128,8 +141,10 @@ module VagrantPlugins
       end
 
       def delete_keypair_if_vagrant(env, server_id)
-        keyname = get_server_details(env, server_id)['key_name']
-        delete(env, "#{@session.endpoints[:compute]}/os-keypairs/#{keyname}") if keyname.start_with?('vagrant-generated-')
+        instance_exists do
+          keyname = get_server_details(env, server_id)['key_name']
+          delete(env, "#{@session.endpoints[:compute]}/os-keypairs/#{keyname}") if keyname.start_with?('vagrant-generated-')
+        end
       end
 
       def get_floating_ip_pools(env)
@@ -143,14 +158,16 @@ module VagrantPlugins
       end
 
       def attach_volume(env, server_id, volume_id, device = nil)
-        attachment = post(env, "#{@session.endpoints[:compute]}/servers/#{server_id}/os-volume_attachments",
-                          {
-                            volumeAttachment: {
-                              volumeId: volume_id,
-                              device: device
-                            }
-                          }.to_json)
-        JSON.parse(attachment)['volumeAttachment']
+        instance_exists do
+          attachment = post(env, "#{@session.endpoints[:compute]}/servers/#{server_id}/os-volume_attachments",
+                            {
+                              volumeAttachment: {
+                                volumeId: volume_id,
+                                device: device
+                              }
+                            }.to_json)
+          JSON.parse(attachment)['volumeAttachment']
+        end
       end
 
       private
@@ -162,6 +179,13 @@ module VagrantPlugins
             start: 'os-start',
             stop: 'os-stop'
           }
+
+      def instance_exists
+        return yield
+      rescue Errors::VagrantOpenstackError => e
+        raise Errors::InstanceNotFound if e.extra_data[:code] == 404
+        raise e
+      end
 
       def change_server_state(env, server_id, new_state)
         post(env, "#{@session.endpoints[:compute]}/servers/#{server_id}/action",
