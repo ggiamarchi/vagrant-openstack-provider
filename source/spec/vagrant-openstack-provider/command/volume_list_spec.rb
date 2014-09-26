@@ -1,6 +1,6 @@
 require 'vagrant-openstack-provider/spec_helper'
 
-describe VagrantPlugins::Openstack::Command::FloatingIpList do
+describe VagrantPlugins::Openstack::Command::VolumeList do
   describe 'cmd' do
 
     let(:cinder) do

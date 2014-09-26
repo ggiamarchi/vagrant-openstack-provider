@@ -128,7 +128,7 @@ describe VagrantPlugins::Openstack::HttpUtils do
     end
 
     context 'response code is 404' do
-      it 'should return raise a VagrantOpenstackError with conflict message' do
+      it 'should raise a VagrantOpenstackError with conflict message' do
         mock_resp = double.tap do |mock|
           mock.stub(:code).and_return(404)
           mock.stub(:headers)

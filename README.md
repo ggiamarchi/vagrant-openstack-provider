@@ -245,6 +245,7 @@ Available subcommands:
      network-list         List private networks in project
      floatingip-list      List floating IP and floating IP pools
      volume-list          List existing volumes
+     reset                Reset Vagrant OpenStack provider to a clear state
 ```
 
 For instance `vagrant openstack image-list` lists images available in Glance.

@@ -132,6 +132,12 @@ en:
         Only one of 'image' and 'volume_boot' configuration must be provided
       ssh_username_missing: |-
         Vagrant was unable to resolve which ssh username to use to connect to the machine. Please provide config parameter `ssh.username`
+      instance_not_found: |-
+        Vagrant was unable to find the OpenStack instance used for your vagrant machine.
+        This can happen when the instance has been deleted via OpenStack APIs or OpenStack
+        Dashboard instead of using vagrant commands.
+        We recommend using the command `vagrant openstack reset` to reset
+        vagrant to a clear state
 
     states:
       short_active: |-
@@ -233,3 +239,5 @@ en:
         List floating IP and floating IP pools
       volume_list_synopsis : |-
         List existing volumes
+      reset : |-
+        Reset Vagrant OpenStack provider to a clear state

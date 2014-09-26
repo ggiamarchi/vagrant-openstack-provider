@@ -72,9 +72,10 @@ module VagrantPlugins
         when 401
           fail Errors::AuthenticationRequired
         when 400, 404, 409
-          fail Errors::VagrantOpenstackError, message: JSON.parse(response.to_s)[ERRORS[response.code.to_s]]['message']
+          message = JSON.parse(response.to_s)[ERRORS[response.code.to_s]]['message']
+          fail Errors::VagrantOpenstackError, message: message, code: response.code
         else
-          fail Errors::VagrantOpenstackError, message: response.to_s
+          fail Errors::VagrantOpenstackError, message: response.to_s, code: response.code
         end
       end
 
