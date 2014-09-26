@@ -4,7 +4,7 @@ Vagrant.configure('2') do |config|
 
   config.vm.box = 'dummy-openstack'
   config.vm.box_url = 'https://github.com/ggiamarchi/vagrant-openstack/raw/master/source/dummy.box'
-  config.ssh.username = 'stack'
+  config.ssh.username = ENV['OS_SSH_USERNAME']
 
   config.vm.provider :openstack do |os|
     os.username = ENV['OS_USERNAME']
