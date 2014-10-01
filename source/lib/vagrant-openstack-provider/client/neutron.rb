@@ -40,6 +40,15 @@ module VagrantPlugins
         end
         networks
       end
+
+      def get_all_networks(env)
+        networks_json = get(env, "#{@session.endpoints[:network]}/networks")
+        networks = []
+        JSON.parse(networks_json)['networks'].each do |n|
+          networks << Item.new(n['id'], n['name'])
+        end
+        networks
+      end
     end
   end
 end

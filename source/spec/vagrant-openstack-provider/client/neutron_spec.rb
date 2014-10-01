@@ -51,6 +51,42 @@ describe VagrantPlugins::Openstack::NeutronClient do
     end
   end
 
+  describe 'get_all_networks' do
+    context 'with token' do
+      it 'returns all networks for project in session' do
+
+        stub_request(:get, 'http://neutron/networks')
+            .with(
+              headers:
+              {
+                'Accept' => 'application/json',
+                'X-Auth-Token' => '123456'
+              })
+            .to_return(
+              status: 200,
+              body: '
+                {
+                  "networks": [
+                    { "name": "PublicNetwork", "tenant_id": "admin-tenant-id", "id": "net-pub" },
+                    { "name": "net1", "tenant_id": "a1b2c3", "id": "net-1" },
+                    { "name": "net2", "tenant_id": "a1b2c3", "id": "net-2" }
+                  ]
+                }
+              ')
+
+        networks = @neutron_client.get_all_networks(env)
+
+        expect(networks.length).to eq(3)
+        expect(networks[0].id).to eq('net-pub')
+        expect(networks[0].name).to eq('PublicNetwork')
+        expect(networks[1].id).to eq('net-1')
+        expect(networks[1].name).to eq('net1')
+        expect(networks[2].id).to eq('net-2')
+        expect(networks[2].name).to eq('net2')
+      end
+    end
+  end
+
   describe 'get_api_version_list' do
     context 'basic' do
       it 'returns version list' do
