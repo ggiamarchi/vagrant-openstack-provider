@@ -72,11 +72,17 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
     end
   end
 
+  let(:utils) do
+    double('utils').tap do |u|
+      u.stub(:get_ip_address) { '1.2.3.4' }
+    end
+  end
+
   before :each do
     CreateServer.send(:public, *CreateServer.private_instance_methods)
     app = double('app')
     app.stub(:call).with(anything)
-    @action = CreateServer.new(app, nil, resolver)
+    @action = CreateServer.new(app, nil, resolver, utils)
   end
 
   describe 'call' do

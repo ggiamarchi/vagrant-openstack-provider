@@ -4,6 +4,7 @@ require 'timeout'
 require 'sshkey'
 
 require 'vagrant-openstack-provider/config_resolver'
+require 'vagrant-openstack-provider/utils'
 require 'vagrant/util/retryable'
 
 module VagrantPlugins
@@ -12,13 +13,18 @@ module VagrantPlugins
       class CreateServer
         include Vagrant::Util::Retryable
 
-        def initialize(app, _env, resolver = nil)
+        def initialize(app, _env, resolver = nil, utils = nil)
           @app = app
           @logger = Log4r::Logger.new('vagrant_openstack::action::create_server')
           if resolver.nil?
             @resolver = VagrantPlugins::Openstack::ConfigResolver.new
           else
             @resolver = resolver
+          end
+          if utils.nil?
+            @utils = VagrantPlugins::Openstack::Utils.new
+          else
+            @utils = utils
           end
         end
 
@@ -50,9 +56,9 @@ module VagrantPlugins
           env[:machine].id = server_id
 
           waiting_for_server_to_be_build(env, server_id)
-          floating_ip = assign_floating_ip(env, server_id)
+          assign_floating_ip(env, server_id)
           attach_volumes(env, server_id, options[:volumes]) unless options[:volumes].empty?
-          waiting_for_server_to_be_reachable(env, floating_ip)
+          waiting_for_server_to_be_reachable(env, @utils.get_ip_address(env))
 
           @app.call(env)
         end
@@ -133,12 +139,10 @@ module VagrantPlugins
 
         def assign_floating_ip(env, server_id)
           floating_ip = @resolver.resolve_floating_ip(env)
-          if floating_ip && !floating_ip.empty?
-            @logger.info "Using floating IP #{floating_ip}"
-            env[:ui].info(I18n.t('vagrant_openstack.using_floating_ip', floating_ip: floating_ip))
-            env[:openstack_client].nova.add_floating_ip(env, server_id, floating_ip)
-          end
-          floating_ip
+          return if !floating_ip || floating_ip.empty?
+          @logger.info "Using floating IP #{floating_ip}"
+          env[:ui].info(I18n.t('vagrant_openstack.using_floating_ip', floating_ip: floating_ip))
+          env[:openstack_client].nova.add_floating_ip(env, server_id, floating_ip)
         end
 
         def attach_volumes(env, server_id, volumes)
