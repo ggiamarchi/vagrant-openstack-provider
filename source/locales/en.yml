@@ -1,5 +1,20 @@
 en:
   vagrant_openstack:
+    global_error: |-
+      An unknow error happened in Vagrant OpenStack provider
+
+      To easily debug what happened, we recommend to set the environment
+      variable VAGRANT_OPENSTACK_LOG to debug
+
+          $ export VAGRANT_OPENSTACK_LOG=debug
+
+      If doing this does not help fixing your issue, there may be a bug
+      in the provider. Please submit an issue on Github at
+      https://github.com/ggiamarchi/vagrant-openstack-provider
+      with the stracktrace and the logs.
+
+      We are looking for feedback, so feel free to ask questions or
+      describe features you would like to see in this provider.
     already_created: |-
       The server is already created.
     already_suspended: |-

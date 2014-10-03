@@ -4,11 +4,12 @@ require 'json'
 
 require 'vagrant-openstack-provider/client/openstack'
 require 'vagrant-openstack-provider/client/request_logger'
+require 'vagrant-openstack-provider/action/abstract_action'
 
 module VagrantPlugins
   module Openstack
     module Action
-      class ConnectOpenstack
+      class ConnectOpenstack < AbstractAction
         include VagrantPlugins::Openstack::HttpUtils::RequestLogger
 
         def initialize(app, env)
@@ -17,7 +18,7 @@ module VagrantPlugins
           env[:openstack_client] = VagrantPlugins::Openstack
         end
 
-        def call(env)
+        def execute(env)
           client = env[:openstack_client]
           if client.session.token.nil?
             catalog = client.keystone.authenticate(env)
