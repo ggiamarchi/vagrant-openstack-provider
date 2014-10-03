@@ -58,7 +58,7 @@ module VagrantPlugins
           waiting_for_server_to_be_build(env, server_id)
           assign_floating_ip(env, server_id)
           attach_volumes(env, server_id, options[:volumes]) unless options[:volumes].empty?
-          waiting_for_server_to_be_reachable(env, @utils.get_ip_address(env))
+          waiting_for_server_to_be_reachable(env)
 
           @app.call(env)
         end
@@ -153,7 +153,8 @@ module VagrantPlugins
           end
         end
 
-        def waiting_for_server_to_be_reachable(env, ip)
+        def waiting_for_server_to_be_reachable(env)
+          ip = @utils.get_ip_address(env)
           return if env[:interrupted]
 
           env[:ui].clear_line
