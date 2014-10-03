@@ -1,6 +1,7 @@
 require 'log4r'
 
 require 'vagrant-openstack-provider/config_resolver'
+require 'vagrant-openstack-provider/utils'
 
 module VagrantPlugins
   module Openstack
@@ -8,13 +9,18 @@ module VagrantPlugins
       # This action reads the SSH info for the machine and puts it into the
       # `:machine_ssh_info` key in the environment.
       class ReadSSHInfo
-        def initialize(app, _env, resolver = nil)
+        def initialize(app, _env, resolver = nil, utils = nil)
           @app    = app
           @logger = Log4r::Logger.new('vagrant_openstack::action::read_ssh_info')
           if resolver.nil?
             @resolver = VagrantPlugins::Openstack::ConfigResolver.new
           else
             @resolver = resolver
+          end
+          if utils.nil?
+            @utils = VagrantPlugins::Openstack::Utils.new
+          else
+            @utils = utils
           end
         end
 
@@ -30,23 +36,12 @@ module VagrantPlugins
         def read_ssh_info(env)
           config = env[:machine].provider_config
           hash = {
-            host: get_ip_address(env),
+            host: @utils.get_ip_address(env),
             port: @resolver.resolve_ssh_port(env),
             username: @resolver.resolve_ssh_username(env)
           }
           hash[:private_key_path] = "#{env[:machine].data_dir}/#{get_keypair_name(env)}" unless config.keypair_name || config.public_key_path
           hash
-        end
-
-        def get_ip_address(env)
-          return env[:machine].provider_config.floating_ip unless env[:machine].provider_config.floating_ip.nil?
-          details = env[:openstack_client].nova.get_server_details(env, env[:machine].id)
-          details['addresses'].each do |network|
-            network[1].each do |network_detail|
-              return network_detail['addr'] if network_detail['OS-EXT-IPS:type'] == 'floating'
-            end
-          end
-          fail Errors::UnableToResolveIP
         end
 
         def get_keypair_name(env)

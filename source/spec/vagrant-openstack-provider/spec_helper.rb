@@ -14,6 +14,7 @@ end
 Dir[
   'lib/vagrant-openstack-provider/config.rb',
   'lib/vagrant-openstack-provider/config_resolver.rb',
+  'lib/vagrant-openstack-provider/utils.rb',
   'lib/vagrant-openstack-provider/errors.rb',
   'lib/vagrant-openstack-provider/provider.rb',
   'lib/vagrant-openstack-provider/client/*.rb',
