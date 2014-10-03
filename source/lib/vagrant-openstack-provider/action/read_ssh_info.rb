@@ -32,18 +32,10 @@ module VagrantPlugins
           hash = {
             host: get_ip_address(env),
             port: @resolver.resolve_ssh_port(env),
-            username: resolve_ssh_username(env)
+            username: @resolver.resolve_ssh_username(env)
           }
           hash[:private_key_path] = "#{env[:machine].data_dir}/#{get_keypair_name(env)}" unless config.keypair_name || config.public_key_path
           hash
-        end
-
-        def resolve_ssh_username(env)
-          config = env[:machine].provider_config
-          machine_config = env[:machine].config
-          return machine_config.ssh.username if machine_config.ssh.username
-          return config.ssh_username if config.ssh_username
-          fail Errors::NoMatchingSshUsername
         end
 
         def get_ip_address(env)

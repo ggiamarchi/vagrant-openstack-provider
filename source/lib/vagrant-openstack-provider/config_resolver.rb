@@ -133,6 +133,14 @@ module VagrantPlugins
         volumes
       end
 
+      def resolve_ssh_username(env)
+        config = env[:machine].provider_config
+        machine_config = env[:machine].config
+        return machine_config.ssh.username if machine_config.ssh.username
+        return config.ssh_username if config.ssh_username
+        fail Errors::NoMatchingSshUsername
+      end
+
       private
 
       def generate_keypair(env)
