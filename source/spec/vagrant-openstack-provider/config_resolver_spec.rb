@@ -237,22 +237,10 @@ describe VagrantPlugins::Openstack::ConfigResolver do
     end
 
     context 'with neither floating_ip nor floating_ip_pool' do
-      context 'if any ip is not associated with an instance' do
-        it 'return the available ip in the list of floating ips' do
-          nova.stub(:get_all_floating_ips).with(anything) do
-            [FloatingIP.new('80.81.82.84', 'pool-1', '1234'), FloatingIP.new('80.81.82.83', 'pool-1', nil)]
-          end
-          @action.resolve_floating_ip(env).should eq('80.81.82.83')
-        end
-      end
-
-      context 'if all ips are already associated with an instance' do
-        it 'fails with an UnableToResolveFloatingIP error' do
-          nova.stub(:get_all_floating_ips).with(anything) do
-            [FloatingIP.new('80.81.82.84', 'pool-1', '1234'), FloatingIP.new('80.81.82.83', 'pool-1', '2345')]
-          end
-          expect { @action.resolve_floating_ip(env) }.to raise_error(Errors::UnableToResolveFloatingIP)
-        end
+      it 'fails with an UnableToResolveFloatingIP error' do
+        config.stub(:floating_ip) { nil }
+        config.stub(:floating_ip_pool) { nil }
+        expect { @action.resolve_floating_ip(env) }.to raise_error(Errors::UnableToResolveFloatingIP)
       end
     end
   end

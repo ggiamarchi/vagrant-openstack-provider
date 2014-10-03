@@ -36,31 +36,16 @@ module VagrantPlugins
         image
       end
 
-      # 1. if floating_ip is set, use it
-      # 2. if floating_ip_pool is set
-      #    GET v2/{{tenant_id}}/os-floating-ips
-      #    If any IP with the same pool is available, use it
-      #    Else Allocate a new IP from the pool
-      #       Manage error case
-      # 3. GET v2/{{tenant_id}}/os-floating-ips
-      #    If any IP is available, use it
-      #    Else fail
       def resolve_floating_ip(env)
         config = env[:machine].provider_config
         nova = env[:openstack_client].nova
         return config.floating_ip if config.floating_ip
         floating_ips = nova.get_all_floating_ips(env)
-        if config.floating_ip_pool
-          floating_ips.each do |single|
-            return single.ip if single.pool == config.floating_ip_pool && single.instance_id.nil?
-          end unless config.floating_ip_pool_always_allocate
-          return nova.allocate_floating_ip(env, config.floating_ip_pool).ip
-        else
-          floating_ips.each do |ip|
-            return ip.ip if ip.instance_id.nil?
-          end
-        end
-        fail Errors::UnableToResolveFloatingIP
+        fail Errors::UnableToResolveFloatingIP unless config.floating_ip_pool
+        floating_ips.each do |single|
+          return single.ip if single.pool == config.floating_ip_pool && single.instance_id.nil?
+        end unless config.floating_ip_pool_always_allocate
+        nova.allocate_floating_ip(env, config.floating_ip_pool).ip
       end
 
       def resolve_keypair(env)
