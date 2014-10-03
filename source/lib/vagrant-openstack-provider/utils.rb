@@ -13,6 +13,7 @@ module VagrantPlugins
             return network_detail['addr'] if network_detail['OS-EXT-IPS:type'] == 'floating'
           end
         end
+        return details['addresses'].first[1][0]['addr'] if details['addresses'].size == 1 && details['addresses'].first[1].size == 1
         fail Errors::UnableToResolveIP
       end
     end

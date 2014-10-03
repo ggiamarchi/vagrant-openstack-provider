@@ -55,21 +55,40 @@ describe VagrantPlugins::Openstack::Utils do
       end
 
       context 'without floating ip in nova details' do
-        it 'fails' do
-          config.stub(:floating_ip) { nil }
-          nova.stub(:get_server_details).with(env, '1234id') do
-            {
-              'addresses' => {
-                'toto' => [{
-                  'addr' => '13.13.13.13'
-                }, {
-                  'addr' => '12.12.12.12',
-                  'OS-EXT-IPS:type' => 'private'
-                }]
+        context 'with on single ip in nova details' do
+          it 'returns the single ip' do
+            config.stub(:floating_ip) { nil }
+            nova.stub(:get_server_details).with(env, '1234id') do
+              {
+                'addresses' => {
+                  'toto' => [{
+                    'addr' => '13.13.13.13',
+                    'OS-EXT-IPS:type' => 'fixed'
+                  }]
+                }
               }
-            }
+            end
+            expect(@action.get_ip_address(env)).to eq('13.13.13.13')
           end
-          expect { @action.get_ip_address(env) }.to raise_error(Errors::UnableToResolveIP)
+        end
+
+        context 'with multiple ips in nova details' do
+          it 'fails' do
+            config.stub(:floating_ip) { nil }
+            nova.stub(:get_server_details).with(env, '1234id') do
+              {
+                'addresses' => {
+                  'toto' => [{
+                    'addr' => '13.13.13.13'
+                  }, {
+                    'addr' => '12.12.12.12',
+                    'OS-EXT-IPS:type' => 'private'
+                  }]
+                }
+              }
+            end
+            expect { @action.get_ip_address(env) }.to raise_error(Errors::UnableToResolveIP)
+          end
         end
       end
     end
