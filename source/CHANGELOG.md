@@ -1,3 +1,9 @@
+# 0.4.1 (October 3, 2014)
+
+BUG FIXES:
+
+  - initialize': must pass :url (ArgumentError) when neutron url is not present [#112](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/112)
+
 # 0.4.0 (September 23, 2014)
 
 FEATURES:
