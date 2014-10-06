@@ -7,11 +7,13 @@ module VagrantPlugins
         def call(env)
           execute(env)
         # rubocop:disable Lint/RescueException
-        rescue Exception => e
+        # rubocop:disable Style/SpecialGlobalVars
+        rescue Exception
           puts I18n.t('vagrant_openstack.global_error').red
-          raise e
+          raise $!, "Catched Error: #{$!}", $!.backtrace
         end
         # rubocop:enable Lint/RescueException
+        # rubocop:enable Style/SpecialGlobalVars
       end
     end
   end
