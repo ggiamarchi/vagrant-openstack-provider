@@ -96,17 +96,6 @@ Note that normally a lot of this boilerplate is encoded within the box
 file, but the box file used for the quick start, the "dummy" box, has
 no preconfigured defaults.
 
-## Box Format
-
-Every provider in Vagrant must introduce a custom box format. This
-provider introduces `openstack` boxes. You can view an example box in
-the [example_box/ directory](https://github.com/ggiamarchi/vagrant-openstack/tree/master/source/example_box).
-That directory also contains instructions on how to build a box.
-
-The box format is basically just the required `metadata.json` file
-along with a `Vagrantfile` that does default settings for the
-provider-specific configuration for this provider.
-
 ## Configuration
 
 This provider exposes quite a few provider-specific configuration options:
@@ -225,9 +214,23 @@ chef, and puppet) to work!
 There are some standard configuration options that this provider takes into account when
 creating and connecting to OpenStack machines
 
+* `config.vm.box` - A box is not mandatory for this provider. However, if you are running Vagrant before version 1.6, vagrant will not start
+   if this property is not set. In this case you can assign any value to it. See section "Box Format" to know more about boxes.
+* `config.vm.box_url` - URL of the box when it is necessary
 * `ssh.username` - Username used by vagrant for SSH login
 * `ssh.port` - Default SSH port is 22. If set, this option will override the default for SSH login
 * `ssh.private_key_path` - If set, vagrant will use this private key path to SSH on the machine. If you set this option, the `public_key_path` option of the provider should be set.
+
+## Box Format
+
+Every provider in Vagrant must introduce a custom box format. This
+provider introduces `openstack` boxes. You can view an example box in
+the [example_box/ directory](https://github.com/ggiamarchi/vagrant-openstack/tree/master/source/example_box).
+That directory also contains instructions on how to build a box.
+
+The box format is basically just the required `metadata.json` file
+along with a `Vagrantfile` that does default settings for the
+provider-specific configuration for this provider.
 
 ## Custom commands
 

@@ -23,7 +23,7 @@ module VagrantPlugins
         Config
       end
 
-      provider(:openstack) do
+      provider(:openstack, box_optional: true) do
         # Setup some things
         Openstack.init_i18n
         Openstack.init_logging
