@@ -57,9 +57,7 @@ require 'vagrant-openstack-provider'
 
 Vagrant.configure('2') do |config|
 
-  config.vm.box       = 'dummy-openstack'
-  config.vm.box_url   = 'https://github.com/ggiamarchi/vagrant-openstack/raw/master/source/dummy.box'
-
+  config.vm.box       = 'openstack'
   config.ssh.username = 'stack'
 
   config.vm.provider :openstack do |os|
@@ -308,9 +306,10 @@ config.ssh.pty = true
 
 ## Sponsoring
 
-We thanks [Numergy](www.numergy.com) for giving us access to free compute
-resources on their OpenStack cloud that enabled us to test our provider on a
-real OpenStack installation.
+[![Numergy](https://www.numergy.com/images/general/numergy-logo.png)](http://www.numergy.com)
+
+
+We thanks [Numergy](http://www.numergy.com) for giving us access to free compute resources on their OpenStack cloud that enabled us to test our provider on a real OpenStack installation.
 
 If you are also powering an OpenStack cloud, we'd like to hear from you. Test
 the plugin and report us issues or features you'd like to see. 
