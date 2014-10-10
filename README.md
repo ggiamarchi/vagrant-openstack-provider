@@ -41,30 +41,14 @@ $ vagrant up --provider=openstack
 Of course prior to doing this, you'll need to obtain an Openstack-compatible
 box file for Vagrant.
 
-### CentOS / RHEL (sudo: sorry, you must have a tty to run sudo)
-
-The default configuration of the RHEL family of Linux distributions requires a tty in order to run sudo. Vagrant does not connect with a tty by default, so you may experience the error:
-> sudo: sorry, you must have a tty to run sudo
-
-The best way to take deal with this error is to upgrade to Vagrant 1.4 or later, and enable:
-```
-config.ssh.pty = true
-```
-
 ## Quick Start
 
 After installing the plugin (instructions above), the quickest way to get
-started is to actually use a dummy Openstack box and specify all the details
-manually within a `config.vm.provider` block. So first, add the dummy
-box using any name you want:
+started is to specify all the details manually within a `config.vm.provider`
+block in the Vagrantfile
 
-```
-$ vagrant box add dummy https://github.com/ggiamarchi/vagrant-openstack-provider/raw/master/source/dummy.box
-...
-```
-
-And then make a Vagrantfile that looks like the following, filling in
-your information where necessary.
+Create a Vagrantfile that looks like the following, filling in your information
+where necessary.
 
 This Vagrantfile shows the minimal needed configuration.
 
@@ -264,7 +248,9 @@ $ vagrant openstack image-list
 +--------------------------------------+---------------------+
 ```
 
-## Development
+## Contribute
+
+### Development
 
 To work on the `vagrant-openstack` plugin, clone this repository out, and use
 [Bundler](http://gembundler.com) to get the dependencies:
@@ -297,9 +283,34 @@ that uses it, and uses bundler to execute Vagrant:
 $ bundle exec vagrant up --provider=openstack
 ```
 
-## Logging
+## Troubleshooting
+
+### Logging
 
 To enable all Vagrant logs set environment variable `VAGRANT_LOG` to the desire
 log level (for instance `VAGRANT_LOG=debug`). If you want only Openstack provider
 logs use the variable `VAGRANT_OPENSTACK_LOG`. if both variables are set, `VAGRANT_LOG`
 takes precedence.
+
+
+### CentOS/RHEL/Fedora (sudo: sorry, you must have a tty to run sudo)
+
+The default configuration of the RHEL family of Linux distributions requires a
+tty in order to run sudo. Vagrant does not connect with a tty by default, so
+you may experience the error:
+> sudo: sorry, you must have a tty to run sudo
+
+The best way to take deal with this error is to upgrade to Vagrant 1.4 or
+later, and enable:
+```
+config.ssh.pty = true
+```
+
+## Sponsoring
+
+We thanks [Numergy](www.numergy.com) for giving us access to free compute
+resources on their OpenStack cloud that enabled us to test our provider on a
+real OpenStack installation.
+
+If you are also powering an OpenStack cloud, we'd like to hear from you. Test
+the plugin and report us issues or features you'd like to see. 
