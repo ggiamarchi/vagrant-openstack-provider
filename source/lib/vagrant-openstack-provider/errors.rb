@@ -52,6 +52,10 @@ module VagrantPlugins
         error_key(:no_arg_required_for_command)
       end
 
+      class UnrecognizedArgForCommand < VagrantOpenstackError
+        error_key(:unrecognized_arg_for_command)
+      end
+
       class UnableToResolveFloatingIP < VagrantOpenstackError
         error_key(:unable_to_resolve_floating_ip)
       end
