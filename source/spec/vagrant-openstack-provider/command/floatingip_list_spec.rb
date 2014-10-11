@@ -71,7 +71,7 @@ describe VagrantPlugins::Openstack::Command::FloatingIpList do
 +----+------------+-------+-------------+
 ').ordered
 
-      @floating_ip_list_cmd.cmd('floatingip-list', ['--'], env)
+      @floating_ip_list_cmd.cmd('floatingip-list', [], env)
     end
   end
 end

@@ -11,7 +11,7 @@ module VagrantPlugins
           I18n.t('vagrant_openstack.command.volume_list_synopsis')
         end
         def cmd(name, argv, env)
-          fail Errors::NoArgRequiredForCommand, cmd: name unless argv.size == 0 || argv == ['--']
+          fail Errors::NoArgRequiredForCommand, cmd: name unless argv.size == 0
           volumes = env[:openstack_client].cinder.get_all_volumes(env)
 
           rows = []

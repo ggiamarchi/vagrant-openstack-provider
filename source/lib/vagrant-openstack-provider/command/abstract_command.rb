@@ -6,7 +6,7 @@ module VagrantPlugins
       class AbstractCommand < Vagrant.plugin('2', :command)
         def initialize(argv, env)
           @env = env
-          super(argv, env)
+          super(normalize_args(argv), env)
         end
 
         def execute(name)
@@ -20,6 +20,15 @@ module VagrantPlugins
 
           cmd(name, @argv, env)
           @env.ui.info('')
+        end
+
+        #
+        # Before Vagrant 1.5, args list ends with an extra arg '--'. It removes it if present.
+        #
+        def normalize_args(args)
+          return args if args.nil?
+          args.pop if args.size > 0 && args.last == '--'
+          args
         end
 
         def cmd(_name, _argv, _env)

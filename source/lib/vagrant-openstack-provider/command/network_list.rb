@@ -11,10 +11,10 @@ module VagrantPlugins
           I18n.t('vagrant_openstack.command.network_list_synopsis')
         end
         def cmd(name, argv, env)
-          fail Errors::NoArgRequiredForCommand, cmd: name unless argv.size <= 1 || argv[0] == '--'
+          fail Errors::UnrecognizedArgForCommand, cmd: name, arg: argv[1] if argv.size > 1
           if argv.size == 0
             flavors = env[:openstack_client].neutron.get_private_networks(env)
-          elsif argv.size == 1 && argv[0] == 'all'
+          elsif argv[0] == 'all'
             flavors = env[:openstack_client].neutron.get_all_networks(env)
           else
             fail Errors::UnrecognizedArgForCommand, cmd: name, arg: argv[0]

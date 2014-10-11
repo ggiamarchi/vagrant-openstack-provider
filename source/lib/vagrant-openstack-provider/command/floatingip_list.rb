@@ -11,7 +11,7 @@ module VagrantPlugins
           I18n.t('vagrant_openstack.command.flaotingip_list_synopsis')
         end
         def cmd(name, argv, env)
-          fail Errors::NoArgRequiredForCommand, cmd: name unless argv.size == 0 || argv == ['--']
+          fail Errors::NoArgRequiredForCommand, cmd: name unless argv.size == 0
 
           floating_ip_pools = env[:openstack_client].nova.get_floating_ip_pools(env)
           floating_ips = env[:openstack_client].nova.get_floating_ips(env)
