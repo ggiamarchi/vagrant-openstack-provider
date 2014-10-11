@@ -14,7 +14,7 @@ module VagrantPlugins
 
         def display_table(env, headers, rows)
           table = Terminal::Table.new headings: headers, rows: rows
-          env[:ui].info("\n#{table}\n")
+          env[:ui].info("\n#{table}")
         end
       end
     end

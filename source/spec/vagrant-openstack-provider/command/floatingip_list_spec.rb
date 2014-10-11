@@ -59,8 +59,7 @@ describe VagrantPlugins::Openstack::Command::FloatingIpList do
 +-------------------+
 | pool1             |
 | pool2             |
-+-------------------+
-').ordered
++-------------------+').ordered
 
       expect(env[:ui]).to receive(:info).with('
 +----+------------+-------+-------------+
@@ -68,8 +67,7 @@ describe VagrantPlugins::Openstack::Command::FloatingIpList do
 +----+------------+-------+-------------+
 | 1  | 10.10.10.1 | pool1 |             |
 | 2  | 10.10.10.2 | pool2 | inst001     |
-+----+------------+-------+-------------+
-').ordered
++----+------------+-------+-------------+').ordered
 
       @floating_ip_list_cmd.cmd('floatingip-list', [], env)
     end

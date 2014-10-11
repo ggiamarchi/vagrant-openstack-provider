@@ -43,8 +43,8 @@ describe VagrantPlugins::Openstack::Command::NetworkList do
 +--------+----------+
 | net-01 | internal |
 | net-02 | external |
-+--------+----------+
-')
++--------+----------+')
+
       @network_list_cmd.cmd('network-list', [], env)
     end
 
@@ -58,8 +58,8 @@ describe VagrantPlugins::Openstack::Command::NetworkList do
 | pub-01 | public   |
 | net-01 | internal |
 | net-02 | external |
-+--------+----------+
-')
++--------+----------+')
+
       @network_list_cmd.cmd('network-list', ['all'], env)
     end
 

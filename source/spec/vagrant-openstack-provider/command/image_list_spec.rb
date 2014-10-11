@@ -41,8 +41,7 @@ describe VagrantPlugins::Openstack::Command::ImageList do
 | 0001 | ubuntu |
 | 0002 | centos |
 | 0003 | debian |
-+------+--------+
-')
++------+--------+')
       @image_list_cmd.cmd('image-list', [], env)
     end
   end
