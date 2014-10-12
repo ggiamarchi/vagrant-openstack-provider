@@ -45,7 +45,7 @@ module VagrantPlugins
             client.session.endpoints[service['type'].to_sym] = url unless url.empty?
           end
 
-          read_network_api_version(env) if config.openstack_network_url.nil?
+          read_network_api_version(env) if config.openstack_network_url.nil? && !client.session.endpoints[:network].nil?
         end
 
         def read_network_api_version(env)

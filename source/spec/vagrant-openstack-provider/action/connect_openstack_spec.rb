@@ -187,5 +187,42 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
         expect { @action.call(env) }.to raise_error(Errors::MultipleApiVersion)
       end
     end
+
+    context 'with only keystone and nova' do
+      it 'read service catalog and stores endpoints URL in session' do
+        catalog = [
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://nova/v2/projectId',
+                'id' => '1'
+              }
+            ],
+            'type' => 'compute',
+            'name' => 'nova'
+          },
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://keystone/v2.0',
+                'id' => '2'
+              }
+            ],
+            'type' => 'identity',
+            'name' => 'keystone'
+          }
+        ]
+
+        double.tap do |keystone|
+          keystone.stub(:authenticate).with(anything) { catalog }
+          env[:openstack_client].stub(:keystone) { keystone }
+        end
+
+        @action.call(env)
+
+        expect(env[:openstack_client].session.endpoints)
+        .to eq(compute: 'http://nova/v2/projectId', identity: 'http://keystone/v2.0')
+      end
+    end
   end
 end
