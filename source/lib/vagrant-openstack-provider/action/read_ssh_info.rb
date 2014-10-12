@@ -9,6 +9,13 @@ module VagrantPlugins
       # This action reads the SSH info for the machine and puts it into the
       # `:machine_ssh_info` key in the environment.
       class ReadSSHInfo
+        #
+        # Keys are machine ids
+        #
+        @@ssh_info = {}
+
+        @@mutex = Mutex.new
+
         def initialize(app, _env, resolver = nil, utils = nil)
           @app    = app
           @logger = Log4r::Logger.new('vagrant_openstack::action::read_ssh_info')
@@ -26,8 +33,11 @@ module VagrantPlugins
 
         def call(env)
           @logger.info 'Reading SSH info'
-          env[:machine_ssh_info] = read_ssh_info(env)
-
+          server_id = env[:machine].id.to_sym
+          @@mutex.synchronize do
+            @@ssh_info[server_id] = read_ssh_info(env) if @@ssh_info[server_id].nil?
+            env[:machine_ssh_info] = @@ssh_info[server_id]
+          end
           @app.call(env)
         end
 

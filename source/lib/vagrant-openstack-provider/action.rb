@@ -100,6 +100,7 @@ module VagrantPlugins
               b2.use Provision
               b2.use SyncFolders
               b2.use CreateServer
+              b2.use WaitForServerToBeAccessible
             when :shutoff
               b2.use StartServer
             when :suspended
@@ -199,6 +200,7 @@ module VagrantPlugins
       autoload :Resume, action_root.join('resume')
       autoload :WaitForServerToStop, action_root.join('wait_stop')
       autoload :WaitForServerToBeActive, action_root.join('wait_active')
+      autoload :WaitForServerToBeAccessible, action_root.join('wait_accessible')
     end
   end
 end
