@@ -33,19 +33,20 @@ module VagrantPlugins
       end
 
       def get_private_networks(env)
-        networks_json = get(env, "#{@session.endpoints[:network]}/networks")
-        networks = []
-        JSON.parse(networks_json)['networks'].each do |n|
-          networks << Item.new(n['id'], n['name']) if n['tenant_id'].eql? @session.project_id
-        end
-        networks
+        get_networks(env, false)
       end
 
       def get_all_networks(env)
+        get_networks(env, true)
+      end
+
+      private
+
+      def get_networks(env, all)
         networks_json = get(env, "#{@session.endpoints[:network]}/networks")
         networks = []
         JSON.parse(networks_json)['networks'].each do |n|
-          networks << Item.new(n['id'], n['name'])
+          networks << Item.new(n['id'], n['name']) if all || n['tenant_id'].eql?(@session.project_id)
         end
         networks
       end
