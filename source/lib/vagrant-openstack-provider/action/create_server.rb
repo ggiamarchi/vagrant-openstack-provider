@@ -143,6 +143,8 @@ module VagrantPlugins
           @logger.info "Using floating IP #{floating_ip}"
           env[:ui].info(I18n.t('vagrant_openstack.using_floating_ip', floating_ip: floating_ip))
           env[:openstack_client].nova.add_floating_ip(env, server_id, floating_ip)
+        rescue Errors::UnableToResolveFloatingIP
+          @logger.info 'Vagrant was unable to resolve FloatingIP, continue assuming it is not necessary'
         end
 
         def attach_volumes(env, server_id, volumes)
@@ -155,6 +157,7 @@ module VagrantPlugins
 
         def waiting_for_server_to_be_reachable(env)
           ip = @utils.get_ip_address(env)
+          @logger.info "Trying to SSH into the instance at #{ip}"
           return if env[:interrupted]
 
           env[:ui].clear_line
