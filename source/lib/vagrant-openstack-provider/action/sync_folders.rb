@@ -63,9 +63,7 @@ module VagrantPlugins
 
             # If on Windows, modify the path to work with cygwin rsync
             if @host_os =~ /mswin|mingw|cygwin/
-              hostpath = hostpath.sub(/^([A-Za-z]):\//) do
-                "/cygdrive/#{Regexp.last_match[1].downcase}/"
-              end
+              hostpath = add_cygdrive_prefix_to_path(hostpath)
             end
 
             env[:ui].info(I18n.t('vagrant_openstack.rsync_folder', hostpath: hostpath, guestpath: guestpath))
@@ -115,6 +113,12 @@ module VagrantPlugins
         def ssh_key_options(ssh_info)
           # Ensure that `private_key_path` is an Array (for Vagrant < 1.4)
           Array(ssh_info[:private_key_path]).map { |path| "-i '#{path}' " }.join
+        end
+
+        def add_cygdrive_prefix_to_path(hostpath)
+          hostpath.downcase.sub(/^([a-z]):\//) do
+            "/cygdrive/#{Regexp.last_match[1]}/"
+          end
         end
       end
     end
