@@ -79,7 +79,7 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
           config.stub(:ssh_username) { 'test_username' }
           config.stub(:floating_ip) { '80.80.80.80' }
           config.stub(:keypair_name) { 'my_keypair' }
-          @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'sshuser')
+          @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'sshuser', log_level: 'ERROR')
         end
       end
       context 'without ssh.username specified' do
@@ -88,7 +88,7 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
           config.stub(:ssh_username) { 'test_username' }
           config.stub(:floating_ip) { '80.80.80.80' }
           config.stub(:keypair_name) { 'my_keypair' }
-          @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'test_username')
+          @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'test_username', log_level: 'ERROR')
         end
       end
     end
@@ -98,7 +98,7 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
         ssh_config.stub(:port) { 33 }
         config.stub(:floating_ip) { '80.80.80.80' }
         config.stub(:keypair_name) { 'my_keypair' }
-        @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 33, username: 'sshuser')
+        @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 33, username: 'sshuser', log_level: 'ERROR')
       end
     end
 
@@ -107,7 +107,7 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
         it 'returns the specified floating ip' do
           config.stub(:floating_ip) { '80.80.80.80' }
           config.stub(:keypair_name) { 'my_keypair' }
-          @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'sshuser')
+          @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'sshuser', log_level: 'ERROR')
         end
       end
 
@@ -116,7 +116,7 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
           config.stub(:floating_ip) { '80.80.80.80' }
           config.stub(:keypair_name) { nil }
           config.stub(:public_key_path) { '/public/key/path' }
-          @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'sshuser')
+          @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'sshuser', log_level: 'ERROR')
         end
       end
 
@@ -126,7 +126,12 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
           config.stub(:keypair_name) { nil }
           config.stub(:public_key_path) { nil }
           @action.stub(:get_keypair_name) { 'my_keypair_name' }
-          @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'sshuser', private_key_path: '/data/dir/my_keypair_name')
+          @action.read_ssh_info(env).should eq(
+            host: '80.80.80.80',
+            port: 22,
+            username: 'sshuser',
+            private_key_path: '/data/dir/my_keypair_name',
+            log_level: 'ERROR')
         end
       end
     end
@@ -146,7 +151,7 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
           }
         end
         config.stub(:keypair_name) { 'my_keypair' }
-        @action.read_ssh_info(env).should eq(host: '12.12.12.12', port: 22, username: 'sshuser')
+        @action.read_ssh_info(env).should eq(host: '12.12.12.12', port: 22, username: 'sshuser', log_level: 'ERROR')
       end
     end
   end
