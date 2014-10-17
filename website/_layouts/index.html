@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</title>
+        <meta name="viewport" content="width=device-width">
+        <meta name="description" content="{{ site.description }}">
+        <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
+        <link rel="stylesheet" href="{{ "/css/bootstrap.min.css" | prepend: site.baseurl }}">
+        <link rel="stylesheet" href="{{ "/css/main.css" | prepend: site.baseurl }}">
+    </head>
+
+    <body>
+
+        <a href="https://github.com/ggiamarchi/vagrant-openstack-provider"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+        <div class="jumbotron">
+            <div class="container">
+                <h2>Vagrant Openstack Provider</h2>
+                <p>
+                    A plugin that adds a Openstack Cloud provider to Vagrant, allowing Vagrant to control and provision machines within Openstack cloud.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-2 menu">
+            <ul class="nav nav-pills nav-stacked">
+                <li><a href="/">News</a></li>
+                <li><a href="/quickstart">Quickstart</a></li>
+                <li class="submenu-item"><a href="/quickstart#install">Installation</a></li>
+                <li class="submenu-item"><a href="/quickstart#vagrantfile">Simple Vagrantfile</a></li>
+                <li><a href="#">Documentation</a></li>
+                <li class="submenu-item"><a href="#">Box management</a></li>
+                <li class="submenu-item"><a href="#">Credentials</a></li>
+                <li class="submenu-item"><a href="#">Instances</a></li>
+                <li class="submenu-item"><a href="#">Networks</a></li>
+                <li class="submenu-item"><a href="#">Attatched volumes</a></li>
+                <li class="submenu-item"><a href="#">Keypair & SSH</a></li>
+                <li class="submenu-item"><a href="#">Floating IPs</a></li>
+                <li class="submenu-item"><a href="#">Synced folders</a></li>
+                <li class="submenu-item"><a href="#">Custom commands</a></li>
+                <li><a href="#">Troubleshooting</a></li>
+                <li><a href="#">How to contribute</a></li>
+                <li><a href="#">License</a></li>
+            </ul>
+        </div>
+
+        <div class="col-md-7 content">
+          {{ content }}
+        </div>
+
+        <div class="col-md-3 features">
+            <div class="col-md-12">
+                <h4><span class="glyphicon glyphicon-cloud-upload"></span>Manage instances</h4>
+                <p>An easy way to boot Openstack instances. As well, halt, resume, supend, reboot and SSH conncetion.</p>
+            </div>
+            <div class="col-md-12">
+                <h4><span class="glyphicon glyphicon-lock"></span>SSH Keys</h4>
+                <p>Automatic SSH key generation and public key provisioning. Zero client configuration needed.</p>
+            </div>
+            <div class="col-md-12">
+                <h4><span class="glyphicon glyphicon-floppy-open"></span>Provisioning</h4>
+                <p>Instances provisioning with built-in vagrant provisioners. For instance, chef, puppet, salt...</p>
+            </div>
+            <div class="col-md-12">
+                <h4><span class="glyphicon glyphicon-log-in"></span>Floating IPs</h4>
+                <p>Automatic floating IP allocation and assignation to virtual machine.</p>
+            </div>
+            <div class="col-md-12">
+                <h4><span class="glyphicon glyphicon-hdd"></span>Attached volumes</h4>
+                <p>Attach existing Cinder volumes to virtual machines.</p>
+            </div>
+            <div class="col-md-12">
+                <h4><span class="glyphicon glyphicon-folder-open"></span>Sync folders</h4>
+                <p>Sync local folders to remote machine using rsync.</p>
+            </div>
+            <div class="col-md-12">
+                <h4><span class="glyphicon glyphicon-list"></span>Custom commands</h4>
+                <p>Custom command added to vagrant CLI to easily query and list openstack elements.</p>
+            </div>
+        </div>
+
+        <div class="col-md-12 footer">
+           ...
+        </div>
+
+    </body>
+
+    <script src="{{ "/js/jquery.min.js }}"></script>
+    <script src="{{ "/js/bootstrap.min.js" | prepend: site.baseurl }}"></script>
+    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+</html>

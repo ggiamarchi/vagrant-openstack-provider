@@ -1,0 +1,17 @@
+---
+layout: index
+---
+
+<div class="news">
+    {% for post in site.posts %}
+
+    <a href="{{ post.url | prepend: site.baseurl }}">
+    <h2><span class="glyphicon glyphicon-calendar"></span>{{ post.title }}</h2>
+    </a>
+
+    <span class="post-date" style="margin-top: 3px">{{ post.date | date: "%b %-d, %Y" }} by <a>{{ post.author }}</a></span>
+    <p style="margin-top: 10px; text-align: justify">
+        {{ post.excerpt | remove: '<p>' | remove: '</p>' }}
+    </p>
+    {% endfor %}
+</div>

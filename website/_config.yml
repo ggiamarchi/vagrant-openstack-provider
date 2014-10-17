@@ -1,0 +1,9 @@
+# Site settings
+title: Vagrant Openstack Provider
+description: ""
+baseurl: ""
+url: "http://ggiamarchi.github.io/vagrant-openstack-provider"
+
+# Build settings
+markdown: kramdown
+permalink: pretty

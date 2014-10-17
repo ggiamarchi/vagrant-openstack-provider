@@ -1,0 +1,91 @@
+.jumbotron {
+  color: #ccc;
+  margin-bottom: 0;
+  background-color: #4b4b4b;
+}
+
+.jumbotron h2 {
+  color: #efefef;
+}
+
+.footer {
+    background-color: #4b4b4b;
+    height: 50px;
+    padding: 30px;
+}
+
+.content {
+    padding: 30px;
+}
+
+.news > a > h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.news > a > h2 > span {
+    margin-right: 10px !important;
+}
+
+.content > h2 {
+    color: #555;
+    margin-bottom: 20px !important;
+    margin-top: 20px !important;
+}
+
+.features {
+  color: #444;
+  background-color: #ddd;
+  padding: 10px;
+}
+
+.features > div {
+  margin-bottom: 10px;
+}
+
+.features > div > h4 > span {
+  margin-right: 10px;
+}
+
+.nav-pills>li>a {
+  border-radius: 0;
+}
+
+.menu {
+  padding: 0px 0px 0px 0px;
+  background-color: #ddd;
+}
+
+.menu li {
+   border-top: 1px solid #ccc;
+}
+
+.menu > ul > li {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.submenu-item {
+/*  padding-left: 30px; */
+  margin-left: 30px !important;
+}
+
+.menu a {
+  color: #444;
+  background-color: #ddd;
+}
+
+.menu a:hover {
+  color: #ccc;
+  background-color: #4b4b4b !important;
+/*  background-color: #ddd !important; */
+  text-decoration: none;
+}
+
+pre.prettyprint {
+  padding: 10px !important;
+  border: none !important;
+  background-color: #ddd;
+    border-radius: 0;
+}
