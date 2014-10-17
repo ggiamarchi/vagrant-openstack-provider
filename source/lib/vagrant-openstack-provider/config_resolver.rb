@@ -40,9 +40,8 @@ module VagrantPlugins
         config = env[:machine].provider_config
         nova = env[:openstack_client].nova
         return config.floating_ip if config.floating_ip
-        floating_ips = nova.get_all_floating_ips(env)
         fail Errors::UnableToResolveFloatingIP unless config.floating_ip_pool
-        floating_ips.each do |single|
+        nova.get_all_floating_ips(env).each do |single|
           return single.ip if single.pool == config.floating_ip_pool && single.instance_id.nil?
         end unless config.floating_ip_pool_always_allocate
         nova.allocate_floating_ip(env, config.floating_ip_pool).ip
