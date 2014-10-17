@@ -61,6 +61,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
       env[:machine] = double('machine')
       env[:machine].stub(:provider_config) { config }
       env[:machine].stub(:data_dir) { '/data/dir' }
+      env[:machine].stub(:config) { machine_config }
       env[:openstack_client] = double('openstack_client')
       env[:openstack_client].stub(:neutron) { neutron }
       env[:openstack_client].stub(:nova) { nova }
@@ -68,9 +69,53 @@ describe VagrantPlugins::Openstack::ConfigResolver do
     end
   end
 
+  let(:ssh_config) do
+    double('ssh_config').tap do |config|
+      config.stub(:username) { nil }
+      config.stub(:port) { nil }
+    end
+  end
+
+  let(:machine_config) do
+    double('machine_config').tap do |config|
+      config.stub(:ssh) { ssh_config }
+    end
+  end
+
   before :each do
     ConfigResolver.send(:public, *ConfigResolver.private_instance_methods)
     @action = ConfigResolver.new
+  end
+
+  describe 'resolve_ssh_username' do
+    context 'with machine.ssh.username' do
+      it 'returns machine.ssh.username' do
+        ssh_config.stub(:username) { 'machine ssh username' }
+        config.stub(:ssh_username) { nil }
+        expect(@action.resolve_ssh_username(env)).to eq('machine ssh username')
+      end
+    end
+    context 'with machine.ssh.username and config.ssh_username' do
+      it 'returns machine.ssh.username' do
+        ssh_config.stub(:username) { 'machine ssh username' }
+        config.stub(:ssh_username) { 'provider ssh username' }
+        expect(@action.resolve_ssh_username(env)).to eq('machine ssh username')
+      end
+    end
+    context 'with config.ssh_username' do
+      it 'returns config.ssh_username' do
+        ssh_config.stub(:username) { nil }
+        config.stub(:ssh_username) { 'provider ssh username' }
+        expect(@action.resolve_ssh_username(env)).to eq('provider ssh username')
+      end
+    end
+    context 'with no ssh username config' do
+      it 'fails' do
+        ssh_config.stub(:username) { nil }
+        config.stub(:ssh_username) { nil }
+        expect { @action.resolve_ssh_username(env) }.to raise_error(Errors::NoMatchingSshUsername)
+      end
+    end
   end
 
   describe 'resolve_flavor' do
@@ -192,22 +237,10 @@ describe VagrantPlugins::Openstack::ConfigResolver do
     end
 
     context 'with neither floating_ip nor floating_ip_pool' do
-      context 'if any ip is not associated with an instance' do
-        it 'return the available ip in the list of floating ips' do
-          nova.stub(:get_all_floating_ips).with(anything) do
-            [FloatingIP.new('80.81.82.84', 'pool-1', '1234'), FloatingIP.new('80.81.82.83', 'pool-1', nil)]
-          end
-          @action.resolve_floating_ip(env).should eq('80.81.82.83')
-        end
-      end
-
-      context 'if all ips are already associated with an instance' do
-        it 'fails with an UnableToResolveFloatingIP error' do
-          nova.stub(:get_all_floating_ips).with(anything) do
-            [FloatingIP.new('80.81.82.84', 'pool-1', '1234'), FloatingIP.new('80.81.82.83', 'pool-1', '2345')]
-          end
-          expect { @action.resolve_floating_ip(env) }.to raise_error(Errors::UnableToResolveFloatingIP)
-        end
+      it 'fails with an UnableToResolveFloatingIP error' do
+        config.stub(:floating_ip) { nil }
+        config.stub(:floating_ip_pool) { nil }
+        expect { @action.resolve_floating_ip(env) }.to raise_error(Errors::UnableToResolveFloatingIP)
       end
     end
   end

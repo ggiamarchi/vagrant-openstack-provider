@@ -72,11 +72,17 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
     end
   end
 
+  let(:utils) do
+    double('utils').tap do |u|
+      u.stub(:get_ip_address) { '1.2.3.4' }
+    end
+  end
+
   before :each do
     CreateServer.send(:public, *CreateServer.private_instance_methods)
     app = double('app')
     app.stub(:call).with(anything)
-    @action = CreateServer.new(app, nil, resolver)
+    @action = CreateServer.new(app, nil, resolver, utils)
   end
 
   describe 'call' do
@@ -105,7 +111,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
         expect(@action).to receive(:waiting_for_server_to_be_build).with(env, '45678')
         expect(@action).to receive(:assign_floating_ip).with(env, '45678').and_return('1.2.3.4')
         expect(@action).to receive(:attach_volumes).with(env, '45678', [{ id: 'vol-01', device: nil }])
-        expect(@action).to receive(:waiting_for_server_to_be_reachable).with(env, '1.2.3.4')
+        expect(@action).to receive(:waiting_for_server_to_be_reachable).with(env)
 
         @action.call(env)
       end
