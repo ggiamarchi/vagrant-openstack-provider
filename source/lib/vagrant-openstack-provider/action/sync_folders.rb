@@ -60,7 +60,9 @@ module VagrantPlugins
 
             # If on Windows, modify the path to work with cygwin rsync
             if @host_os =~ /mswin|mingw|cygwin/
-              hostpath = hostpath.sub(/^([A-Za-z]):\//, "/cygdrive/#{Regexp.last_match[1].downcase}/")
+              hostpath = hostpath.sub(/^([A-Za-z]):\//) do |match|
+                "/cygdrive/#{Regexp.last_match[1].downcase}/"
+              end
             end
 
             env[:ui].info(I18n.t('vagrant_openstack.rsync_folder', hostpath: hostpath, guestpath: guestpath))
@@ -77,12 +79,14 @@ module VagrantPlugins
             end
 
             # Rsync over to the guest path using the SSH info. add
-            # .hg/ to exclude list as that isn't covered in
+            # .hg/ and .git/ to exclude list as that isn't covered in
             # --cvs-exclude
             command = [
               'rsync', '--verbose', '--archive', '-z',
               '--cvs-exclude',
               '--exclude', '.hg/',
+              '--exclude', '.git/',
+              '--chmod', 'ugo=rwX',
               *includes,
               '-e', "ssh -p #{ssh_info[:port]} -o StrictHostKeyChecking=no #{ssh_key_options(ssh_info)}",
               hostpath,
