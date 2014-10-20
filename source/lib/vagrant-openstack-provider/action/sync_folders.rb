@@ -60,7 +60,7 @@ module VagrantPlugins
 
             # If on Windows, modify the path to work with cygwin rsync
             if @host_os =~ /mswin|mingw|cygwin/
-              hostpath = hostpath.sub(/^([A-Za-z]):\//) do |match|
+              hostpath = hostpath.sub(/^([A-Za-z]):\//) do
                 "/cygdrive/#{Regexp.last_match[1].downcase}/"
               end
             end
