@@ -136,6 +136,11 @@ module VagrantPlugins
       # @return [Hash]
       attr_accessor :metadata
 
+      # Flag to enable/disable all SSH actions (to use for instance on private networks)
+      #
+      # @return [Boolean]
+      attr_accessor :ssh_disabled
+
       def initialize
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
@@ -164,6 +169,7 @@ module VagrantPlugins
         @security_groups = UNSET_VALUE
         @user_data = UNSET_VALUE
         @metadata = UNSET_VALUE
+        @ssh_disabled = UNSET_VALUE
       end
 
       # rubocop:disable Style/CyclomaticComplexity
@@ -191,6 +197,7 @@ module VagrantPlugins
         @security_groups = nil if @security_groups == UNSET_VALUE
         @user_data = nil if @user_data == UNSET_VALUE
         @metadata = nil if @metadata == UNSET_VALUE
+        @ssh_disabled = false if @ssh_disabled == UNSET_VALUE
 
         # The SSH values by default are nil, and the top-level config
         # `config.ssh` values are used.

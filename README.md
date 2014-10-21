@@ -167,13 +167,15 @@ end
 
 * `volume_boot` - Volume to boot the VM from. When booting from an existing volume, `image` is not necessary and must not be provided.
 
-### SSH-key authentication
+### SSH authentication
 
 * `keypair_name` - The name of the key pair register in nova to associate with the VM. The public key should
   be the matching pair for the private key configured with `config.ssh.private_key_path` on Vagrant.
 * `public_key_path` - if `keypair_name` is not provided, the path to the public key will be used by vagrant to generate a keypair on the OpenStack cloud. The keypair will be destroyed when the VM is destroyed.
 
 If neither `keypair_name` nor `public_key_path` are set, vagrant will generate a new ssh key and automatically import it in Openstack.
+
+* `ssh_disabled` - if set to `true`, all ssh actions managed by the provider will be disabled. We recommend to use this option only to create private VMs that won't be accessed directly from vagrant. Some actions might still want to connect with SSH (provisionners...). In this case, we will just warn you that the ssh action is likely to fail, but we won't forbid it
 
 ### Synced folders
 
@@ -315,4 +317,4 @@ config.ssh.pty = true
 We thanks [Numergy](http://www.numergy.com) for giving us access to free compute resources on their OpenStack cloud that enabled us to test our provider on a real OpenStack installation.
 
 If you are also powering an OpenStack cloud, we'd like to hear from you. Test
-the plugin and report us issues or features you'd like to see. 
+the plugin and report us issues or features you'd like to see.
