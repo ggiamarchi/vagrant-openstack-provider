@@ -69,6 +69,9 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
       end
       r.stub(:resolve_keypair).with(anything) { 'key' }
       r.stub(:resolve_floating_ip).with(anything) { '1.2.3.4' }
+      r.stub(:resolve_security_groups).with(anything) do
+        [{ name: 'group1' }, { name: 'group2' }]
+      end
     end
   end
 
