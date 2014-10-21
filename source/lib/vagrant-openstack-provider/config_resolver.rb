@@ -169,6 +169,19 @@ module VagrantPlugins
         { id: volume_id, device: device }
       end
 
+      def resolve_security_groups(env)
+        groups = []
+        env[:machine].provider_config.security_groups.each do |group|
+          case group
+          when String
+            groups << { name: group }
+          when Hash
+            groups << group
+          end
+        end unless env[:machine].provider_config.security_groups.nil?
+        groups
+      end
+
       # This method finds a matching _thing_ in a collection of
       # _things_. This works matching if the ID or NAME equals to
       # `name`. Or, if `name` is a regexp, a partial match is chosen

@@ -500,4 +500,13 @@ describe VagrantPlugins::Openstack::ConfigResolver do
       end
     end
   end
+
+  describe 'resolve_security_groups' do
+    context 'with Hash and String objects' do
+      it 'returns normalized Hash list' do
+        config.stub(:security_groups) { ['group1', { name: 'group2' }] }
+        expect(@action.resolve_security_groups(env)).to eq([{ name: 'group1' }, { name: 'group2' }])
+      end
+    end
+  end
 end

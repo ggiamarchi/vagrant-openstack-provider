@@ -141,7 +141,7 @@ describe VagrantPlugins::Openstack::NovaClient do
           stub_request(:post, 'http://nova/a1b2c3/servers')
               .with(
                 body: '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key",'\
-                '"security_groups":["default"],"user_data":"dXNlcl9kYXRhX3Rlc3Q=\n","metadata":"metadata_test"},'\
+                '"security_groups":[{"name":"default"}],"user_data":"dXNlcl9kYXRhX3Rlc3Q=\n","metadata":"metadata_test"},'\
                 '"scheduler_hints":"sched_hints_test"}',
                 headers:
                 {
@@ -158,7 +158,7 @@ describe VagrantPlugins::Openstack::NovaClient do
             flavor_ref: 'flav',
             networks: nil,
             keypair: 'key',
-            security_groups: ['default'],
+            security_groups: [{ name: 'default' }],
             user_data: 'user_data_test',
             metadata: 'metadata_test',
             scheduler_hints: 'sched_hints_test')

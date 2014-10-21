@@ -45,7 +45,7 @@ module VagrantPlugins
             keypair_name: @resolver.resolve_keypair(env),
             availability_zone: env[:machine].provider_config.availability_zone,
             scheduler_hints: env[:machine].provider_config.scheduler_hints,
-            security_groups: env[:machine].provider_config.security_groups,
+            security_groups: @resolver.resolve_security_groups(env),
             user_data: env[:machine].provider_config.user_data,
             metadata: env[:machine].provider_config.metadata
           }
