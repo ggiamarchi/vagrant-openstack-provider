@@ -157,8 +157,8 @@ module VagrantPlugins
 
         def waiting_for_server_to_be_reachable(env)
           ip = @utils.get_ip_address(env)
+          return if env[:interrupted] || env[:machine].provider_config.ssh_disabled
           @logger.info "Trying to SSH into the instance at #{ip}"
-          return if env[:interrupted]
 
           env[:ui].clear_line
 

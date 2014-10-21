@@ -35,6 +35,7 @@ module VagrantPlugins
 
         def read_ssh_info(env)
           config = env[:machine].provider_config
+          env[:ui].warn('SSH is disabled in the provider config. The action you are attempting is likely to fail') if config.ssh_disabled
           hash = {
             host: @utils.get_ip_address(env),
             port: @resolver.resolve_ssh_port(env),
