@@ -284,6 +284,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
       nova.stub(:import_keypair) { 'my-keypair-imported' }
       SSHKey.stub(:generate) { ssh_key }
       File.should_receive(:write).with('/data/dir/my-keypair-imported', 'private key')
+      File.should_receive(:chmod).with(0600, '/data/dir/my-keypair-imported')
       @action.generate_keypair(env).should eq('my-keypair-imported')
     end
   end

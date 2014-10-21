@@ -131,7 +131,9 @@ module VagrantPlugins
         key = SSHKey.generate
         nova = env[:openstack_client].nova
         generated_keyname = nova.import_keypair(env, key.ssh_public_key)
-        File.write("#{env[:machine].data_dir}/#{generated_keyname}", key.private_key)
+        file_path = "#{env[:machine].data_dir}/#{generated_keyname}"
+        File.write(file_path, key.private_key)
+        File.chmod(0600, file_path)
         generated_keyname
       end
 
