@@ -194,20 +194,6 @@ module VagrantPlugins
           end
           false
         end
-
-        # This method finds a matching _thing_ in a collection of
-        # _things_. This works matching if the ID or NAME equals to
-        # `name`. Or, if `name` is a regexp, a partial match is chosen
-        # as well.
-        def find_matching(collection, name)
-          collection.each do |single|
-            return single if single.id == name
-            return single if single.name == name
-            return single if name.is_a?(Regexp) && name =~ single.name
-          end
-          @logger.error "Element '#{name}' not found in collection #{collection}"
-          nil
-        end
       end
     end
   end
