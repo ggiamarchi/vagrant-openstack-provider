@@ -4,15 +4,11 @@ module VagrantPlugins
   module Openstack
     module Action
       class WaitForServerToBeAccessible
-        def initialize(app, env, resolver = nil)
-          @app     = app
-          @ssh     = Vagrant::Action::Builtin::SSHRun.new(app, env)
-          @logger  = Log4r::Logger.new('vagrant_openstack::action::wait_accessible')
-          if resolver.nil?
-            @resolver = VagrantPlugins::Openstack::ConfigResolver.new
-          else
-            @resolver = resolver
-          end
+        def initialize(app, env, resolver = nil, ssh = nil)
+          @logger   = Log4r::Logger.new('vagrant_openstack::action::wait_accessible')
+          @app      = app
+          @ssh      = ssh || Vagrant::Action::Builtin::SSHRun.new(app, env)
+          @resolver = resolver || VagrantPlugins::Openstack::ConfigResolver.new
         end
 
         def call(env)
@@ -46,7 +42,7 @@ module VagrantPlugins
 
             env[:ssh_run_command] = 'exit 0'
             @ssh.call(env)
-            return true  if env[:ssh_run_exit_status] == 0
+            return true if env[:ssh_run_exit_status] == 0
 
             @logger.debug 'SSH not yet available... new retry in in 1 second'
             nb_retry += 1
