@@ -125,6 +125,19 @@ module VagrantPlugins
         fail Errors::NoMatchingSshUsername
       end
 
+      def resolve_security_groups(env)
+        groups = []
+        env[:machine].provider_config.security_groups.each do |group|
+          case group
+          when String
+            groups << { name: group }
+          when Hash
+            groups << group
+          end
+        end unless env[:machine].provider_config.security_groups.nil?
+        groups
+      end
+
       private
 
       def generate_keypair(env)
@@ -167,19 +180,6 @@ module VagrantPlugins
           fail Errors::ConflictVolumeNameId, volume: volume
         end
         { id: volume_id, device: device }
-      end
-
-      def resolve_security_groups(env)
-        groups = []
-        env[:machine].provider_config.security_groups.each do |group|
-          case group
-          when String
-            groups << { name: group }
-          when Hash
-            groups << group
-          end
-        end unless env[:machine].provider_config.security_groups.nil?
-        groups
       end
 
       # This method finds a matching _thing_ in a collection of
