@@ -58,7 +58,6 @@ module VagrantPlugins
           waiting_for_server_to_be_build(env, server_id)
           assign_floating_ip(env, server_id)
           attach_volumes(env, server_id, options[:volumes]) unless options[:volumes].empty?
-          waiting_for_server_to_be_reachable(env)
 
           @app.call(env)
         end
@@ -153,46 +152,6 @@ module VagrantPlugins
             @logger.debug("Attaching volumes #{volume}")
             env[:openstack_client].nova.attach_volume(env, server_id, volume[:id], volume[:device])
           end
-        end
-
-        def waiting_for_server_to_be_reachable(env)
-          ip = @utils.get_ip_address(env)
-          return if env[:interrupted] || env[:machine].provider_config.ssh_disabled
-          @logger.info "Trying to SSH into the instance at #{ip}"
-
-          env[:ui].clear_line
-
-          ssh_timeout = env[:machine].provider_config.ssh_timeout
-          unless port_open?(env, ip, @resolver.resolve_ssh_port(env), ssh_timeout)
-            env[:ui].error(I18n.t('vagrant_openstack.timeout'))
-            fail Errors::SshUnavailable, host: ip, timeout: ssh_timeout
-          end
-
-          @logger.info 'The server is ready'
-          env[:ui].info(I18n.t('vagrant_openstack.ready'))
-        end
-
-        def port_open?(env, ip, port, timeout)
-          start_time = Time.now
-          current_time = start_time
-          nb_retry = 0
-          while (current_time - start_time) <= timeout
-            begin
-              @logger.debug "Checking if SSH port is open... Attempt number #{nb_retry}"
-              if nb_retry % 5 == 0
-                @logger.info 'Waiting for SSH to become available...'
-                env[:ui].info(I18n.t('vagrant_openstack.waiting_for_ssh'))
-              end
-              TCPSocket.new(ip, port)
-              return true
-            rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ETIMEDOUT
-              @logger.debug 'SSH port is not open... new retry in in 1 second'
-              nb_retry += 1
-              sleep 1
-            end
-            current_time = Time.now
-          end
-          false
         end
       end
     end

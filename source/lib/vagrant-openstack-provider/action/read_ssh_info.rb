@@ -26,8 +26,13 @@ module VagrantPlugins
 
         def call(env)
           @logger.info 'Reading SSH info'
-          env[:machine_ssh_info] = read_ssh_info(env)
-
+          server_id = env[:machine].id.to_sym
+          SSHInfoHolder.instance.tap do |holder|
+            holder.synchronize do
+              holder.ssh_info[server_id] = read_ssh_info(env) if holder.ssh_info[server_id].nil?
+              env[:machine_ssh_info] = holder.ssh_info[server_id]
+            end
+          end
           @app.call(env)
         end
 
@@ -49,6 +54,19 @@ module VagrantPlugins
 
         def get_keypair_name(env)
           env[:openstack_client].nova.get_server_details(env, env[:machine].id)['key_name']
+        end
+      end
+
+      class SSHInfoHolder < Mutex
+        include Singleton
+
+        #
+        # Keys are machine ids
+        #
+        attr_accessor :ssh_info
+
+        def initialize
+          @ssh_info = {}
         end
       end
     end
