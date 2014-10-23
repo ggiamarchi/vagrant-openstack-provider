@@ -62,12 +62,7 @@ module VagrantPlugins
           s['security_groups'] = options[:security_groups] unless options[:security_groups].nil?
           s['user_data'] = Base64.encode64(options[:user_data]) unless options[:user_data].nil?
           s['metadata'] = options[:metadata] unless options[:metadata].nil?
-          unless options[:networks].nil? || options[:networks].empty?
-            s['networks'] = []
-            options[:networks].each do |uuid|
-              s['networks'] << { uuid: uuid }
-            end
-          end
+          s['networks'] = options[:networks] unless options[:networks].nil? || options[:networks].empty?
         end
         object = { server: server }
         object[:scheduler_hints] = options[:scheduler_hints] unless options[:scheduler_hints].nil?

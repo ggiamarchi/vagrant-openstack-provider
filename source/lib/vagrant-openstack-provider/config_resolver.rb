@@ -62,23 +62,15 @@ module VagrantPlugins
         env[:ui].info(I18n.t('vagrant_openstack.finding_networks'))
 
         private_networks = env[:openstack_client].neutron.get_private_networks(env)
-        private_network_ids = private_networks.map { |n| n.id }
+        private_network_ids = private_networks.map { |v| v.id }
+
+        @logger.debug(private_networks)
 
         networks = []
         config.networks.each do |network|
-          if private_network_ids.include?(network)
-            networks << network
-            next
-          end
-          net_id = nil
-          private_networks.each do |n| # Bad algorithm complexity, but here we don't care...
-            next unless n.name.eql? network
-            fail "Multiple networks with name '#{n.id}'" unless net_id.nil?
-            net_id = n.id
-          end
-          fail "No matching network with name '#{network}'" if net_id.nil?
-          networks << net_id
+          networks << resolve_network(network, private_networks, private_network_ids)
         end
+        @logger.debug("Resolved networks : #{networks.to_json}")
         networks
       end
 
@@ -148,6 +140,37 @@ module VagrantPlugins
         File.write(file_path, key.private_key)
         File.chmod(0600, file_path)
         generated_keyname
+      end
+
+      def resolve_network(network, network_list, network_ids)
+        return resolve_network_from_string(network, network_list) if network.is_a? String
+        return resolve_network_from_hash(network, network_list, network_ids) if network.is_a? Hash
+        fail Errors::InvalidNetworkObject, network: network
+      end
+
+      def resolve_network_from_string(network, network_list)
+        found_network = find_matching(network_list, network)
+        fail Errors::UnresolvedNetwork, network: network if found_network.nil?
+        { uuid: found_network.id }
+      end
+
+      def resolve_network_from_hash(network, network_list, network_ids)
+        if network.key?(:id)
+          fail Errors::ConflictNetworkNameId, network: network if network.key?(:name)
+          network_id = network[:id]
+          fail Errors::UnresolvedNetworkId, id: network_id unless network_ids.include? network_id
+        elsif network.key?(:name)
+          network_list.each do |v|
+            next unless v.name.eql? network[:name]
+            fail Errors::MultipleNetworkName, name: network[:name] unless network_id.nil?
+            network_id = v.id
+          end
+          fail Errors::UnresolvedNetworkName, name: network[:name] unless network_ids.include? network_id
+        else
+          fail Errors::ConflictNetworkNameId, network: network
+        end
+        return { uuid: network_id, fixed_ip: network[:address] } if network.key?(:address)
+        { uuid: network_id }
       end
 
       def resolve_volume(volume, volume_list, volume_ids)
