@@ -27,7 +27,7 @@ describe VagrantPlugins::Openstack::Action::ReadState do
 
   describe 'call' do
     context 'when server id is present' do
-      it 'set the state to the one returned by nova' do
+      it 'set the state to the vm_state returned by nova' do
         env[:machine].id = 'server_id'
         nova.stub(:get_server_details).and_return('status' => 'ACTIVE')
 
@@ -38,6 +38,18 @@ describe VagrantPlugins::Openstack::Action::ReadState do
         @action.call(env)
 
         expect(env[:machine_state_id]).to eq(:active)
+      end
+      it 'set the state to the task_state returned by nova extension' do
+        env[:machine].id = 'server_id'
+        nova.stub(:get_server_details).and_return('OS-EXT-STS:task_state' => 'SUSPENDING')
+
+        expect(nova).to receive(:get_server_details).with(env, 'server_id')
+        expect(app).to receive(:call)
+
+        @action = ReadState.new(app, nil)
+        @action.call(env)
+
+        expect(env[:machine_state_id]).to eq(:suspending)
       end
     end
     context 'when server id is not present' do
