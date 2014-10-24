@@ -215,6 +215,22 @@ en:
         not created
       long_not_created: |-
         The server is not created. Run `vagrant up` to create it.
+      short_active_suspending: |-
+        State: active - Task: suspending
+      long_suspending: |-
+        The server is active but a suspend is ongoing, either by request or necessity. 
+      short_suspended_resuming: |-
+        State: suspended  - Task: resuming 
+      long_suspended_resuming: |-
+        The server is suspended but a resume is ongoing. 
+      short_active_: |-
+        State: active - Task: none 
+      long_active_: |-
+        The server is active with no task performed, either by request or necessity. 
+      short_suspended_: |-
+        State: suspended - Task: none 
+      long_suspended_: |-
+        The server is suspended with no task performed. 
 
     client:
       looking_for_available_endpoints: |-
