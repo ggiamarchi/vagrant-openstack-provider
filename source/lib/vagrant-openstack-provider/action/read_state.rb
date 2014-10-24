@@ -31,8 +31,11 @@ module VagrantPlugins
             return :not_created
           end
 
-          # Return the state
-          server['status'].downcase.to_sym
+          if !server['OS-EXT-STS:task_state'].nil?
+            server['OS-EXT-STS:task_state'].downcase.to_sym
+          else
+            server['status'].downcase.to_sym
+          end
         end
       end
     end
