@@ -27,7 +27,7 @@ module VagrantPlugins
       def get_all_floating_ips(env)
         ips_json = get(env, "#{@session.endpoints[:compute]}/os-floating-ips",
                        'X-Auth-Token' => @session.token,
-                       :accept => :json) { |res| handle_response(res) }
+                       :accept => :json)
         JSON.parse(ips_json)['floating_ips'].map { |n| FloatingIP.new(n['ip'], n['pool'], n['instance_id']) }
       end
 
@@ -38,7 +38,7 @@ module VagrantPlugins
                         }.to_json,
                         'X-Auth-Token' => @session.token,
                         :accept => :json,
-                        :content_type => :json) { |res| handle_response(res) }
+                        :content_type => :json)
         floating_ip = JSON.parse(ips_json)['floating_ip']
         FloatingIP.new(floating_ip['ip'], floating_ip['pool'], floating_ip['instance_id'])
       end
