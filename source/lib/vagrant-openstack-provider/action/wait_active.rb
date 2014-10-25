@@ -5,18 +5,20 @@ module VagrantPlugins
   module Openstack
     module Action
       class WaitForServerToBeActive
-        def initialize(app, _env)
+        def initialize(app, _env, retry_interval = 3, timeout = 200)
           @app    = app
           @logger = Log4r::Logger.new('vagrant_openstack::action::start_server')
+          @retry_interval = retry_interval
+          @timeout = timeout
         end
 
         def call(env)
           if env[:machine].id
             env[:ui].info(I18n.t('vagrant_openstack.waiting_start'))
             client = env[:openstack_client].nova
-            timeout(200) do
+            timeout(@timeout) do
               while client.get_server_details(env, env[:machine].id)['status'] != 'ACTIVE'
-                sleep 3
+                sleep @retry_interval
                 @logger.info('Waiting for server to be active')
               end
             end
