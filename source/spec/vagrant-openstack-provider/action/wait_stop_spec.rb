@@ -32,6 +32,7 @@ describe VagrantPlugins::Openstack::Action::WaitForServerToStop do
       it 'become shutoff after one retry' do
         nova.stub(:get_server_details).and_return({ 'status' => 'ACTIVE' }, { 'status' => 'SHUTOFF' })
         expect(nova).to receive(:get_server_details).with(env, 'server_id').exactly(2).times
+        expect(app).to receive(:call)
         @action = WaitForServerToStop.new(app, nil, 1, 5)
         @action.call(env)
       end

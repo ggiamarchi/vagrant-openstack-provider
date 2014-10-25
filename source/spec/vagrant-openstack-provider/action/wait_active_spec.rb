@@ -32,6 +32,7 @@ describe VagrantPlugins::Openstack::Action::WaitForServerToBeActive do
       it 'become active after one retry' do
         nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, { 'status' => 'ACTIVE' })
         expect(nova).to receive(:get_server_details).with(env, 'server_id').exactly(2).times
+        expect(app).to receive(:call)
         @action = WaitForServerToBeActive.new(app, nil, 1, 5)
         @action.call(env)
       end
