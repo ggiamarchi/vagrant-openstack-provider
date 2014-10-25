@@ -55,7 +55,7 @@ module VagrantPlugins
           # Store the ID right away so we can track it
           env[:machine].id = server_id
 
-          waiting_for_server_to_be_build(env, server_id)
+          waiting_for_server_to_be_built(env, server_id)
           assign_floating_ip(env, server_id)
           attach_volumes(env, server_id, options[:volumes]) unless options[:volumes].empty?
 
@@ -125,7 +125,7 @@ module VagrantPlugins
           nova.create_server(env, create_opts)
         end
 
-        def waiting_for_server_to_be_build(env, server_id)
+        def waiting_for_server_to_be_built(env, server_id)
           @logger.info 'Waiting for the server to be built...'
           env[:ui].info(I18n.t('vagrant_openstack.waiting_for_build'))
           timeout(200) do
