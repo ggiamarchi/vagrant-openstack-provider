@@ -120,15 +120,33 @@ supported with `vagrant-openstack`, currently. If any of these are
 specified, Vagrant will emit a warning, but will otherwise boot
 the Openstack server.
 
-You can provide network id or name. However, in Openstack a network name is not unique, thus if there is two networks with
-the same name in your project the plugin will fail. If so, you have to use only ids.
+You can provide network id or name. However, in Openstack a network name is not unique, thus if there are two networks with
+the same name in your project the plugin will fail. If so, you have to use only ids. Optionally, you can specify the IP
+address that will be assigned to the instance if you need a static address or if DHCP is not enable for this network.
 
-Here's an example which adds two Cloud Networks. The first by id and the second by name.
+Here's an example which connect the instance to six Networks :
 
 ```ruby
 config.vm.provider :openstack do |os|
   ...
-  os.networks = ['443aff42-be57-effb-ad30-c097c1e4503f', 'backend-network']
+    os.networks = [
+      'net-name-01',
+      '287132f0-57e6-4c31-a1ee-4823e9786ff2',
+      {
+        name: 'net-name-03',
+        address: '192.168.22.43'
+      },
+      {
+        id: '7dfdcf01-5177-4774-9473-2ae92a6447d4',
+        address: '192.168.43.76'
+      },
+      {
+        name: 'net-name-05'
+      },
+      {
+        id: '01e0950f-c668-4efe-821b-93ff6e427562'
+      }
+    ]
   ...
 end
 ```
@@ -136,7 +154,7 @@ end
 #### Volumes
 
 * `volumes` - Volume list that have to be attached to the server. You can provide volume id or name. However, in Openstack
-a volume name is not unique, thus if there is two volumes with the same name in your project the plugin will fail. If so,
+a volume name is not unique, thus if there are two volumes with the same name in your project the plugin will fail. If so,
 you have to use only ids. Optionally, you can specify the device that will be assigned to the volume.
 
 Here comes an example that show six volumes attached to a server :

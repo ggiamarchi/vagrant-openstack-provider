@@ -26,7 +26,14 @@ describe VagrantPlugins::Openstack::ConfigResolver do
   let(:neutron) do
     double('neutron').tap do |neutron|
       neutron.stub(:get_private_networks).with(anything) do
-        [Item.new('net-id-1', 'net-1'), Item.new('net-id-2', 'net-2')]
+        [Item.new('001', 'net-01'),
+         Item.new('002', 'net-02'),
+         Item.new('003', 'net-03'),
+         Item.new('004', 'net-04'),
+         Item.new('005', 'net-05'),
+         Item.new('006', 'net-06'),
+         Item.new('007', 'net-07-08'),
+         Item.new('008', 'net-07-08')]
       end
     end
   end
@@ -290,48 +297,80 @@ describe VagrantPlugins::Openstack::ConfigResolver do
   end
 
   describe 'resolve_networks' do
+    context 'with network configured in all possible ways' do
+      it 'returns normalized network list' do
 
-    context 'with only ids of existing networks' do
-      it 'return the ids array' do
-        config.stub(:networks) { %w(net-id-1 net-id-2) }
-        @action.resolve_networks(env).should eq(%w(net-id-1 net-id-2))
+        config.stub(:networks) do
+          ['001',
+           'net-02',
+           { id: '003', address: '1.2.3.4' },
+           { name: 'net-04', address: '5.6.7.8' },
+           { name: 'net-05' },
+           { id: '006' }]
+        end
+
+        expect(@action.resolve_networks(env)).to eq [{ uuid: '001' },
+                                                     { uuid: '002' },
+                                                     { uuid: '003', fixed_ip: '1.2.3.4' },
+                                                     { uuid: '004', fixed_ip: '5.6.7.8' },
+                                                     { uuid: '005' },
+                                                     { uuid: '006' }]
       end
     end
 
-    context 'with only names of existing networks' do
-      it 'return the ids array' do
-        config.stub(:networks) { %w(net-1 net-2) }
-        @action.resolve_networks(env).should eq(%w(net-id-1 net-id-2))
+    context 'with invalid network object' do
+      it 'raises an error' do
+        config.stub(:networks) { [1] }
+        expect { @action.resolve_networks(env) }.to raise_error(Errors::InvalidNetworkObject)
       end
     end
 
-    context 'with only names and ids of existing networks' do
-      it 'return the ids array' do
-        config.stub(:networks) { %w(net-1 net-id-2) }
-        @action.resolve_networks(env).should eq(%w(net-id-1 net-id-2))
+    context 'with string that is neither an id nor name matching a network' do
+      it 'raises an error' do
+        config.stub(:networks) { ['not-exist'] }
+        expect { @action.resolve_networks(env) }.to raise_error(Errors::UnresolvedNetwork)
       end
     end
 
-    context 'with not existing networks' do
-      it 'return the ids array' do
-        config.stub(:networks) { %w(net-1 net-id-3) }
-        expect { @action.resolve_networks(env) }.to raise_error
+    context 'with hash containing a bad id' do
+      it 'raises an error' do
+        config.stub(:networks) { [{ id: 'not-exist' }] }
+        expect { @action.resolve_networks(env) }.to raise_error(Errors::UnresolvedNetworkId)
       end
     end
 
-    context 'with no network returned by neutron and no network specified in vagrant provider' do
-      it 'return the ids array' do
-        neutron.stub(:get_private_networks).with(anything) { [] }
-        config.stub(:networks) { [] }
-        @action.resolve_networks(env).should eq([])
+    context 'with hash containing a bad name' do
+      it 'raises an error' do
+        config.stub(:networks) { [{ name: 'not-exist' }] }
+        expect { @action.resolve_networks(env) }.to raise_error(Errors::UnresolvedNetworkName)
       end
     end
 
-    context 'with no network returned by neutron and one network specified in vagrant provider' do
-      it 'return the ids array' do
-        neutron.stub(:get_private_networks).with(anything) { [] }
-        config.stub(:networks) { ['net-id-1'] }
-        expect { @action.resolve_networks(env) }.to raise_error
+    context 'with empty hash' do
+      it 'raises an error' do
+        config.stub(:networks) { [{}] }
+        expect { @action.resolve_networks(env) }.to raise_error(Errors::ConflictNetworkNameId)
+      end
+    end
+
+    context 'with hash containing both id and name' do
+      it 'raises an error' do
+        config.stub(:networks) { [{ id: '001', name: 'net-01' }] }
+        expect { @action.resolve_networks(env) }.to raise_error(Errors::ConflictNetworkNameId)
+      end
+    end
+
+    context 'with hash containing both id and name' do
+      it 'raises an error' do
+        config.stub(:networks) { [{ id: '001', name: 'net-01' }] }
+        expect { @action.resolve_networks(env) }.to raise_error(Errors::ConflictNetworkNameId)
+      end
+    end
+
+    context 'with hash containing a name matching more than one network' do
+      it 'raises an error' do
+        config.stub(:networks) { [{ name: 'net-07-08' }] }
+        expect { @action.resolve_networks(env) }.to raise_error(Errors::MultipleNetworkName)
       end
     end
   end

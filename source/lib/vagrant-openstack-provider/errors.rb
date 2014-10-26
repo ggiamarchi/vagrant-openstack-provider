@@ -68,6 +68,30 @@ module VagrantPlugins
         error_key(:unable_to_resolve_ssh_key)
       end
 
+      class InvalidNetworkObject < VagrantOpenstackError
+        error_key(:invalid_network_format)
+      end
+
+      class UnresolvedNetwork < VagrantOpenstackError
+        error_key(:unresolved_network)
+      end
+
+      class UnresolvedNetworkId < VagrantOpenstackError
+        error_key(:unresolved_network_id)
+      end
+
+      class UnresolvedNetworkName < VagrantOpenstackError
+        error_key(:unresolved_network_name)
+      end
+
+      class ConflictNetworkNameId < VagrantOpenstackError
+        error_key(:conflict_network_name_id)
+      end
+
+      class MultipleNetworkName < VagrantOpenstackError
+        error_key(:multiple_network_name)
+      end
+
       class InvalidVolumeObject < VagrantOpenstackError
         error_key(:invalid_volume_format)
       end
