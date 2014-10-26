@@ -13,19 +13,11 @@ module VagrantPlugins
       class CreateServer
         include Vagrant::Util::Retryable
 
-        def initialize(app, _env, resolver = nil, utils = nil)
+        def initialize(app, _env, resolver = ConfigResolver.new, utils = Utils.new)
           @app = app
           @logger = Log4r::Logger.new('vagrant_openstack::action::create_server')
-          if resolver.nil?
-            @resolver = VagrantPlugins::Openstack::ConfigResolver.new
-          else
-            @resolver = resolver
-          end
-          if utils.nil?
-            @utils = VagrantPlugins::Openstack::Utils.new
-          else
-            @utils = utils
-          end
+          @resolver = resolver
+          @utils = utils
         end
 
         def call(env)

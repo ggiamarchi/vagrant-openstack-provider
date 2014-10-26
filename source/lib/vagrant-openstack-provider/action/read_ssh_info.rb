@@ -9,19 +9,11 @@ module VagrantPlugins
       # This action reads the SSH info for the machine and puts it into the
       # `:machine_ssh_info` key in the environment.
       class ReadSSHInfo
-        def initialize(app, _env, resolver = nil, utils = nil)
+        def initialize(app, _env, resolver = ConfigResolver.new, utils = Utils.new)
           @app    = app
           @logger = Log4r::Logger.new('vagrant_openstack::action::read_ssh_info')
-          if resolver.nil?
-            @resolver = VagrantPlugins::Openstack::ConfigResolver.new
-          else
-            @resolver = resolver
-          end
-          if utils.nil?
-            @utils = VagrantPlugins::Openstack::Utils.new
-          else
-            @utils = utils
-          end
+          @resolver = resolver
+          @utils = utils
         end
 
         def call(env)
