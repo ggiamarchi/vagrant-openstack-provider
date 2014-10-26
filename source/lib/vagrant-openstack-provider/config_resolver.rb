@@ -64,8 +64,6 @@ module VagrantPlugins
         private_networks = env[:openstack_client].neutron.get_private_networks(env)
         private_network_ids = private_networks.map { |v| v.id }
 
-        @logger.debug(private_networks)
-
         networks = []
         config.networks.each do |network|
           networks << resolve_network(network, private_networks, private_network_ids)
