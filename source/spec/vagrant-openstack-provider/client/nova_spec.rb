@@ -39,7 +39,7 @@ describe VagrantPlugins::Openstack::NovaClient do
     session.token = '123456'
     session.project_id = 'a1b2c3'
     session.endpoints = { compute: 'http://nova/a1b2c3' }
-    @nova_client = VagrantPlugins::Openstack::NovaClient.instance
+    @nova_client = VagrantPlugins::Openstack.nova
   end
 
   describe 'instance_exists' do

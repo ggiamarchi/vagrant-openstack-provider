@@ -47,7 +47,7 @@ describe VagrantPlugins::Openstack::KeystoneClient do
     end
 
     before :each do
-      @keystone_client = VagrantPlugins::Openstack::KeystoneClient.instance
+      @keystone_client = VagrantPlugins::Openstack.keystone
     end
 
     context 'with good credentials' do

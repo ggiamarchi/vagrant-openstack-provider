@@ -14,7 +14,7 @@ describe VagrantPlugins::Openstack::NeutronClient do
     session.token = '123456'
     session.project_id = 'a1b2c3'
     session.endpoints = { network: 'http://neutron' }
-    @neutron_client = VagrantPlugins::Openstack::NeutronClient.instance
+    @neutron_client = VagrantPlugins::Openstack.neutron
   end
 
   describe 'get_private_networks' do

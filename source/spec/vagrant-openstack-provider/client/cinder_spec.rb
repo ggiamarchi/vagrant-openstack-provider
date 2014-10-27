@@ -14,7 +14,7 @@ describe VagrantPlugins::Openstack::CinderClient do
     session.token = '123456'
     session.project_id = 'a1b2c3'
     session.endpoints = { volume: 'http://cinder' }
-    @cinder_client = VagrantPlugins::Openstack::CinderClient.instance
+    @cinder_client = VagrantPlugins::Openstack.cinder
   end
 
   describe 'get_all_volumes' do
