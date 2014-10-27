@@ -156,6 +156,51 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
     end
   end
 
+  describe 'waiting_for_server_to_be_built' do
+    context 'when server is not yet active' do
+      it 'become active after one retry' do
+        nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, { 'status' => 'ACTIVE' })
+        nova.should_receive(:get_server_details).with(env, 'server-01').exactly(2).times
+        @action.waiting_for_server_to_be_built(env, 'server-01', 1, 5)
+      end
+      it 'timeout before the server become active' do
+        nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, { 'status' => 'BUILD' })
+        nova.should_receive(:get_server_details).with(env, 'server-01').at_least(2).times
+        expect { @action.waiting_for_server_to_be_built(env, 'server-01', 1, 3) }.to raise_error Timeout::Error
+      end
+    end
+  end
+
+  describe 'assign_floating_ip' do
+    context 'When resolve correctly floating ip' do
+      it 'calls nova to assign floating ip' do
+        resolver.stub(:resolve_floating_ip).and_return '1.2.3.4'
+        nova.stub(:add_floating_ip)
+        expect(resolver).to receive(:resolve_floating_ip).with(env)
+        expect(nova).to receive(:add_floating_ip).with(env, 'server-01', '1.2.3.4')
+        @action.assign_floating_ip(env, 'server-01')
+      end
+    end
+    context 'When unable to resolve floating ip' do
+      it 'does not fail' do
+        resolver.stub(:resolve_floating_ip).and_raise Errors::UnableToResolveFloatingIP
+        nova.stub(:add_floating_ip)
+        expect(resolver).to receive(:resolve_floating_ip).with(env)
+        expect(nova).to_not receive(:add_floating_ip)
+        @action.assign_floating_ip(env, 'server-01')
+      end
+    end
+    context 'When neither floating ip nor floating ip pool is configured' do
+      it 'does nothing' do
+        resolver.stub(:resolve_floating_ip).and_return nil
+        nova.stub(:add_floating_ip)
+        expect(resolver).to receive(:resolve_floating_ip).with(env)
+        expect(nova).to_not receive(:add_floating_ip)
+        @action.assign_floating_ip(env, 'server-01')
+      end
+    end
+  end
+
   describe 'attach_volumes' do
     context 'with volume attached in all possible ways' do
       it 'returns normalized volume list' do
