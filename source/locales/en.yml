@@ -68,6 +68,8 @@ en:
         standard vagrant configuration option `config.ssh.username` instead
       ssh_username_required: |-
         vagrant standard configuration option `ssh.username` is required
+      invalid_value_for_parameter: |-
+        Invalid value '%{value}' for parameter '%{parameter}'
 
     errors:
       default: |-

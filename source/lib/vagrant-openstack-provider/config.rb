@@ -219,6 +219,7 @@ module VagrantPlugins
         errors << I18n.t('vagrant_openstack.config.username_required') unless @username
 
         validate_ssh_username(machine, errors)
+        validate_ssh_timeout(errors)
 
         if machine.config.ssh.private_key_path
           puts I18n.t('vagrant_openstack.config.keypair_name_required').yellow unless @keypair_name || @public_key_path
@@ -238,12 +239,19 @@ module VagrantPlugins
         { 'Openstack Provider' => errors }
       end
 
+      private
+
       def validate_ssh_username(machine, errors)
         puts I18n.t('vagrant_openstack.config.ssh_username_deprecated').yellow if @ssh_username
         errors << I18n.t('vagrant_openstack.config.ssh_username_required') unless @ssh_username || machine.config.ssh.username
       end
 
-      private
+      def validate_ssh_timeout(errors)
+        return if @ssh_timeout.nil? || @ssh_timeout == UNSET_VALUE
+        @ssh_timeout = Integer(@ssh_timeout) if @ssh_timeout.is_a? String
+      rescue ArgumentError
+        errors << I18n.t('vagrant_openstack.config.invalid_value_for_parameter', parameter: 'ssh_timeout', value: @ssh_timeout)
+      end
 
       def valid_uri?(value)
         uri = URI.parse value

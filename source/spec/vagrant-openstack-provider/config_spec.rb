@@ -139,6 +139,20 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
 
+    context 'the ssh_timeout' do
+      it 'should error if do not represent an integer' do
+        subject.ssh_timeout = 'timeout'
+        I18n.should_receive(:t).with('vagrant_openstack.config.invalid_value_for_parameter',
+                                     parameter: 'ssh_timeout', value: 'timeout').and_return error_message
+        validation_errors.first.should == error_message
+      end
+      it 'should be parsed as integer if is a string that represent an integer' do
+        subject.ssh_timeout = '100'
+        validation_errors.size.should eq(0)
+        expect(subject.ssh_timeout).to eq(100)
+      end
+    end
+
     [:openstack_compute_url, :openstack_auth_url].each do |url|
       context "the #{url}" do
         it 'should not validate if the URL is invalid' do
