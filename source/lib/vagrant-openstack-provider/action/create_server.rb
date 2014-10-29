@@ -74,11 +74,20 @@ module VagrantPlugins
           env[:ui].info(" -- KeyPair         : #{options[:keypair_name]}")
 
           unless options[:networks].empty?
+            formated_networks = ' -- '
             if options[:networks].size == 1
-              env[:ui].info(" -- Network         : #{options[:networks][0]}")
+              formated_networks << 'Network         : '
             else
-              env[:ui].info(" -- Networks        : #{options[:networks]}")
+              formated_networks << 'Networks        : '
             end
+            formated_networks << options[:networks].map do |n|
+              if n.key? :fixed_ip
+                "#{n[:uuid]} (#{n[:fixed_ip]})"
+              else
+                n[:uuid]
+              end
+            end.join(', ')
+            env[:ui].info(formated_networks)
           end
 
           unless options[:volumes].empty?

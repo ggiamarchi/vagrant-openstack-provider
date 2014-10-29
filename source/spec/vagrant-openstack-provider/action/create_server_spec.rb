@@ -129,7 +129,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
         flavor_ref: flavor.id,
         image_ref: image.id,
         volume_boot: nil,
-        networks: ['test-networks'],
+        networks: [{ uuid: 'test-networks-1' }, { uuid: 'test-networks-2', fixed_ip: '1.2.3.4' }],
         keypair: 'test-keypair',
         availability_zone: 'test-az',
         scheduler_hints: 'test-sched-hints',
@@ -141,7 +141,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
         options = {
           flavor: flavor,
           image: image,
-          networks: ['test-networks'],
+          networks: [{ uuid: 'test-networks-1' }, { uuid: 'test-networks-2', fixed_ip: '1.2.3.4' }],
           volumes: [{ id: '001', device: :auto }, { id: '002', device: '/dev/vdc' }],
           keypair_name: 'test-keypair',
           availability_zone: 'test-az',
