@@ -16,10 +16,10 @@ Style/ClassLength:
 
 Style/CyclomaticComplexity:
   Severity: warning
-  Max: 10
+  Max: 15
 
 Style/MethodLength:
-  Max: 50
+  Max: 60
 
 Style/LineLength:
   Max: 150
