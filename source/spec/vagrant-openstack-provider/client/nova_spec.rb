@@ -687,4 +687,33 @@ describe VagrantPlugins::Openstack::NovaClient do
       end
     end
   end
+
+  describe 'attach_volume' do
+    context 'with token and project_id acquainted' do
+      context 'with volume id and device' do
+        it 'call the nova api', :focus do
+          stub_request(:post, 'http://nova/a1b2c3/servers/9876/os-volume_attachments')
+          .with(headers:
+                  {
+                    'Accept' => 'application/json',
+                    'X-Auth-Token' => '123456'
+                  },
+                body: '{"volumeAttachment":{"volumeId":"n1n2","device":"/dev/vdg"}}')
+          .to_return(status: 200, body: '
+                  {
+                    "volumeAttachment": {
+                      "device": "/dev/vdg",
+                      "id": "attachment-01",
+                      "serverId": "9876",
+                      "volumeId": "n1n2"
+                    }
+                  }
+                ')
+
+          attachment = @nova_client.attach_volume(env, '9876', 'n1n2', '/dev/vdg')
+          expect(attachment['id']).to eq('attachment-01')
+        end
+      end
+    end
+  end
 end
