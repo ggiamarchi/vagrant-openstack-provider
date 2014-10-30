@@ -70,8 +70,7 @@ module VagrantPlugins
 
             # Create the guest path
             env[:machine].communicate.sudo("mkdir -p '#{guestpath}'")
-            env[:machine].communicate.sudo(
-              "chown -R #{ssh_info[:username]} '#{guestpath}'")
+            env[:machine].communicate.sudo("chown -R #{ssh_info[:username]} '#{guestpath}'")
 
             # Generate rsync include commands
             includes = rsync_includes.each_with_object([]) do |incl, incls|
