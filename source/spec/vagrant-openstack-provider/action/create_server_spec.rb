@@ -154,6 +154,40 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
         expect(@action.create_server(env, options)).to eq '1234'
       end
     end
+    context 'with minimal configuration and a single network' do
+      it 'calls nova' do
+        config.stub(:server_name) { nil }
+        nova.stub(:create_server).with(
+          env,
+          name: nil,
+          flavor_ref: flavor.id,
+          image_ref: image.id,
+          volume_boot: nil,
+          networks: [{ uuid: 'test-networks-1' }],
+          keypair: 'test-keypair',
+          availability_zone: nil,
+          scheduler_hints: nil,
+          security_groups: [],
+          user_data: nil,
+          metadata: nil) do '1234'
+        end
+
+        options = {
+          flavor: flavor,
+          image: image,
+          networks: [{ uuid: 'test-networks-1' }],
+          volumes: [],
+          keypair_name: 'test-keypair',
+          availability_zone: nil,
+          scheduler_hints: nil,
+          security_groups: [],
+          user_data: nil,
+          metadata: nil
+        }
+
+        expect(@action.create_server(env, options)).to eq '1234'
+      end
+    end
   end
 
   describe 'waiting_for_server_to_be_built' do
