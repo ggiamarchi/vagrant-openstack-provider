@@ -32,16 +32,17 @@ module VagrantPlugins
         # key in the environment.
         env = @machine.action('read_state')
         state_id = env[:machine_state_id]
-        env = @machine.action('read_task')
-        task_id = env[:machine_task_id]
-       
-
+        # env = @machine.action('read_task')
+        # task_id = env[:machine_task_id]
         # Get the short and long description
-        short = I18n.t("vagrant_openstack.states.short_#{state_id}_#{task_id}")
-        long  = I18n.t("vagrant_openstack.states.long_#{state_id}_#{task_id}")
+        short = I18n.t("vagrant_openstack.states.short_#{state_id}")
+        long  = I18n.t("vagrant_openstack.states.long_#{state_id}")
+
+        p "fred #{short}"
+        p "fred #{long}"
 
         # Return the MachineState object
-        Vagrant::MachineState.new("#{state_id}-#{task_id}", short, long) 
+        Vagrant::MachineState.new("#{state_id}", short, long)
       end
 
       def to_s

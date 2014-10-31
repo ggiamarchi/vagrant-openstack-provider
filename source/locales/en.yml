@@ -143,7 +143,7 @@ en:
 
     states:
       short_active: |-
-        active
+        active 
       long_active: |-
         The server is up and running. Run `vagrant ssh` to access it.
       short_build: |-
@@ -215,22 +215,18 @@ en:
         not created
       long_not_created: |-
         The server is not created. Run `vagrant up` to create it.
-      short_active_suspending: |-
-        State: active - Task: suspending
+      short_suspending: |-
+        suspending
       long_suspending: |-
-        The server is active but a suspend is ongoing, either by request or necessity. 
-      short_suspended_resuming: |-
-        State: suspended  - Task: resuming 
-      long_suspended_resuming: |-
-        The server is suspended but a resume is ongoing. 
-      short_active_: |-
-        State: active - Task: none 
-      long_active_: |-
-        The server is active with no task performed, either by request or necessity. 
-      short_suspended_: |-
-        State: suspended - Task: none 
-      long_suspended_: |-
-        The server is suspended with no task performed. 
+        The server is active and a suspend is ongoing, either by request or necessity. 
+      short_resuming: |-
+        resuming 
+      long_resuming: |-
+        The server is suspended and a resume is ongoing. 
+      short_spawning: |-
+        spawning
+      long_spawning: |-
+        The server is created and currently spawning. 
 
     client:
       looking_for_available_endpoints: |-
