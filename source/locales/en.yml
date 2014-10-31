@@ -188,7 +188,7 @@ en:
 
     states:
       short_active: |-
-        active
+        active 
       long_active: |-
         The server is up and running. Run `vagrant ssh` to access it.
       short_build: |-
