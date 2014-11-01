@@ -9,8 +9,8 @@ module VagrantPlugins
       include Vagrant::Action::Builtin
 
       # This action is called to destroy the remote machine.
-      def self.action_destroy
-        Vagrant::Action::Builder.new.tap do |b|
+      def self.action_destroy(builder = Vagrant::Action::Builder.new)
+        builder.tap do |b|
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
@@ -24,8 +24,8 @@ module VagrantPlugins
       end
 
       # This action is called when `vagrant provision` is called.
-      def self.action_provision
-        Vagrant::Action::Builder.new.tap do |b|
+      def self.action_provision(builder = Vagrant::Action::Builder.new)
+        builder.tap do |b|
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
@@ -42,8 +42,8 @@ module VagrantPlugins
       # This action is called to read the SSH info of the machine. The
       # resulting state is expected to be put into the `:machine_ssh_info`
       # key.
-      def self.action_read_ssh_info
-        Vagrant::Action::Builder.new.tap do |b|
+      def self.action_read_ssh_info(builder = Vagrant::Action::Builder.new)
+        builder.tap do |b|
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use ReadSSHInfo
@@ -53,16 +53,16 @@ module VagrantPlugins
       # This action is called to read the state of the machine. The
       # resulting state is expected to be put into the `:machine_state_id`
       # key.
-      def self.action_read_state
-        Vagrant::Action::Builder.new.tap do |b|
+      def self.action_read_state(builder = Vagrant::Action::Builder.new)
+        builder.tap do |b|
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use ReadState
         end
       end
 
-      def self.action_ssh
-        Vagrant::Action::Builder.new.tap do |b|
+      def self.action_ssh(builder = Vagrant::Action::Builder.new)
+        builder.tap do |b|
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
@@ -75,8 +75,8 @@ module VagrantPlugins
         end
       end
 
-      def self.action_ssh_run
-        Vagrant::Action::Builder.new.tap do |b|
+      def self.action_ssh_run(builder = Vagrant::Action::Builder.new)
+        builder.tap do |b|
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
@@ -89,8 +89,8 @@ module VagrantPlugins
         end
       end
 
-      def self.action_up
-        Vagrant::Action::Builder.new.tap do |b|
+      def self.action_up(builder = Vagrant::Action::Builder.new)
+        builder.tap do |b|
           b.use ConfigValidate
           b.use ConnectOpenstack
 
@@ -112,8 +112,8 @@ module VagrantPlugins
         end
       end
 
-      def self.action_halt
-        Vagrant::Action::Builder.new.tap do |b|
+      def self.action_halt(builder = Vagrant::Action::Builder.new)
+        builder.tap do |b|
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
@@ -128,8 +128,8 @@ module VagrantPlugins
 
       # This is the action that is primarily responsible for suspending
       # the virtual machine.
-      def self.action_suspend
-        Vagrant::Action::Builder.new.tap do |b|
+      def self.action_suspend(builder = Vagrant::Action::Builder.new)
+        builder.tap do |b|
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
@@ -146,8 +146,8 @@ module VagrantPlugins
 
       # This is the action that is primarily responsible for resuming
       # suspended machines.
-      def self.action_resume
-        Vagrant::Action::Builder.new.tap do |b|
+      def self.action_resume(builder = Vagrant::Action::Builder.new)
+        builder.tap do |b|
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
@@ -160,8 +160,8 @@ module VagrantPlugins
         end
       end
 
-      def self.action_reload
-        Vagrant::Action::Builder.new.tap do |b|
+      def self.action_reload(builder = Vagrant::Action::Builder.new)
+        builder.tap do |b|
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
