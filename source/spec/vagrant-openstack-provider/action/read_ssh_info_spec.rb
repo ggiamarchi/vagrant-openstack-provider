@@ -23,14 +23,6 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
     end
   end
 
-  let(:neutron) do
-    double('neutron').tap do |neutron|
-      neutron.stub(:get_private_networks).with(anything) do
-        [Item.new('net-id-1', 'net-1'), Item.new('net-id-2', 'net-2')]
-      end
-    end
-  end
-
   let(:nova) do
     double('nova').tap do |nova|
       nova.stub(:get_all_floating_ips).with(anything) do
@@ -67,9 +59,27 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
     end
   end
 
+  let(:app) do
+    double('app').tap do |app|
+      app.stub(:call).with(anything)
+    end
+  end
+
   before :each do
     ReadSSHInfo.send(:public, *ReadSSHInfo.private_instance_methods)
-    @action = ReadSSHInfo.new(nil, nil)
+    @action = ReadSSHInfo.new(app, env)
+  end
+
+  describe 'call' do
+    context 'when called three times' do
+      it 'read ssh info only once' do
+        config.stub(:keypair_name) { 'my_keypair' }
+        @action.stub(:read_ssh_info) { { host: '', port: '', username: '' } }
+        expect(@action).to receive(:read_ssh_info).exactly(1).times
+        expect(app).to receive(:call)
+        (1..3).each { @action.call(env) }
+      end
+    end
   end
 
   describe 'read_ssh_info' do
@@ -126,7 +136,8 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
           config.stub(:floating_ip) { '80.80.80.80' }
           config.stub(:keypair_name) { nil }
           config.stub(:public_key_path) { nil }
-          @action.stub(:get_keypair_name) { 'my_keypair_name' }
+          nova.stub(:get_server_details) { { 'key_name' => 'my_keypair_name' } }
+          expect(nova).to receive(:get_server_details).with(env, '1234')
           @action.read_ssh_info(env).should eq(
             host: '80.80.80.80',
             port: 22,
