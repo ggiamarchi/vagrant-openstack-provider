@@ -691,7 +691,7 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'attach_volume' do
     context 'with token and project_id acquainted' do
       context 'with volume id and device' do
-        it 'call the nova api', :focus do
+        it 'call the nova api' do
           stub_request(:post, 'http://nova/a1b2c3/servers/9876/os-volume_attachments')
           .with(headers:
                   {
