@@ -8,13 +8,17 @@ describe VagrantPlugins::Openstack::Action do
     end
   end
 
+  before :each do
+    Action.stub(:new_builder) { builder }
+  end
+
   describe 'action_destroy' do
     it 'add others middleware to builder' do
       expect(builder).to receive(:use).with(ConfigValidate)
       expect(builder).to receive(:use).with(ConnectOpenstack)
       expect(builder).to receive(:use).with(Call, ReadState)
       # TODO, Impove this test to check what's happen after ReadState
-      Action.action_destroy builder
+      Action.action_destroy
     end
   end
 
@@ -24,7 +28,7 @@ describe VagrantPlugins::Openstack::Action do
       expect(builder).to receive(:use).with(ConnectOpenstack)
       expect(builder).to receive(:use).with(Call, ReadState)
       # TODO, Impove this test to check what's happen after ReadState
-      Action.action_provision builder
+      Action.action_provision
     end
   end
 
@@ -33,7 +37,7 @@ describe VagrantPlugins::Openstack::Action do
       expect(builder).to receive(:use).with(ConfigValidate)
       expect(builder).to receive(:use).with(ConnectOpenstack)
       expect(builder).to receive(:use).with(ReadSSHInfo)
-      Action.action_read_ssh_info builder
+      Action.action_read_ssh_info
     end
   end
 
@@ -42,7 +46,7 @@ describe VagrantPlugins::Openstack::Action do
       expect(builder).to receive(:use).with(ConfigValidate)
       expect(builder).to receive(:use).with(ConnectOpenstack)
       expect(builder).to receive(:use).with(ReadState)
-      Action.action_read_state builder
+      Action.action_read_state
     end
   end
 
@@ -51,7 +55,7 @@ describe VagrantPlugins::Openstack::Action do
       expect(builder).to receive(:use).with(ConfigValidate)
       expect(builder).to receive(:use).with(ConnectOpenstack)
       expect(builder).to receive(:use).with(Call, ReadState)
-      Action.action_ssh builder
+      Action.action_ssh
     end
   end
 
@@ -61,7 +65,7 @@ describe VagrantPlugins::Openstack::Action do
       expect(builder).to receive(:use).with(ConnectOpenstack)
       expect(builder).to receive(:use).with(Call, ReadState)
       # TODO, Impove this test to check what's happen after ReadState
-      Action.action_ssh_run builder
+      Action.action_ssh_run
     end
   end
 
@@ -71,7 +75,7 @@ describe VagrantPlugins::Openstack::Action do
       expect(builder).to receive(:use).with(ConnectOpenstack)
       expect(builder).to receive(:use).with(Call, ReadState)
       # TODO, Impove this test to check what's happen after ReadState
-      Action.action_up builder
+      Action.action_up
     end
   end
 
@@ -81,7 +85,7 @@ describe VagrantPlugins::Openstack::Action do
       expect(builder).to receive(:use).with(ConnectOpenstack)
       expect(builder).to receive(:use).with(Call, ReadState)
       # TODO, Impove this test to check what's happen after ReadState
-      Action.action_halt builder
+      Action.action_halt
     end
   end
 
@@ -91,7 +95,7 @@ describe VagrantPlugins::Openstack::Action do
       expect(builder).to receive(:use).with(ConnectOpenstack)
       expect(builder).to receive(:use).with(Call, ReadState)
       # TODO, Impove this test to check what's happen after ReadState
-      Action.action_suspend builder
+      Action.action_suspend
     end
   end
 
@@ -101,7 +105,7 @@ describe VagrantPlugins::Openstack::Action do
       expect(builder).to receive(:use).with(ConnectOpenstack)
       expect(builder).to receive(:use).with(Call, ReadState)
       # TODO, Impove this test to check what's happen after ReadState
-      Action.action_resume builder
+      Action.action_resume
     end
   end
 
@@ -111,7 +115,7 @@ describe VagrantPlugins::Openstack::Action do
       expect(builder).to receive(:use).with(ConnectOpenstack)
       expect(builder).to receive(:use).with(Call, ReadState)
       # TODO, Impove this test to check what's happen after ReadState
-      Action.action_reload builder
+      Action.action_reload
     end
   end
 end
