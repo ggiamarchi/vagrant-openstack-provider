@@ -67,7 +67,8 @@ module VagrantPlugins
           config = env[:machine].provider_config
           client.session.endpoints[:compute] = config.openstack_compute_url unless config.openstack_compute_url.nil?
           client.session.endpoints[:network] = config.openstack_network_url unless config.openstack_network_url.nil?
-          client.session.endpoints[:volume] = config.openstack_volume_url unless config.openstack_volume_url.nil?
+          client.session.endpoints[:volume]  = config.openstack_volume_url  unless config.openstack_volume_url.nil?
+          client.session.endpoints.delete_if { |_, value| value.nil? || value.empty? }
         end
 
         def log_endpoint_catalog(env)

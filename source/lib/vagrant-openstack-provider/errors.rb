@@ -131,6 +131,14 @@ module VagrantPlugins
       class InstanceNotFound < VagrantOpenstackError
         error_key(:instance_not_found)
       end
+
+      class NetworkServiceUnavailable < VagrantOpenstackError
+        error_key(:nerwork_service_unavailable)
+      end
+
+      class VolumeServiceUnavailable < VagrantOpenstackError
+        error_key(:volume_service_unavailable)
+      end
     end
   end
 end
