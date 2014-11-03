@@ -1,3 +1,25 @@
+# 0.5.0 (November 4, 2014)
+
+FEATURES:
+
+  - Add an option to disable SSH Authentication and allow private vms [#120](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/120)
+  - Support for fixed IP address for private network [#87](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/87)
+
+IMPROVEMENTS:
+
+  - Accept a string for ssh_timeout value [#144](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/144)
+  - Vagrant Openstack should works in degraded mode id only Keystone and Nova are availables [#142](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/142)
+  - Add custom command `vagrant openstack reset [#107](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/107)
+  - Make box optional [#105](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/105)
+  - vagrant up => Instance could not be found [#98](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/98)
+
+BUG FIXES:
+
+  - security_groups should be an array of hashes [#137](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/137)
+  - user_data needs to be Base64 encoded in Nova.createServer [#122](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/122)
+  - SSH failures after port 22 is open because user doesn't exist yet [#106](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/106)
+  - Floating IP should not be mandatory [#55](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/55)
+
 # 0.4.1 (October 3, 2014)
 
 BUG FIXES:
