@@ -61,6 +61,19 @@ describe VagrantPlugins::Openstack::ConfigResolver do
     end
   end
 
+  let(:session) do
+    double('session').tap do |s|
+      s.stub(:endpoints) do
+        {
+          identity: 'http://keystone',
+          compute: 'http://nova',
+          volume: 'http://cinder',
+          network: 'http://neutron'
+        }
+      end
+    end
+  end
+
   let(:env) do
     Hash.new.tap do |env|
       env[:ui] = double('ui')
@@ -73,6 +86,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
       env[:openstack_client].stub(:neutron) { neutron }
       env[:openstack_client].stub(:nova) { nova }
       env[:openstack_client].stub(:cinder) { cinder }
+      env[:openstack_client].stub(:session) { session }
     end
   end
 
@@ -297,245 +311,360 @@ describe VagrantPlugins::Openstack::ConfigResolver do
   end
 
   describe 'resolve_networks' do
-    context 'with network configured in all possible ways' do
-      it 'returns normalized network list' do
+    context 'neutron service is available' do
+      context 'with network configured in all possible ways' do
+        it 'returns normalized network list' do
 
-        config.stub(:networks) do
-          ['001',
-           'net-02',
-           { id: '003', address: '1.2.3.4' },
-           { name: 'net-04', address: '5.6.7.8' },
-           { name: 'net-05' },
-           { id: '006' }]
+          config.stub(:networks) do
+            ['001',
+             'net-02',
+             { id: '003', address: '1.2.3.4' },
+             { name: 'net-04', address: '5.6.7.8' },
+             { name: 'net-05' },
+             { id: '006' }]
+          end
+
+          expect(@action.resolve_networks(env)).to eq [{ uuid: '001' },
+                                                       { uuid: '002' },
+                                                       { uuid: '003', fixed_ip: '1.2.3.4' },
+                                                       { uuid: '004', fixed_ip: '5.6.7.8' },
+                                                       { uuid: '005' },
+                                                       { uuid: '006' }]
         end
+      end
 
-        expect(@action.resolve_networks(env)).to eq [{ uuid: '001' },
-                                                     { uuid: '002' },
-                                                     { uuid: '003', fixed_ip: '1.2.3.4' },
-                                                     { uuid: '004', fixed_ip: '5.6.7.8' },
-                                                     { uuid: '005' },
-                                                     { uuid: '006' }]
+      context 'with invalid network object' do
+        it 'raises an error' do
+          config.stub(:networks) { [1] }
+          expect { @action.resolve_networks(env) }.to raise_error(Errors::InvalidNetworkObject)
+        end
+      end
+
+      context 'with string that is neither an id nor name matching a network' do
+        it 'raises an error' do
+          config.stub(:networks) { ['not-exist'] }
+          expect { @action.resolve_networks(env) }.to raise_error(Errors::UnresolvedNetwork)
+        end
+      end
+
+      context 'with hash containing a bad id' do
+        it 'raises an error' do
+          config.stub(:networks) { [{ id: 'not-exist' }] }
+          expect { @action.resolve_networks(env) }.to raise_error(Errors::UnresolvedNetworkId)
+        end
+      end
+
+      context 'with hash containing a bad name' do
+        it 'raises an error' do
+          config.stub(:networks) { [{ name: 'not-exist' }] }
+          expect { @action.resolve_networks(env) }.to raise_error(Errors::UnresolvedNetworkName)
+        end
+      end
+
+      context 'with empty hash' do
+        it 'raises an error' do
+          config.stub(:networks) { [{}] }
+          expect { @action.resolve_networks(env) }.to raise_error(Errors::ConflictNetworkNameId)
+        end
+      end
+
+      context 'with hash containing both id and name' do
+        it 'raises an error' do
+          config.stub(:networks) { [{ id: '001', name: 'net-01' }] }
+          expect { @action.resolve_networks(env) }.to raise_error(Errors::ConflictNetworkNameId)
+        end
+      end
+
+      context 'with hash containing a name matching more than one network' do
+        it 'raises an error' do
+          config.stub(:networks) { [{ name: 'net-07-08' }] }
+          expect { @action.resolve_networks(env) }.to raise_error(Errors::MultipleNetworkName)
+        end
       end
     end
 
-    context 'with invalid network object' do
-      it 'raises an error' do
-        config.stub(:networks) { [1] }
-        expect { @action.resolve_networks(env) }.to raise_error(Errors::InvalidNetworkObject)
-      end
-    end
+    context 'neutron service is not available' do
+      context 'with network configured in all possible ways' do
+        it 'returns normalized network list' do
+          session.stub(:endpoints) { { identity: 'http://keystone', compute: 'http://nova' } }
+          config.stub(:networks) do
+            ['001',
+             { id: '003', address: '1.2.3.4' },
+             { id: '006' }]
+          end
 
-    context 'with string that is neither an id nor name matching a network' do
-      it 'raises an error' do
-        config.stub(:networks) { ['not-exist'] }
-        expect { @action.resolve_networks(env) }.to raise_error(Errors::UnresolvedNetwork)
+          expect(@action.resolve_networks(env)).to eq [{ uuid: '001' },
+                                                       { uuid: '003', fixed_ip: '1.2.3.4' },
+                                                       { uuid: '006' }]
+        end
       end
-    end
 
-    context 'with hash containing a bad id' do
-      it 'raises an error' do
-        config.stub(:networks) { [{ id: 'not-exist' }] }
-        expect { @action.resolve_networks(env) }.to raise_error(Errors::UnresolvedNetworkId)
+      context 'with hash containing both id and name' do
+        it 'raises an error' do
+          session.stub(:endpoints) { { identity: 'http://keystone', compute: 'http://nova' } }
+          config.stub(:networks) { [{ id: '001', name: 'net-01' }] }
+          expect { @action.resolve_networks(env) }.to raise_error(Errors::ConflictNetworkNameId)
+        end
       end
-    end
 
-    context 'with hash containing a bad name' do
-      it 'raises an error' do
-        config.stub(:networks) { [{ name: 'not-exist' }] }
-        expect { @action.resolve_networks(env) }.to raise_error(Errors::UnresolvedNetworkName)
-      end
-    end
-
-    context 'with empty hash' do
-      it 'raises an error' do
-        config.stub(:networks) { [{}] }
-        expect { @action.resolve_networks(env) }.to raise_error(Errors::ConflictNetworkNameId)
-      end
-    end
-
-    context 'with hash containing both id and name' do
-      it 'raises an error' do
-        config.stub(:networks) { [{ id: '001', name: 'net-01' }] }
-        expect { @action.resolve_networks(env) }.to raise_error(Errors::ConflictNetworkNameId)
-      end
-    end
-
-    context 'with hash containing both id and name' do
-      it 'raises an error' do
-        config.stub(:networks) { [{ id: '001', name: 'net-01' }] }
-        expect { @action.resolve_networks(env) }.to raise_error(Errors::ConflictNetworkNameId)
-      end
-    end
-
-    context 'with hash containing a name matching more than one network' do
-      it 'raises an error' do
-        config.stub(:networks) { [{ name: 'net-07-08' }] }
-        expect { @action.resolve_networks(env) }.to raise_error(Errors::MultipleNetworkName)
+      context 'with hash containing name' do
+        it 'raises an error' do
+          session.stub(:endpoints) { { identity: 'http://keystone', compute: 'http://nova' } }
+          config.stub(:networks) { [{ name: 'net-01' }] }
+          expect { @action.resolve_networks(env) }.to raise_error(Errors::NetworkServiceUnavailable)
+        end
       end
     end
   end
 
   describe 'resolve_volume_boot' do
-    context 'with string volume id' do
-      it 'returns normalized volume' do
-        config.stub(:volume_boot) { '001' }
-        expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+    context 'cinder service is available' do
+      context 'with string volume id' do
+        it 'returns normalized volume' do
+          config.stub(:volume_boot) { '001' }
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+        end
+      end
+
+      context 'with string volume name' do
+        it 'returns normalized volume' do
+          config.stub(:volume_boot) { 'vol-01' }
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+        end
+      end
+
+      context 'with hash volume id' do
+        it 'returns normalized volume' do
+          config.stub(:volume_boot) { { id: '001' } }
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+        end
+      end
+
+      context 'with hash volume name' do
+        it 'returns normalized volume' do
+          config.stub(:volume_boot) { { name: 'vol-01' } }
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+        end
+      end
+
+      context 'with hash volume id and device' do
+        it 'returns normalized volume' do
+          config.stub(:volume_boot) { { id: '001', device: 'vdb' } }
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vdb'
+        end
+      end
+
+      context 'with hash volume name and device' do
+        it 'returns normalized volume' do
+          config.stub(:volume_boot) { { name: 'vol-01', device: 'vdb' } }
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vdb'
+        end
+      end
+
+      context 'with empty hash' do
+        it 'raises an error' do
+          config.stub(:volume_boot) { {} }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictVolumeNameId)
+        end
+      end
+
+      context 'with invalid volume object' do
+        it 'raises an error' do
+          config.stub(:volume_boot) { 1 }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::InvalidVolumeObject)
+        end
+      end
+
+      context 'with hash containing a bad id' do
+        it 'raises an error' do
+          config.stub(:volume_boot) { { id: 'not-exist' } }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::UnresolvedVolumeId)
+        end
+      end
+
+      context 'with hash containing a bad name' do
+        it 'raises an error' do
+          config.stub(:volume_boot) { { name: 'not-exist' } }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::UnresolvedVolumeName)
+        end
+      end
+
+      context 'with hash containing both id and name' do
+        it 'raises an error' do
+          config.stub(:volume_boot) { { id: '001', name: 'vol-01' } }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictVolumeNameId)
+        end
+      end
+
+      context 'with hash containing a name matching more than one volume' do
+        it 'raises an error' do
+          config.stub(:volume_boot) { { name: 'vol-07-08' } }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::MultipleVolumeName)
+        end
       end
     end
 
-    context 'with string volume name' do
-      it 'returns normalized volume' do
-        config.stub(:volume_boot) { 'vol-01' }
-        expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+    context 'cinder service is not available' do
+      context 'with string volume id' do
+        it 'returns normalized volume' do
+          session.stub(:endpoints) { { identity: 'http://keystone', compute: 'http://nova' } }
+          config.stub(:volume_boot) { '001' }
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+        end
       end
-    end
 
-    context 'with hash volume id' do
-      it 'returns normalized volume' do
-        config.stub(:volume_boot) { { id: '001' } }
-        expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+      context 'with hash volume id' do
+        it 'returns normalized volume' do
+          session.stub(:endpoints) { { identity: 'http://keystone', compute: 'http://nova' } }
+          config.stub(:volume_boot) { { id: '001' } }
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+        end
       end
-    end
 
-    context 'with hash volume name' do
-      it 'returns normalized volume' do
-        config.stub(:volume_boot) { { name: 'vol-01' } }
-        expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
+      context 'with hash volume name' do
+        it 'raise an error' do
+          session.stub(:endpoints) { { identity: 'http://keystone', compute: 'http://nova' } }
+          config.stub(:volume_boot) { { name: 'vol-01' } }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::VolumeServiceUnavailable)
+        end
       end
-    end
 
-    context 'with hash volume id and device' do
-      it 'returns normalized volume' do
-        config.stub(:volume_boot) { { id: '001', device: 'vdb' } }
-        expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vdb'
+      context 'with hash volume id and device' do
+        it 'returns normalized volume' do
+          session.stub(:endpoints) { { identity: 'http://keystone', compute: 'http://nova' } }
+          config.stub(:volume_boot) { { id: '001', device: 'vdb' } }
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vdb'
+        end
       end
-    end
 
-    context 'with hash volume name and device' do
-      it 'returns normalized volume' do
-        config.stub(:volume_boot) { { name: 'vol-01', device: 'vdb' } }
-        expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vdb'
+      context 'with hash volume name and device' do
+        it 'raise an error' do
+          session.stub(:endpoints) { { identity: 'http://keystone', compute: 'http://nova' } }
+          config.stub(:volume_boot) { { name: 'vol-01', device: 'vdb' } }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::VolumeServiceUnavailable)
+        end
       end
-    end
 
-    context 'with empty hash' do
-      it 'raises an error' do
-        config.stub(:volume_boot) { {} }
-        expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictVolumeNameId)
+      context 'with invalid volume object' do
+        it 'raises an error' do
+          session.stub(:endpoints) { { identity: 'http://keystone', compute: 'http://nova' } }
+          config.stub(:volume_boot) { 1 }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::InvalidVolumeObject)
+        end
       end
-    end
 
-    context 'with invalid volume object' do
-      it 'raises an error' do
-        config.stub(:volume_boot) { 1 }
-        expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::InvalidVolumeObject)
-      end
-    end
-
-    context 'with hash containing a bad id' do
-      it 'raises an error' do
-        config.stub(:volume_boot) { { id: 'not-exist' } }
-        expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::UnresolvedVolumeId)
-      end
-    end
-
-    context 'with hash containing a bad name' do
-      it 'raises an error' do
-        config.stub(:volume_boot) { { name: 'not-exist' } }
-        expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::UnresolvedVolumeName)
-      end
-    end
-
-    context 'with hash containing both id and name' do
-      it 'raises an error' do
-        config.stub(:volume_boot) { { id: '001', name: 'vol-01' } }
-        expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictVolumeNameId)
-      end
-    end
-
-    context 'with hash containing a name matching more than one volume' do
-      it 'raises an error' do
-        config.stub(:volume_boot) { { name: 'vol-07-08' } }
-        expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::MultipleVolumeName)
+      context 'with hash containing both id and name' do
+        it 'raises an error' do
+          session.stub(:endpoints) { { identity: 'http://keystone', compute: 'http://nova' } }
+          config.stub(:volume_boot) { { id: '001', name: 'vol-01' } }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictVolumeNameId)
+        end
       end
     end
   end
 
   describe 'resolve_volumes' do
-    context 'with volume attached in all possible ways' do
-      it 'returns normalized volume list' do
+    context 'cinder service is available' do
+      context 'with volume attached in all possible ways' do
+        it 'returns normalized volume list' do
 
-        config.stub(:volumes) do
-          ['001',
-           'vol-02',
-           { id: '003', device: '/dev/vdz' },
-           { name: 'vol-04', device: '/dev/vdy' },
-           { name: 'vol-05' },
-           { id: '006' }]
+          config.stub(:volumes) do
+            ['001',
+             'vol-02',
+             { id: '003', device: '/dev/vdz' },
+             { name: 'vol-04', device: '/dev/vdy' },
+             { name: 'vol-05' },
+             { id: '006' }]
+          end
+
+          expect(@action.resolve_volumes(env)).to eq [{ id: '001', device: nil },
+                                                      { id: '002', device: nil },
+                                                      { id: '003', device: '/dev/vdz' },
+                                                      { id: '004', device: '/dev/vdy' },
+                                                      { id: '005', device: nil },
+                                                      { id: '006', device: nil }]
+        end
+      end
+
+      context 'with invalid volume object' do
+        it 'raises an error' do
+          config.stub(:volumes) { [1] }
+          expect { @action.resolve_volumes(env) }.to raise_error(Errors::InvalidVolumeObject)
+        end
+      end
+
+      context 'with string that is neither an id nor name matching a volume' do
+        it 'raises an error' do
+          config.stub(:volumes) { ['not-exist'] }
+          expect { @action.resolve_volumes(env) }.to raise_error(Errors::UnresolvedVolume)
+        end
+      end
+
+      context 'with hash containing a bad id' do
+        it 'raises an error' do
+          config.stub(:volumes) { [{ id: 'not-exist' }] }
+          expect { @action.resolve_volumes(env) }.to raise_error(Errors::UnresolvedVolumeId)
+        end
+      end
+
+      context 'with hash containing a bad name' do
+        it 'raises an error' do
+          config.stub(:volumes) { [{ name: 'not-exist' }] }
+          expect { @action.resolve_volumes(env) }.to raise_error(Errors::UnresolvedVolumeName)
+        end
+      end
+
+      context 'with empty hash' do
+        it 'raises an error' do
+          config.stub(:volumes) { [{}] }
+          expect { @action.resolve_volumes(env) }.to raise_error(Errors::ConflictVolumeNameId)
+        end
+      end
+
+      context 'with hash containing both id and name' do
+        it 'raises an error' do
+          config.stub(:volumes) { [{ id: '001', name: 'vol-01' }] }
+          expect { @action.resolve_volumes(env) }.to raise_error(Errors::ConflictVolumeNameId)
+        end
+      end
+
+      context 'with hash containing a name matching more than one volume' do
+        it 'raises an error' do
+          config.stub(:volumes) { [{ name: 'vol-07-08' }] }
+          expect { @action.resolve_volumes(env) }.to raise_error(Errors::MultipleVolumeName)
+        end
+      end
+    end
+
+    context 'cinder service is not available' do
+      context 'with volume attached in all possible ways' do
+        it 'returns normalized volume list' do
+          session.stub(:endpoints) { { identity: 'http://keystone', compute: 'http://nova' } }
+          config.stub(:volumes) do
+            ['001',
+             { id: '003', device: '/dev/vdz' },
+             { id: '006' }]
+          end
+
+          expect(@action.resolve_volumes(env)).to eq [{ id: '001', device: nil },
+                                                      { id: '003', device: '/dev/vdz' },
+                                                      { id: '006', device: nil }]
         end
 
-        expect(@action.resolve_volumes(env)).to eq [{ id: '001', device: nil },
-                                                    { id: '002', device: nil },
-                                                    { id: '003', device: '/dev/vdz' },
-                                                    { id: '004', device: '/dev/vdy' },
-                                                    { id: '005', device: nil },
-                                                    { id: '006', device: nil }]
-      end
-    end
-
-    context 'with invalid volume object' do
-      it 'raises an error' do
-        config.stub(:volumes) { [1] }
-        expect { @action.resolve_volumes(env) }.to raise_error(Errors::InvalidVolumeObject)
-      end
-    end
-
-    context 'with string that is neither an id nor name matching a volume' do
-      it 'raises an error' do
-        config.stub(:volumes) { ['not-exist'] }
-        expect { @action.resolve_volumes(env) }.to raise_error(Errors::UnresolvedVolume)
-      end
-    end
-
-    context 'with hash containing a bad id' do
-      it 'raises an error' do
-        config.stub(:volumes) { [{ id: 'not-exist' }] }
-        expect { @action.resolve_volumes(env) }.to raise_error(Errors::UnresolvedVolumeId)
-      end
-    end
-
-    context 'with hash containing a bad name' do
-      it 'raises an error' do
-        config.stub(:volumes) { [{ name: 'not-exist' }] }
-        expect { @action.resolve_volumes(env) }.to raise_error(Errors::UnresolvedVolumeName)
-      end
-    end
-
-    context 'with empty hash' do
-      it 'raises an error' do
-        config.stub(:volumes) { [{}] }
-        expect { @action.resolve_volumes(env) }.to raise_error(Errors::ConflictVolumeNameId)
-      end
-    end
-
-    context 'with hash containing both id and name' do
-      it 'raises an error' do
-        config.stub(:volumes) { [{ id: '001', name: 'vol-01' }] }
-        expect { @action.resolve_volumes(env) }.to raise_error(Errors::ConflictVolumeNameId)
-      end
-    end
-
-    context 'with hash containing both id and name' do
-      it 'raises an error' do
-        config.stub(:volumes) { [{ id: '001', name: 'vol-01' }] }
-        expect { @action.resolve_volumes(env) }.to raise_error(Errors::ConflictVolumeNameId)
-      end
-    end
-
-    context 'with hash containing a name matching more than one volume' do
-      it 'raises an error' do
-        config.stub(:volumes) { [{ name: 'vol-07-08' }] }
-        expect { @action.resolve_volumes(env) }.to raise_error(Errors::MultipleVolumeName)
+        context 'with hash containing both id and name' do
+          it 'raises an error' do
+            session.stub(:endpoints) { { identity: 'http://keystone', compute: 'http://nova' } }
+            config.stub(:volumes) { [{ id: '001', name: 'vol-01' }] }
+            expect { @action.resolve_volumes(env) }.to raise_error(Errors::ConflictVolumeNameId)
+          end
+        end
+        context 'with hash containing name' do
+          it 'raises an error' do
+            session.stub(:endpoints) { { identity: 'http://keystone', compute: 'http://nova' } }
+            config.stub(:volumes) { [{ name: 'vol-01' }] }
+            expect { @action.resolve_volumes(env) }.to raise_error(Errors::VolumeServiceUnavailable)
+          end
+        end
       end
     end
   end

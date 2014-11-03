@@ -44,6 +44,10 @@ en:
       Warning! The Openstack provider doesn't support any of the Vagrant
       high-level network configurations (`config.vm.network`). They
       will be silently ignored.
+    warn_network_identifier_is_assumed_to_be_an_id: |-
+      As Neutron endpoint is not available, the identifier '%{network}' is assumed to be an id (not a name).
+    warn_volume_identifier_is_assumed_to_be_an_id: |-
+      As Cinder endpoint is not available, the identifier '%{volume}' is assumed to be an id (not a name).
 
     config:
       password_required: |-
@@ -154,6 +158,12 @@ en:
         Dashboard instead of using vagrant commands.
         We recommend using the command `vagrant openstack reset` to reset
         vagrant to a clear state
+      nerwork_service_unavailable: |-
+        Neutron service endpoint is not available, thus there is not way to retrieve
+        network id from its name. You have to provide only ids in your Vagrantfile.
+      volume_service_unavailable: |-
+        Cinder service endpoint is not available, thus there is not way to retrieve
+        volume id from its name. You have to provide only ids in your Vagrantfile.
 
     states:
       short_active: |-

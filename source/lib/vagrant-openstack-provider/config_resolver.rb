@@ -60,6 +60,7 @@ module VagrantPlugins
         config = env[:machine].provider_config
         return [] if config.networks.nil? || config.networks.empty?
         env[:ui].info(I18n.t('vagrant_openstack.finding_networks'))
+        return resolve_networks_without_network_service(env) unless env[:openstack_client].session.endpoints.key? :network
 
         private_networks = env[:openstack_client].neutron.get_private_networks(env)
         private_network_ids = private_networks.map { |v| v.id }
@@ -76,6 +77,7 @@ module VagrantPlugins
         @logger.info 'Resolving image'
         config = env[:machine].provider_config
         return nil if config.volume_boot.nil?
+        return resolve_volume_without_volume_service(env, config.volume_boot, 'vda') unless env[:openstack_client].session.endpoints.key? :volume
 
         volume_list = env[:openstack_client].cinder.get_all_volumes(env)
         volume_ids = volume_list.map { |v| v.id }
@@ -93,6 +95,7 @@ module VagrantPlugins
         config = env[:machine].provider_config
         return [] if config.volumes.nil? || config.volumes.empty?
         env[:ui].info(I18n.t('vagrant_openstack.finding_volumes'))
+        return resolve_volumes_without_volume_service(env) unless env[:openstack_client].session.endpoints.key? :volume
 
         volume_list = env[:openstack_client].cinder.get_all_volumes(env)
         volume_ids = volume_list.map { |v| v.id }
@@ -140,6 +143,27 @@ module VagrantPlugins
         generated_keyname
       end
 
+      def resolve_networks_without_network_service(env)
+        config = env[:machine].provider_config
+        networks = []
+        config.networks.each do |network|
+          case network
+          when String
+            env[:ui].info(I18n.t('vagrant_openstack.warn_network_identifier_is_assumed_to_be_an_id', network: network))
+            networks << { uuid: network }
+          when Hash
+            fail Errors::ConflictNetworkNameId, network: network if network.key?(:name) && network.key?(:id)
+            fail Errors::NetworkServiceUnavailable if network.key? :name
+            if network.key?(:address)
+              networks << { uuid: network[:id], fixed_ip: network[:address] }
+            else
+              networks << { uuid: network[:id] }
+            end
+          end
+        end
+        networks
+      end
+
       def resolve_network(network, network_list, network_ids)
         return resolve_network_from_string(network, network_list) if network.is_a? String
         return resolve_network_from_hash(network, network_list, network_ids) if network.is_a? Hash
@@ -169,6 +193,23 @@ module VagrantPlugins
         end
         return { uuid: network_id, fixed_ip: network[:address] } if network.key?(:address)
         { uuid: network_id }
+      end
+
+      def resolve_volumes_without_volume_service(env)
+        env[:machine].provider_config.volumes.map { |volume| resolve_volume_without_volume_service(env, volume) }
+      end
+
+      def resolve_volume_without_volume_service(env, volume, default_device = nil)
+        case volume
+        when String
+          env[:ui].info(I18n.t('vagrant_openstack.warn_volume_identifier_is_assumed_to_be_an_id', volume: volume))
+          return { id: volume, device: default_device }
+        when Hash
+          fail Errors::ConflictVolumeNameId, volume: volume if volume.key?(:name) && volume.key?(:id)
+          fail Errors::VolumeServiceUnavailable if volume.key? :name
+          return { id: volume[:id], device: volume[:device] || default_device }
+        end
+        fail Errors::InvalidVolumeObject, volume: volume
       end
 
       def resolve_volume(volume, volume_list, volume_ids)
