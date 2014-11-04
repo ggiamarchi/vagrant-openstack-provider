@@ -19,6 +19,8 @@ BUG FIXES:
   - user_data needs to be Base64 encoded in Nova.createServer [#122](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/122)
   - SSH failures after port 22 is open because user doesn't exist yet [#106](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/106)
   - Floating IP should not be mandatory [#55](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/55)
+  - sync_folders error under windows 7 [#119](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/119)
+  - Ansible provisionner doesn't use our generated SSH key [#133](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/133)
 
 # 0.4.1 (October 3, 2014)
 
