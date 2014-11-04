@@ -62,12 +62,12 @@ module VagrantPlugins
         env[:ui].info(I18n.t('vagrant_openstack.finding_networks'))
         return resolve_networks_without_network_service(env) unless env[:openstack_client].session.endpoints.key? :network
 
-        private_networks = env[:openstack_client].neutron.get_private_networks(env)
-        private_network_ids = private_networks.map { |v| v.id }
+        all_networks = env[:openstack_client].neutron.get_all_networks(env)
+        all_network_ids = all_networks.map { |v| v.id }
 
         networks = []
         config.networks.each do |network|
-          networks << resolve_network(network, private_networks, private_network_ids)
+          networks << resolve_network(network, all_networks, all_network_ids)
         end
         @logger.debug("Resolved networks : #{networks.to_json}")
         networks
