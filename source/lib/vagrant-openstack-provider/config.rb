@@ -172,6 +172,35 @@ module VagrantPlugins
         @ssh_disabled = UNSET_VALUE
       end
 
+      def merge(other)
+        result = self.class.new
+
+        # Set all of our instance variables on the new class
+        [self, other].each do |obj|
+          obj.instance_variables.each do |key|
+            # Ignore keys that start with a double underscore. This allows
+            # configuration classes to still hold around internal state
+            # that isn't propagated.
+            if !key.to_s.start_with?("@__")
+              # Don't set the value if it is the unset value, either.
+              value = obj.instance_variable_get(key)
+              if [:@networks, :@volumes, :@rsync_includes].include? key
+                result.instance_variable_set(key, value) if !value.empty?
+              else
+                result.instance_variable_set(key, value) if value != UNSET_VALUE
+              end
+            end
+          end
+        end
+
+        # Persist through the set of invalid methods
+        this_invalid  = @__invalid_methods || Set.new
+        other_invalid = other.instance_variable_get(:"@__invalid_methods") || Set.new
+        result.instance_variable_set(:"@__invalid_methods", this_invalid + other_invalid)
+
+        result
+      end
+
       # rubocop:disable Style/CyclomaticComplexity
       def finalize!
         @password = nil if @password == UNSET_VALUE
