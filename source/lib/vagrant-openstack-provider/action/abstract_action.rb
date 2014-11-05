@@ -8,8 +8,9 @@ module VagrantPlugins
           execute(env)
         # rubocop:disable Lint/RescueException
         # rubocop:disable Style/SpecialGlobalVars
-        rescue Exception
-          puts I18n.t('vagrant_openstack.global_error').red
+        # rubocop:disable Lint/RescueException
+        rescue Exception => e
+          puts I18n.t('vagrant_openstack.global_error').red unless e.message && e.message.start_with?('Catched Error:')
           raise $!, "Catched Error: #{$!}", $!.backtrace
         end
         # rubocop:enable Lint/RescueException
