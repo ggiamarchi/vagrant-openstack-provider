@@ -6,7 +6,6 @@ module VagrantPlugins
       class AbstractAction
         def call(env)
           execute(env)
-        # rubocop:disable Lint/RescueException
         # rubocop:disable Style/SpecialGlobalVars
         # rubocop:disable Lint/RescueException
         rescue Exception => e
