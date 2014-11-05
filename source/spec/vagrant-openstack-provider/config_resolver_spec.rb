@@ -25,16 +25,6 @@ describe VagrantPlugins::Openstack::ConfigResolver do
 
   let(:neutron) do
     double('neutron').tap do |neutron|
-      neutron.stub(:get_private_networks).with(anything) do
-        [Item.new('001', 'net-01'),
-         Item.new('002', 'net-02'),
-         Item.new('003', 'net-03'),
-         Item.new('004', 'net-04'),
-         Item.new('005', 'net-05'),
-         Item.new('006', 'net-06'),
-         Item.new('007', 'net-07-08'),
-         Item.new('008', 'net-07-08')]
-      end
       neutron.stub(:get_all_networks).with(anything) do
         [Item.new('001', 'net-01'),
          Item.new('002', 'net-02'),
