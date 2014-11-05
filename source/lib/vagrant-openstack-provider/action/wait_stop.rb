@@ -8,9 +8,6 @@ module VagrantPlugins
     module Action
       class WaitForServerToStop < AbstractAction
         def initialize(app, _env, retry_interval = 3, timeout = 200)
-
-      class WaitForServerToStop < AbstractAction
-        def initialize(app, _env)
           @app    = app
           @logger = Log4r::Logger.new('vagrant_openstack::action::stop_server')
           @retry_interval = retry_interval
