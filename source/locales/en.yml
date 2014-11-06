@@ -261,25 +261,25 @@ en:
       long_not_created: |-
         The server is not created. Run `vagrant up` to create it.
       short_suspending: |-
-	suspending
+        suspending
       long_suspending: |-
-	The server is active and currently suspending, either by request or necessity.
+        The server is active and currently suspending, either by request or necessity. 
       short_resuming: |-
-	resuming
+        resuming 
       long_resuming: |-
-	The server is suspended and currently resuming by request.
+        The server is suspended and currently resuming by request. 
       short_spawning: |-
-	spawning
+        spawning
       long_spawning: |-
-	The server is not created yet but is currently spawning by request.
+        The server is not created yet but is currently spawning by request. 
       short_deleting: |-
-	deleting
+        deleting
       long_deleting: |-
-	The server is created and currently deleting by request.
+        The server is created and currently deleting by request. 
       short_rebooting: |-
-	rebooting
+        rebooting
       long_rebooting: |-
-	The server is active and currently rebooting, either by request or necessity.  
+        The server is active and currently rebooting, either by request or necessity.
 
     client:
       looking_for_available_endpoints: |-
