@@ -151,6 +151,10 @@ module VagrantPlugins
       class FloatingIPNotAvailable < VagrantOpenstackError
         error_key(:floating_ip_not_available)
       end
+
+      class ServerStatusError < VagrantOpenstackError
+        error_key(:server_status_error)
+      end
     end
   end
 end

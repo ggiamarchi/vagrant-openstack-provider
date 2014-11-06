@@ -128,13 +128,16 @@ module VagrantPlugins
         end
 
         def waiting_for_server_to_be_built(env, server_id, retry_interval = 3, timeout = 200)
-          @logger.info 'Waiting for the server to be built...'
+          @logger.info "Waiting for the server with id #{server_id} to be built..."
           env[:ui].info(I18n.t('vagrant_openstack.waiting_for_build'))
           timeout(timeout, Errors::Timeout) do
-            while env[:openstack_client].nova.get_server_details(env, server_id)['status'] != 'ACTIVE'
-              sleep retry_interval
+            server_status = 'WAITING'
+            until server_status == 'ACTIVE' || server_status == 'ERROR'
               @logger.debug('Waiting for server to be ACTIVE')
+              server_status = env[:openstack_client].nova.get_server_details(env, server_id)['status']
+              sleep retry_interval
             end
+            fail Errors::ServerStatusError, server: server_id if server_status == 'ERROR'
           end
         end
 
