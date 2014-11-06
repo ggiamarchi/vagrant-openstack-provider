@@ -590,7 +590,7 @@ describe VagrantPlugins::Openstack::NovaClient do
                   ]
               }')
 
-        expect { @nova_client.add_floating_ip(env, 'o1o2o3', '1.2.3.4') }.to raise_error(RuntimeError)
+        expect { @nova_client.add_floating_ip(env, 'o1o2o3', '1.2.3.4') }.to raise_error(Errors::FloatingIPAlreadyAssigned)
       end
     end
 
@@ -616,7 +616,7 @@ describe VagrantPlugins::Openstack::NovaClient do
                   ]
               }')
 
-        expect { @nova_client.add_floating_ip(env, 'o1o2o3', '1.2.3.4') }.to raise_error(RuntimeError)
+        expect { @nova_client.add_floating_ip(env, 'o1o2o3', '1.2.3.4') }.to raise_error(Errors::FloatingIPNotAvailable)
       end
     end
   end

@@ -139,6 +139,14 @@ module VagrantPlugins
       class VolumeServiceUnavailable < VagrantOpenstackError
         error_key(:volume_service_unavailable)
       end
+
+      class FloatingIPAlreadyAssigned < VagrantOpenstackError
+        error_key(:floating_ip_already_assigned)
+      end
+
+      class FloatingIPNotAvailable < VagrantOpenstackError
+        error_key(:floating_ip_not_available)
+      end
     end
   end
 end

@@ -80,6 +80,10 @@ en:
         %{message}
       authentication_required: |-
         Authentication token is missing or no longer valid.
+      floating_ip_already_assigned: |-
+        Floating IP %{floating_ip} already assigned to another server
+      floating_ip_not_available: |-
+        Floating IP %{floating_ip} not available for this tenant
       authentication_failed: |-
         Authentication failed.
       bad_authentication_endpoint: |-
