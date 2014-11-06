@@ -87,6 +87,32 @@ describe VagrantPlugins::Openstack::Utils do
                 }
               }
             end
+            expect(@action.get_ip_address(env)).to eq('13.13.13.13')
+          end
+        end
+
+        context 'with networks but no ips' do
+          it 'fails' do
+            config.stub(:floating_ip) { nil }
+            nova.stub(:get_server_details).with(env, '1234id') do
+              {
+                'addresses' => {
+                  'toto' => []
+                }
+              }
+            end
+            expect { @action.get_ip_address(env) }.to raise_error(Errors::UnableToResolveIP)
+          end
+        end
+
+        context 'with no networks ' do
+          it 'fails' do
+            config.stub(:floating_ip) { nil }
+            nova.stub(:get_server_details).with(env, '1234id') do
+              {
+                'addresses' => {}
+              }
+            end
             expect { @action.get_ip_address(env) }.to raise_error(Errors::UnableToResolveIP)
           end
         end
