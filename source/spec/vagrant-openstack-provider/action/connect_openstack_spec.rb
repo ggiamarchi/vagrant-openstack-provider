@@ -17,6 +17,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
       config.stub(:openstack_compute_url) { nil }
       config.stub(:openstack_network_url) { nil }
       config.stub(:openstack_volume_url) { nil }
+      config.stub(:openstack_image_url) { nil }
       config.stub(:tenant_name) { 'testTenant' }
       config.stub(:username) { 'username' }
       config.stub(:password) { 'password' }
@@ -42,6 +43,25 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
     end
   end
 
+  let(:glance) do
+    double.tap do |glance|
+      glance.stub(:get_api_version_list).with(anything) do
+        [
+          {
+            'status' => 'CURRENT',
+            'id' => 'v2.1',
+            'links' => [
+              {
+                'href' => 'http://glance/v2.0',
+                'rel' => 'self'
+              }
+            ]
+          }
+        ]
+      end
+    end
+  end
+
   let(:env) do
     Hash.new.tap do |env|
       env[:ui] = double
@@ -51,6 +71,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
       env[:machine].stub(:provider_config) { config }
       env[:openstack_client] = double('openstack_client')
       env[:openstack_client].stub(:neutron) { neutron }
+      env[:openstack_client].stub(:glance) { glance }
     end
   end
 
@@ -86,6 +107,26 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
             ],
             'type' => 'network',
             'name' => 'neutron'
+          },
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://cinder/v2/projectId',
+                'id' => '2'
+              }
+            ],
+            'type' => 'volume',
+            'name' => 'cinder'
+          },
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://glance',
+                'id' => '2'
+              }
+            ],
+            'type' => 'image',
+            'name' => 'glance'
           }
         ]
 
@@ -93,12 +134,16 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
           keystone.stub(:authenticate).with(anything) { catalog }
           env[:openstack_client].stub(:keystone) { keystone }
         end
-        env[:openstack_client].stub(:neutron) { neutron }
+        env[:openstack_client].stub(:neutron)  { neutron }
+        env[:openstack_client].stub(:glance)   { glance }
 
         @action.call(env)
 
         expect(env[:openstack_client].session.endpoints)
-          .to eq(compute: 'http://nova/v2/projectId', network: 'http://neutron/v2.0')
+          .to eq(compute: 'http://nova/v2/projectId',
+                 network: 'http://neutron/v2.0',
+                 volume:  'http://cinder/v2/projectId',
+                 image:   'http://glance/v2.0')
       end
     end
 
@@ -133,7 +178,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
       end
     end
 
-    context 'with multiple versions for network service' do
+    context 'with no matching versions for network service' do
 
       let(:neutron) do
         double.tap do |neutron|
@@ -141,10 +186,10 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
             [
               {
                 'status' => 'CURRENT',
-                'id' => 'v2.0',
+                'id' => 'v1.1',
                 'links' => [
                   {
-                    'href' => 'http://neutron/v2.0',
+                    'href' => 'http://neutron/v1.1',
                     'rel' => 'self'
                   }
                 ]
@@ -164,7 +209,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
         end
       end
 
-      it 'raise a MultipleApiVersion error' do
+      it 'raise an error' do
         catalog = [
           {
             'endpoints' => [
@@ -184,7 +229,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
         end
         env[:openstack_client].stub(:neutron) { neutron }
 
-        expect { @action.call(env) }.to raise_error(Errors::MultipleApiVersion)
+        expect { @action.call(env) }.to raise_error(Errors::NoMatchingApiVersion)
       end
     end
 

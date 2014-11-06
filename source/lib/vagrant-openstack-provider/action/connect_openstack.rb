@@ -46,21 +46,26 @@ module VagrantPlugins
             client.session.endpoints[service['type'].to_sym] = url unless url.empty?
           end
 
-          read_network_api_version(env) if config.openstack_network_url.nil? && !client.session.endpoints[:network].nil?
+          client.session.endpoints[:network] = choose_api_version('Neutron', 'openstack_network_url', 'v2') do
+            client.neutron.get_api_version_list(env)
+          end if config.openstack_network_url.nil? && !client.session.endpoints[:network].nil?
+
+          client.session.endpoints[:image] = choose_api_version('Glance', 'openstack_image_url', 'v2', false) do
+            client.glance.get_api_version_list(env)
+          end if config.openstack_image_url.nil? && !client.session.endpoints[:image].nil?
         end
 
-        def read_network_api_version(env)
-          client = env[:openstack_client]
-          versions = client.neutron.get_api_version_list(env)
-          if versions.size > 1
-            version_list = ''
-            versions.each do |version|
-              links = version['links'].map { |l| l['href'] }
-              version_list << "#{version['id'].ljust(6)} #{version['status'].ljust(10)} #{links}\n"
-            end
-            fail Errors::MultipleApiVersion, api_name: 'Neutron', url_property: 'openstack_network_url', version_list: version_list
+        def choose_api_version(service_name, url_property, version_prefix = nil, fail_if_not_found = true)
+          versions = yield
+          return versions.first['links'].first['href'] unless versions.size > 1
+          version_list = ''
+          versions.each do |version|
+            return version['links'].first['href'] if version['id'].start_with? version_prefix if version_prefix
+            links = version['links'].map { |l| l['href'] }
+            version_list << "#{version['id'].ljust(6)} #{version['status'].ljust(10)} #{links}\n"
           end
-          client.session.endpoints[:network] = versions.first['links'].first['href']
+          fail Errors::NoMatchingApiVersion, api_name: service_name, url_property: url_property, version_list: version_list if fail_if_not_found
+          nil
         end
 
         def override_endpoint_catalog_with_user_config(env)
@@ -69,6 +74,7 @@ module VagrantPlugins
           client.session.endpoints[:compute] = config.openstack_compute_url unless config.openstack_compute_url.nil?
           client.session.endpoints[:network] = config.openstack_network_url unless config.openstack_network_url.nil?
           client.session.endpoints[:volume]  = config.openstack_volume_url  unless config.openstack_volume_url.nil?
+          client.session.endpoints[:image]   = config.openstack_image_url   unless config.openstack_image_url.nil?
           client.session.endpoints.delete_if { |_, value| value.nil? || value.empty? }
         end
 
