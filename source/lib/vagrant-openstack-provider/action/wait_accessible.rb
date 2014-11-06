@@ -3,7 +3,7 @@ require 'log4r'
 module VagrantPlugins
   module Openstack
     module Action
-      class WaitForServerToBeAccessible
+      class WaitForServerToBeAccessible < AbstractAction
         def initialize(app, env, resolver = nil, ssh = nil)
           @logger   = Log4r::Logger.new('vagrant_openstack::action::wait_accessible')
           @app      = app
@@ -11,7 +11,7 @@ module VagrantPlugins
           @resolver = resolver || VagrantPlugins::Openstack::ConfigResolver.new
         end
 
-        def call(env)
+        def execute(env)
           waiting_for_server_to_be_reachable(env)
           @logger.info 'The server is ready'
           env[:ui].info(I18n.t('vagrant_openstack.ready'))
