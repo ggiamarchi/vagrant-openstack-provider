@@ -218,15 +218,23 @@ en:
       short_suspending: |-
         suspending
       long_suspending: |-
-        The server is active and a suspend is ongoing, either by request or necessity. 
+        The server is active and currently suspending, either by request or necessity. 
       short_resuming: |-
         resuming 
       long_resuming: |-
-        The server is suspended and a resume is ongoing. 
+        The server is suspended and currently resuming by request. 
       short_spawning: |-
         spawning
       long_spawning: |-
-        The server is created and currently spawning. 
+        The server is not created yet but is currently spawning by request. 
+      short_deleting: |-
+        deleting
+      long_deleting: |-
+        The server is created and currently deleting by request. 
+      short_rebooting: |-
+        rebooting
+      long_rebooting: |-
+        The server is active and currently rebooting, either by request or necessity. 
 
     client:
       looking_for_available_endpoints: |-
