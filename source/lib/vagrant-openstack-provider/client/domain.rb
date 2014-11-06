@@ -21,9 +21,30 @@ module VagrantPlugins
         end
       end
 
+      class Image < Item
+        attr_accessor :visibility
+        attr_accessor :size
+        attr_accessor :min_ram
+        attr_accessor :min_disk
+
+        def initialize(id, name, visibility = nil, size = nil, min_ram = nil, min_disk = nil)
+          @visibility = visibility
+          @size = size
+          @min_ram = min_ram
+          @min_disk = min_disk
+          super(id, name)
+        end
+
+        protected
+
+        def state
+          [@id, @name, @visibility, @size, @min_ram, @min_disk]
+        end
+      end
+
       class Flavor < Item
         #
-        # THe number of vCPU
+        # The number of vCPU
         #
         attr_accessor :vcpus
 

@@ -6,6 +6,7 @@ require 'vagrant-openstack-provider/client/keystone'
 require 'vagrant-openstack-provider/client/nova'
 require 'vagrant-openstack-provider/client/neutron'
 require 'vagrant-openstack-provider/client/cinder'
+require 'vagrant-openstack-provider/client/glance'
 
 module VagrantPlugins
   module Openstack
@@ -45,6 +46,10 @@ module VagrantPlugins
 
     def self.cinder
       Openstack::CinderClient.instance
+    end
+
+    def self.glance
+      Openstack::GlanceClient.instance
     end
   end
 end
