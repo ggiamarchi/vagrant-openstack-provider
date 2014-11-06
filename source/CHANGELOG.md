@@ -1,3 +1,10 @@
+# 0.5.2 (November 6, 2014)
+
+BUG FIXES:
+
+  - When multiple IPs are available, return the first one instead of failing [#155](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/155)
+
+
 # 0.5.1 (November 6, 2014)
 
 BUG FIXES:
