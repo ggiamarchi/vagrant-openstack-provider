@@ -31,6 +31,7 @@ module VagrantPlugins
         # what it says. It puts the state in the `:machine_state_id`
         # key in the environment.
         env = @machine.action('read_state')
+
         state_id = env[:machine_state_id]
 
         # Get the short and long description
@@ -38,7 +39,7 @@ module VagrantPlugins
         long  = I18n.t("vagrant_openstack.states.long_#{state_id}")
 
         # Return the MachineState object
-        Vagrant::MachineState.new("#{state_id}", short, long)
+        Vagrant::MachineState.new(state_id, short, long)
       end
 
       def to_s
