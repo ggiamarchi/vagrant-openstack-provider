@@ -18,7 +18,7 @@ module VagrantPlugins
           if env[:machine].id
             env[:ui].info(I18n.t('vagrant_openstack.waiting_stop'))
             client = env[:openstack_client].nova
-            timeout(@timeout) do
+            timeout(@timeout, Errors::Timeout) do
               while client.get_server_details(env, env[:machine].id)['status'] != 'SHUTOFF'
                 sleep @retry_interval
                 @logger.info('Waiting for server to stop')

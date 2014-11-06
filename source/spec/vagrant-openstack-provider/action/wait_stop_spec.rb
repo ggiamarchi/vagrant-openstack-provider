@@ -40,7 +40,7 @@ describe VagrantPlugins::Openstack::Action::WaitForServerToStop do
         nova.stub(:get_server_details).and_return({ 'status' => 'ACTIVE' }, { 'status' => 'ACTIVE' })
         expect(nova).to receive(:get_server_details).with(env, 'server_id').at_least(2).times
         @action = WaitForServerToStop.new(app, nil, 1, 2)
-        expect { @action.call(env) }.to raise_error Timeout::Error
+        expect { @action.call(env) }.to raise_error Errors::Timeout
       end
     end
   end

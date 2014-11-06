@@ -200,7 +200,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
       it 'timeout before the server become active' do
         nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, { 'status' => 'BUILD' })
         nova.should_receive(:get_server_details).with(env, 'server-01').at_least(2).times
-        expect { @action.waiting_for_server_to_be_built(env, 'server-01', 1, 3) }.to raise_error Timeout::Error
+        expect { @action.waiting_for_server_to_be_built(env, 'server-01', 1, 3) }.to raise_error Errors::Timeout
       end
     end
   end

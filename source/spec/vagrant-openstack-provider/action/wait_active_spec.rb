@@ -40,7 +40,7 @@ describe VagrantPlugins::Openstack::Action::WaitForServerToBeActive do
         nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, { 'status' => 'BUILD' })
         expect(nova).to receive(:get_server_details).with(env, 'server_id').at_least(2).times
         @action = WaitForServerToBeActive.new(app, nil, 1, 2)
-        expect { @action.call(env) }.to raise_error Timeout::Error
+        expect { @action.call(env) }.to raise_error Errors::Timeout
       end
     end
   end

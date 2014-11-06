@@ -93,6 +93,8 @@ en:
     errors:
       default: |-
         %{message}
+      timeout: |-
+        Timeout occurred
       authentication_required: |-
         Authentication token is missing or no longer valid.
       floating_ip_already_assigned: |-
