@@ -61,17 +61,6 @@ module VagrantPlugins
         end
       end
 
-      # This action is called to read the task of the machine. The
-      # resulting state is expected to be put into the `:machine_state_id`
-      # key.
-      def self.action_read_task
-        Vagrant::Action::Builder.new.tap do |b|
-          b.use ConfigValidate
-          b.use ConnectOpenstack
-          b.use ReadTask
-        end
-      end
-
       def self.action_ssh
         new_builder.tap do |b|
           b.use ConfigValidate
