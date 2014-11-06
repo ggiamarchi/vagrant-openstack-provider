@@ -5,12 +5,13 @@ require 'sshkey'
 
 require 'vagrant-openstack-provider/config_resolver'
 require 'vagrant-openstack-provider/utils'
+require 'vagrant-openstack-provider/action/abstract_action'
 require 'vagrant/util/retryable'
 
 module VagrantPlugins
   module Openstack
     module Action
-      class CreateServer
+      class CreateServer < AbstractAction
         include Vagrant::Util::Retryable
 
         def initialize(app, _env, resolver = ConfigResolver.new, utils = Utils.new)
@@ -20,7 +21,7 @@ module VagrantPlugins
           @utils = utils
         end
 
-        def call(env)
+        def execute(env)
           @logger.info 'Start create server action'
 
           config = env[:machine].provider_config
@@ -129,7 +130,7 @@ module VagrantPlugins
         def waiting_for_server_to_be_built(env, server_id, retry_interval = 3, timeout = 200)
           @logger.info 'Waiting for the server to be built...'
           env[:ui].info(I18n.t('vagrant_openstack.waiting_for_build'))
-          timeout(timeout) do
+          timeout(timeout, Errors::Timeout) do
             while env[:openstack_client].nova.get_server_details(env, server_id)['status'] != 'ACTIVE'
               sleep retry_interval
               @logger.debug('Waiting for server to be ACTIVE')

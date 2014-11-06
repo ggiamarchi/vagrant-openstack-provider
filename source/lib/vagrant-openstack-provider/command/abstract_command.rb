@@ -20,7 +20,14 @@ module VagrantPlugins
 
           cmd(name, @argv, env)
           @env.ui.info('')
+        # rubocop:disable Lint/RescueException
+        rescue Errors::VagrantOpenstackError => e
+          raise e
+        rescue Exception => e
+          puts I18n.t('vagrant_openstack.global_error').red unless e.message && e.message.start_with?('Catched Error:')
+          raise e
         end
+        # rubocop:enable Lint/RescueException
 
         #
         # Before Vagrant 1.5, args list ends with an extra arg '--'. It removes it if present.

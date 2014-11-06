@@ -8,6 +8,10 @@ module VagrantPlugins
         error_key(:default)
       end
 
+      class Timeout < VagrantOpenstackError
+        error_key(:timeout)
+      end
+
       class AuthenticationRequired < VagrantOpenstackError
         error_key(:authentication_required)
       end
