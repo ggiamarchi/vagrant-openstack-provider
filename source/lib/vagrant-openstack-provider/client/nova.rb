@@ -193,9 +193,9 @@ module VagrantPlugins
         JSON.parse(ip_details)['floating_ips'].each do |ip|
           next unless ip['ip'] == floating_ip
           return if ip['instance_id'].nil?
-          fail "Floating IP #{floating_ip} already assigned to another server"
+          fail Errors::FloatingIPAlreadyAssigned, floating_ip: floating_ip
         end
-        fail "Floating IP #{floating_ip} not available for this tenant"
+        fail Errors::FloatingIPNotAvailable, floating_ip: floating_ip
       end
     end
   end
