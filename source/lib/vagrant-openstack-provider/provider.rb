@@ -31,6 +31,7 @@ module VagrantPlugins
         # what it says. It puts the state in the `:machine_state_id`
         # key in the environment.
         env = @machine.action('read_state')
+
         state_id = env[:machine_state_id]
 
         # Get the short and long description
