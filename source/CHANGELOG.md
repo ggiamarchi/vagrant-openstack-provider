@@ -1,3 +1,9 @@
+# 0.5.1 (November 6, 2014)
+
+BUG FIXES:
+
+  - Allow public and private networks to be specified [#148](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/148)
+
 # 0.5.0 (November 4, 2014)
 
 FEATURES:
@@ -62,7 +68,7 @@ BUG FIXES:
 
 IMPROVEMENTS:
 
-   - Show more informations for command flavor-list [#52](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/52) 
+   - Show more informations for command flavor-list [#52](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/52)
 
 # 0.3.0 (August 29, 2014)
 
