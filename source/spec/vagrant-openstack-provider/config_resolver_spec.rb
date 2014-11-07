@@ -213,7 +213,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
       end
     end
 
-    context 'with config.floating_ip_pool as string specified' do
+    context 'with only one config.floating_ip_pool specified' do
       context 'if an ip in the same pool is available' do
         context 'with config.floating_ip_pool_always_allocate true' do
           it 'allocate a new floating_ip from the pool' do
@@ -225,7 +225,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
             nova.stub(:allocate_floating_ip).with(env, 'pool-1') do
               FloatingIP.new('80.81.82.85', 'pool-1', nil)
             end
-            config.stub(:floating_ip_pool) { 'pool-1' }
+            config.stub(:floating_ip_pool) { ['pool-1'] }
             @action.resolve_floating_ip(env).should eq('80.81.82.85')
           end
         end
@@ -237,7 +237,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
               [FloatingIP.new('80.81.82.84', 'pool-1', '1234'),
                FloatingIP.new('80.81.82.83', 'pool-1', nil)]
             end
-            config.stub(:floating_ip_pool) { 'pool-1' }
+            config.stub(:floating_ip_pool) { ['pool-1'] }
             @action.resolve_floating_ip(env).should eq('80.81.82.83')
           end
         end
@@ -251,13 +251,13 @@ describe VagrantPlugins::Openstack::ConfigResolver do
           nova.stub(:allocate_floating_ip).with(env, 'pool-1') do
             FloatingIP.new('80.81.82.84', 'pool-1', nil)
           end
-          config.stub(:floating_ip_pool) { 'pool-1' }
+          config.stub(:floating_ip_pool) { ['pool-1'] }
           @action.resolve_floating_ip(env).should eq('80.81.82.84')
         end
       end
     end
 
-    context 'with floating_ip_pool as array defined' do
+    context 'with several floating_ip_pool defined' do
       context 'if an ip in a pool is available' do
         context 'with config.floating_ip_pool_always_allocate true' do
           it 'allocate a new floating_ip from the first pool defined' do
@@ -309,7 +309,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
               [FloatingIP.new('80.81.82.83', 'pool-1', '1234'),
                FloatingIP.new('80.81.82.82', 'pool-2', '5678')]
             end
-            nova.stub(:allocate_floating_ip).with(env, 'pool-1').and_raise Errors::VagrantOpenstackError, message:'error'
+            nova.stub(:allocate_floating_ip).with(env, 'pool-1').and_raise Errors::VagrantOpenstackError, message: 'error'
             nova.stub(:allocate_floating_ip).with(env, 'pool-2') do
               FloatingIP.new('80.81.82.84', 'pool-2', nil)
             end

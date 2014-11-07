@@ -43,10 +43,7 @@ module VagrantPlugins
         fail Errors::UnableToResolveFloatingIP if config.floating_ip_pool.nil? || config.floating_ip_pool.empty?
         @logger.debug 'Retrieving all allocated floating ips on tenant'
         all_floating_ips = nova.get_all_floating_ips(env)
-        floating_ip_pools = []
-        floating_ip_pools << config.floating_ip_pool
-        floating_ip_pools = floating_ip_pools.flatten
-        floating_ip_pools.each do |floating_ip_pool|
+        config.floating_ip_pool.each do |floating_ip_pool|
           @logger.debug "Searching for available ip in floating ip pool #{floating_ip_pool} :"
           all_floating_ips.each do |floating_ip|
             log_attach = floating_ip.instance_id ? "attached to #{floating_ip.instance_id}" : 'not attached'
@@ -55,7 +52,7 @@ module VagrantPlugins
           end unless config.floating_ip_pool_always_allocate
         end
         @logger.debug 'No free ip found'
-        floating_ip_pools.each do |floating_ip_pool|
+        config.floating_ip_pool.each do |floating_ip_pool|
           begin
             @logger.debug "Allocating ip in pool #{floating_ip_pool}"
             return nova.allocate_floating_ip(env, floating_ip_pool).ip

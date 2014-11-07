@@ -66,6 +66,7 @@ describe VagrantPlugins::Openstack::Config do
     let(:foo_class) do
       Class.new(described_class) do
         attr_accessor :networks
+        attr_accessor :floating_ip_pool
       end
     end
 
@@ -107,6 +108,96 @@ describe VagrantPlugins::Openstack::Config do
 
         result = one.merge(two)
         result.networks.should =~ ['foo']
+      end
+    end
+
+    context 'with original floating_ip_pool as string' do
+      context 'and new as empty array' do
+        it 'should put original string in a single entry array' do
+          one = foo_class.new
+          one.floating_ip_pool = 'pool'
+
+          two = foo_class.new
+          two.floating_ip_pool = []
+
+          result = one.merge(two)
+          result.floating_ip_pool.should =~ ['pool']
+        end
+      end
+      context 'and new as empty string' do
+        it 'should put original string in a single entry array' do
+          one = foo_class.new
+          one.floating_ip_pool = 'pool'
+
+          two = foo_class.new
+          two.floating_ip_pool = ''
+
+          result = one.merge(two)
+          result.floating_ip_pool.should =~ ['']
+        end
+      end
+      context 'and new as string' do
+        it 'should put new string in a single entry array' do
+          one = foo_class.new
+          one.floating_ip_pool = 'pool'
+
+          two = foo_class.new
+          two.floating_ip_pool = 'new-pool'
+
+          result = one.merge(two)
+          result.floating_ip_pool.should =~ ['new-pool']
+        end
+      end
+      context 'and new as array' do
+        it 'should put new array' do
+          one = foo_class.new
+          one.floating_ip_pool = 'pool'
+
+          two = foo_class.new
+          two.floating_ip_pool = %w(pool-1 pool-2)
+
+          result = one.merge(two)
+          result.floating_ip_pool.should =~ %w(pool-1 pool-2)
+        end
+      end
+    end
+
+    context 'with original floating_ip_pool as array' do
+      context 'and new empty' do
+        it 'should put original array' do
+          one = foo_class.new
+          one.floating_ip_pool = %w(pool-1 pool-2)
+
+          two = foo_class.new
+          two.floating_ip_pool = []
+
+          result = one.merge(two)
+          result.floating_ip_pool.should =~ %w(pool-1 pool-2)
+        end
+      end
+      context 'and new as string' do
+        it 'should put new string in a single entry array' do
+          one = foo_class.new
+          one.floating_ip_pool = %w(pool-1 pool-2)
+
+          two = foo_class.new
+          two.floating_ip_pool = 'pool'
+
+          result = one.merge(two)
+          result.floating_ip_pool.should =~ ['pool']
+        end
+      end
+      context 'and new as array' do
+        it 'should put new array' do
+          one = foo_class.new
+          one.floating_ip_pool = %w(pool-1 pool-2)
+
+          two = foo_class.new
+          two.floating_ip_pool = %w(new-pool-1 new-pool-2)
+
+          result = one.merge(two)
+          result.floating_ip_pool.should =~ %w(new-pool-1 new-pool-2)
+        end
       end
     end
   end

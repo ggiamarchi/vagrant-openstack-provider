@@ -149,6 +149,7 @@ module VagrantPlugins
       attr_accessor :ssh_disabled
 
       def initialize
+        @logger = Log4r::Logger.new('vagrant_openstack::action::config')
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
         @openstack_network_url = UNSET_VALUE
@@ -167,7 +168,7 @@ module VagrantPlugins
         @ssh_username = UNSET_VALUE
         @ssh_timeout = UNSET_VALUE
         @floating_ip = UNSET_VALUE
-        @floating_ip_pool = UNSET_VALUE
+        @floating_ip_pool = []
         @floating_ip_pool_always_allocate = UNSET_VALUE
         @sync_method = UNSET_VALUE
         @availability_zone = UNSET_VALUE
@@ -192,10 +193,13 @@ module VagrantPlugins
             # that isn't propagated.
             next if key.to_s.start_with?('@__')
 
+            # Let user inputs a string or an array for floating ip pool attribute
+            obj.floating_ip_pool = [obj.floating_ip_pool].flatten if key.eql?(:@floating_ip_pool) && !obj.floating_ip_pool.nil?
+
             # Don't set the value if it is the unset value, either.
             value = obj.instance_variable_get(key)
 
-            if [:@networks, :@volumes, :@rsync_includes, :@ignore_files].include? key
+            if [:@networks, :@volumes, :@rsync_includes, :@ignore_files, :@floating_ip_pool].include? key
               result.instance_variable_set(key, value) unless value.empty?
             else
               result.instance_variable_set(key, value) if value != UNSET_VALUE
