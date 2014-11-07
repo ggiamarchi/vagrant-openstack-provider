@@ -177,20 +177,19 @@ module VagrantPlugins
 
         # Set all of our instance variables on the new class
         [self, other].each do |obj|
-          # rubocop:disable Style/Next
           obj.instance_variables.each do |key|
-            # rubocop:enable Style/Next
             # Ignore keys that start with a double underscore. This allows
             # configuration classes to still hold around internal state
             # that isn't propagated.
-            unless key.to_s.start_with?('@__')
-              # Don't set the value if it is the unset value, either.
-              value = obj.instance_variable_get(key)
-              if [:@networks, :@volumes, :@rsync_includes].include? key
-                result.instance_variable_set(key, value) unless value.empty?
-              else
-                result.instance_variable_set(key, value) if value != UNSET_VALUE
-              end
+            next if key.to_s.start_with?('@__')
+
+            # Don't set the value if it is the unset value, either.
+            value = obj.instance_variable_get(key)
+            print key
+            if [:@networks, :@volumes, :@rsync_includes].include? key
+              result.instance_variable_set(key, value) unless value.empty?
+            else
+              result.instance_variable_set(key, value) if value != UNSET_VALUE
             end
           end
         end
