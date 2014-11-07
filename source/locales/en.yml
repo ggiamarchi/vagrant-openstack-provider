@@ -275,7 +275,7 @@ en:
       short_scheduling: |-
         scheduling
       long_scheduling: |-
-        The server is building and currently scheduling by necessity.
+        The server is building and currently scheduling by necessity.  
       short_deleting: |-
         deleting
       long_deleting: |-
