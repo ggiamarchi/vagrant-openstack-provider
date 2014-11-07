@@ -8,20 +8,21 @@ module VagrantPlugins
       #
       attr_accessor :password
 
-      # The compute service url to access Openstack. If nil, it will read from
-      # hypermedia catalog form REST API
+      # The compute service url to access Openstack. If nil, it will read from hypermedia catalog form REST API
       #
       attr_accessor :openstack_compute_url
 
-      # The network service url to access Openstack. If nil, it will read from
-      # hypermedia catalog form REST API
+      # The network service url to access Openstack. If nil, it will read from hypermedia catalog form REST API
       #
       attr_accessor :openstack_network_url
 
-      # The block storage service url to access Openstack. If nil, it will read from
-      # hypermedia catalog form REST API
+      # The block storage service url to access Openstack. If nil, it will read from hypermedia catalog form REST API
       #
       attr_accessor :openstack_volume_url
+
+      # The image service url to access Openstack. If nil, it will read from hypermedia catalog form REST API
+      #
+      attr_accessor :openstack_image_url
 
       # The authentication endpoint. This defaults to Openstack's global authentication endpoint.
       attr_accessor :openstack_auth_url
@@ -146,6 +147,7 @@ module VagrantPlugins
         @openstack_compute_url = UNSET_VALUE
         @openstack_network_url = UNSET_VALUE
         @openstack_volume_url = UNSET_VALUE
+        @openstack_image_url = UNSET_VALUE
         @openstack_auth_url = UNSET_VALUE
         @flavor = UNSET_VALUE
         @image = UNSET_VALUE
@@ -178,6 +180,7 @@ module VagrantPlugins
         @openstack_compute_url = nil if @openstack_compute_url == UNSET_VALUE
         @openstack_network_url = nil if @openstack_network_url == UNSET_VALUE
         @openstack_volume_url = nil if @openstack_volume_url == UNSET_VALUE
+        @openstack_image_url = nil if @openstack_image_url == UNSET_VALUE
         @openstack_auth_url = nil if @openstack_auth_url == UNSET_VALUE
         @flavor = nil if @flavor == UNSET_VALUE
         @image = nil if @image == UNSET_VALUE
@@ -231,6 +234,7 @@ module VagrantPlugins
           openstack_compute_url: @openstack_compute_url,
           openstack_network_url: @openstack_network_url,
           openstack_volume_url: @openstack_volume_url,
+          openstack_image_url: @openstack_image_url,
           openstack_auth_url: @openstack_auth_url
         }.each_pair do |key, value|
           errors << I18n.t('vagrant_openstack.config.invalid_uri', key: key, uri: value) unless value.nil? || valid_uri?(value)

@@ -45,7 +45,7 @@ module VagrantPlugins
 
       def get_all_images(env)
         images_json = get(env, "#{@session.endpoints[:compute]}/images")
-        JSON.parse(images_json)['images'].map { |fl| Item.new(fl['id'], fl['name']) }
+        JSON.parse(images_json)['images'].map { |fl| Image.new(fl['id'], fl['name'], 'unknown') }
       end
 
       def create_server(env, options)
