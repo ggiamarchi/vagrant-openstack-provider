@@ -41,6 +41,9 @@ module VagrantPlugins
             end
 
             env[:ssh_run_command] = 'exit 0'
+            env[:ssh_opts] = {
+              extra_args: ['-o', 'BatchMode=yes']
+            }
             @ssh.call(env)
             return true if env[:ssh_run_exit_status] == 0
 
