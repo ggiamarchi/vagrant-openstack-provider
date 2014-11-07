@@ -62,6 +62,55 @@ describe VagrantPlugins::Openstack::Config do
     end
   end
 
+  describe 'merge' do
+    let(:foo_class) do
+      Class.new(described_class) do
+        attr_accessor :networks
+      end
+    end
+
+    subject { foo_class.new }
+
+    context 'with original network not empty' do
+      it 'should overidde the config' do
+        one = foo_class.new
+        one.networks = ['foo']
+
+        two = foo_class.new
+        two.networks = ['bar']
+
+        result = one.merge(two)
+        result.networks.should =~ ['bar']
+      end
+    end
+
+    context 'with original network empty' do
+      it 'should add the network to the existing list' do
+        one = foo_class.new
+        one.networks = []
+
+        two = foo_class.new
+        two.networks = ['bar']
+
+        result = one.merge(two)
+        result.networks.should =~ ['bar']
+      end
+    end
+
+    context 'with original network not empty and new empty' do
+      it 'should keep the original network' do
+        one = foo_class.new
+        one.networks = ['foo']
+
+        two = foo_class.new
+        two.networks = []
+
+        result = one.merge(two)
+        result.networks.should =~ ['foo']
+      end
+    end
+  end
+
   describe 'validation' do
     let(:machine) { double('machine') }
     let(:validation_errors) { subject.validate(machine)['Openstack Provider'] }
