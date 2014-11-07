@@ -190,7 +190,7 @@ en:
 
     states:
       short_active: |-
-        active
+        active 
       long_active: |-
         The server is up and running. Run `vagrant ssh` to access it.
       short_build: |-
@@ -262,6 +262,50 @@ en:
         not created
       long_not_created: |-
         The server is not created. Run `vagrant up` to create it.
+      short_suspending: |-
+        suspending
+      long_suspending: |-
+        The server is active and currently suspending, either by request or necessity. 
+      short_resuming: |-
+        resuming 
+      long_resuming: |-
+        The server is suspended and currently resuming by request. 
+      short_spawning: |-
+        spawning
+      long_spawning: |-
+        The server is not created yet but is currently spawning by request.
+      short_scheduling: |-
+        scheduling
+      long_scheduling: |-
+        The server is building and currently scheduling by necessity.  
+      short_deleting: |-
+        deleting
+      long_deleting: |-
+        The server is created and currently deleting by request. 
+      short_rebooting: |-
+        rebooting
+      long_rebooting: |-
+        The server is currently rebooting, either by request or necessity.
+      short_reboot_pending: |-
+        reboot_pending
+      long_reboot_pending: |-
+        The server reboot is pending by necessity.
+      short_reboot_started: |-
+        reboot_started
+      long_reboot_started: |-
+        The server is starting to reboot, either by request or necessity.
+      short_rebooting_hard: |-
+        rebooting_hard
+      long_rebooting_hard: |-
+        The server is currently hard rebooting, either by request.
+      short_reboot_pending_hard: |-
+        reboot_pending_hard
+      long_reboot_pending_hard: |-
+        The server hard reboot is pending by necessity.
+      short_reboot_started_hard: |-
+        reboot_started_hard
+      long_reboot_started_hard: |-
+        The server is starting to hard reboot by request.
 
     client:
       looking_for_available_endpoints: |-
