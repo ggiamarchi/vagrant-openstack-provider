@@ -40,11 +40,30 @@ module VagrantPlugins
         config = env[:machine].provider_config
         nova = env[:openstack_client].nova
         return config.floating_ip if config.floating_ip
-        fail Errors::UnableToResolveFloatingIP unless config.floating_ip_pool
-        nova.get_all_floating_ips(env).each do |single|
-          return single.ip if single.pool == config.floating_ip_pool && single.instance_id.nil?
-        end unless config.floating_ip_pool_always_allocate
-        nova.allocate_floating_ip(env, config.floating_ip_pool).ip
+        fail Errors::UnableToResolveFloatingIP if config.floating_ip_pool.nil? || config.floating_ip_pool.empty?
+        @logger.debug 'Retrieving all allocated floating ips on tenant'
+        all_floating_ips = nova.get_all_floating_ips(env)
+        floating_ip_pools = []
+        floating_ip_pools << config.floating_ip_pool
+        floating_ip_pools = floating_ip_pools.flatten
+        floating_ip_pools.each do |floating_ip_pool|
+          @logger.debug "Searching for available ip in floating ip pool #{floating_ip_pool} :"
+          all_floating_ips.each do |floating_ip|
+            log_attach = floating_ip.instance_id ? "attached to #{floating_ip.instance_id}" : 'not attached'
+            @logger.debug " -> #{floating_ip.ip} #{log_attach}" if floating_ip.pool == floating_ip_pool
+            return floating_ip.ip if floating_ip.pool == floating_ip_pool && floating_ip.instance_id.nil?
+          end unless config.floating_ip_pool_always_allocate
+        end
+        @logger.debug 'No free ip found'
+        floating_ip_pools.each do |floating_ip_pool|
+          begin
+            @logger.debug "Allocating ip in pool #{floating_ip_pool}"
+            return nova.allocate_floating_ip(env, floating_ip_pool).ip
+          rescue Errors::VagrantOpenstackError
+            @logger.debug "Error allocating ip in pool #{floating_ip_pool}"
+            next
+          end
+        end
       end
 
       def resolve_keypair(env)
