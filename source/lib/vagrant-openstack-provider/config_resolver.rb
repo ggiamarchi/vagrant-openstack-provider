@@ -52,15 +52,20 @@ module VagrantPlugins
           end unless config.floating_ip_pool_always_allocate
         end
         @logger.debug 'No free ip found'
+        allocation_error = nil
         config.floating_ip_pool.each do |floating_ip_pool|
           begin
             @logger.debug "Allocating ip in pool #{floating_ip_pool}"
             return nova.allocate_floating_ip(env, floating_ip_pool).ip
-          rescue Errors::VagrantOpenstackError
-            @logger.debug "Error allocating ip in pool #{floating_ip_pool}"
-            next
+          rescue Errors::VagrantOpenstackError => e
+            @logger.debug "Error allocating ip in pool #{floating_ip_pool} : #{e}"
+            allocation_error = e
+            next if e.extra_data[:code] == 404
+            raise allocation_error
           end
         end
+        @logger.debug 'Impossible to allocate a new IP'
+        fail allocation_error
       end
 
       def resolve_keypair(env)

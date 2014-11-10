@@ -309,12 +309,25 @@ describe VagrantPlugins::Openstack::ConfigResolver do
               [FloatingIP.new('80.81.82.83', 'pool-1', '1234'),
                FloatingIP.new('80.81.82.82', 'pool-2', '5678')]
             end
-            nova.stub(:allocate_floating_ip).with(env, 'pool-1').and_raise Errors::VagrantOpenstackError, message: 'error'
+            nova.stub(:allocate_floating_ip).with(env, 'pool-1').and_raise Errors::VagrantOpenstackError, message: 'error', code: 404
             nova.stub(:allocate_floating_ip).with(env, 'pool-2') do
               FloatingIP.new('80.81.82.84', 'pool-2', nil)
             end
             config.stub(:floating_ip_pool) { %w(pool-1 pool-2) }
             @action.resolve_floating_ip(env).should eq('80.81.82.84')
+          end
+        end
+
+        context 'if allocate an ip in either first and second pool is not possible' do
+          it 'shoud raise an error', :simon do
+            nova.stub(:get_all_floating_ips).with(anything) do
+              [FloatingIP.new('80.81.82.83', 'pool-1', '1234'),
+               FloatingIP.new('80.81.82.82', 'pool-2', '5678')]
+            end
+            nova.stub(:allocate_floating_ip).with(env, 'pool-1').and_raise Errors::VagrantOpenstackError, message: 'error', code: 404
+            nova.stub(:allocate_floating_ip).with(env, 'pool-2').and_raise Errors::VagrantOpenstackError, message: 'error', code: 404
+            config.stub(:floating_ip_pool) { %w(pool-1 pool-2) }
+            expect { @action.resolve_floating_ip(env) }.to raise_error(Errors::VagrantOpenstackError)
           end
         end
       end
