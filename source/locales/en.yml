@@ -284,6 +284,8 @@ en:
         List available flavors
       network_list_synopsis : |-
         List private networks in project
+      subnet_list_synopsis : |-
+        List subnets for available networks
       flaotingip_list_synopsis : |-
         List floating IP and floating IP pools
       volume_list_synopsis : |-

@@ -249,6 +249,7 @@ Available subcommands:
      image-list           List available images
      flavor-list          List available flavors
      network-list         List private networks in project
+     subnet-list          List subnets for available networks
      floatingip-list      List floating IP and floating IP pools
      volume-list          List existing volumes
      reset                Reset Vagrant OpenStack provider to a clear state
