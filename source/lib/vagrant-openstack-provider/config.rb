@@ -187,7 +187,7 @@ module VagrantPlugins
 
             # Don't set the value if it is the unset value, either.
             value = obj.instance_variable_get(key)
-            print key
+
             if [:@networks, :@volumes, :@rsync_includes].include? key
               result.instance_variable_set(key, value) unless value.empty?
             else

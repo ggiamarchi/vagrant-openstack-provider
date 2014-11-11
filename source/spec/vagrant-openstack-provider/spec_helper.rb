@@ -12,6 +12,7 @@ if ENV['COVERAGE'] != 'false'
 end
 
 Dir[
+  'lib/vagrant-openstack-provider/logging.rb',
   'lib/vagrant-openstack-provider/config.rb',
   'lib/vagrant-openstack-provider/config_resolver.rb',
   'lib/vagrant-openstack-provider/utils.rb',
@@ -31,3 +32,5 @@ RSpec.configure do |config|
 end
 
 I18n.load_path << File.expand_path('locales/en.yml', Pathname.new(File.expand_path('../../../', __FILE__)))
+
+VagrantPlugins::Openstack::Logging.init
