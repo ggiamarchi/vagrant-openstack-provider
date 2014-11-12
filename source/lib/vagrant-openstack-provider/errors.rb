@@ -136,6 +136,10 @@ module VagrantPlugins
         error_key(:instance_not_found)
       end
 
+      class StackNotFound < VagrantOpenstackError
+        error_key(:stack_not_found)
+      end
+
       class NetworkServiceUnavailable < VagrantOpenstackError
         error_key(:nerwork_service_unavailable)
       end
@@ -154,6 +158,10 @@ module VagrantPlugins
 
       class ServerStatusError < VagrantOpenstackError
         error_key(:server_status_error)
+      end
+
+      class StackStatusError < VagrantOpenstackError
+        error_key(:stack_status_error)
       end
     end
   end

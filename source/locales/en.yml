@@ -17,6 +17,8 @@ en:
       describe features you would like to see in this provider.
     already_created: |-
       The server is already created.
+    create_stack: |-
+      Creating Heat Stack.
     already_suspended: |-
       The server is already suspended
     deleting_server: |-
@@ -55,6 +57,8 @@ en:
       Waiting for the server to stop...
     waiting_start: |-
       Waiting for the server to start...
+    waiting_for_stack: |-
+      Waiting for Heat Stack to be created...
     warn_networks: |-
       Warning! The Openstack provider doesn't support any of the Vagrant
       high-level network configurations (`config.vm.network`). They
@@ -179,6 +183,8 @@ en:
         Dashboard instead of using vagrant commands.
         We recommend using the command `vagrant openstack reset` to reset
         vagrant to a clear state
+      stack_not_found: |-
+        Heat stack not found
       nerwork_service_unavailable: |-
         Neutron service endpoint is not available, thus there is not way to retrieve
         network id from its name. You have to provide only ids in your Vagrantfile.
@@ -187,6 +193,8 @@ en:
         volume id from its name. You have to provide only ids in your Vagrantfile.
       server_status_error: |-
         Server '%{server}' is in error status.
+      stack_status_error: |-
+        Heat Stack '%{stack}' is in error status.
 
     states:
       short_active: |-

@@ -13,6 +13,7 @@ describe VagrantPlugins::Openstack::Config do
     its(:password)  { should be_nil }
     its(:openstack_compute_url) { should be_nil }
     its(:openstack_auth_url) { should be_nil }
+    its(:openstack_orchestration_url) { should be_nil }
     its(:flavor)   { should be_nil }
     its(:image)    { should be_nil }
     its(:server_name) { should be_nil }
@@ -43,6 +44,8 @@ describe VagrantPlugins::Openstack::Config do
       :floating_ip_pool_always_allocate,
       :scheduler_hints,
       :security_groups,
+      :openstack_orchestration_url,
+      :stacks,
       :user_data,
       :metadata,
       :availability_zone,
@@ -293,7 +296,7 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
 
-    [:openstack_compute_url, :openstack_auth_url].each do |url|
+    [:openstack_compute_url, :openstack_auth_url, :openstack_orchestration_url].each do |url|
       context "the #{url}" do
         it 'should not validate if the URL is invalid' do
           subject.send "#{url}=", 'baz'

@@ -99,6 +99,7 @@ module VagrantPlugins
             when :not_created
               b2.use Provision
               b2.use SyncFolders
+              b2.use CreateStack
               b2.use CreateServer
               b2.use WaitForServerToBeAccessible
             when :shutoff
@@ -190,6 +191,7 @@ module VagrantPlugins
       autoload :Message, action_root.join('message')
       autoload :ConnectOpenstack, action_root.join('connect_openstack')
       autoload :CreateServer, action_root.join('create_server')
+      autoload :CreateStack, action_root.join('create_stack')
       autoload :DeleteServer, action_root.join('delete_server')
       autoload :StopServer, action_root.join('stop_server')
       autoload :StartServer, action_root.join('start_server')

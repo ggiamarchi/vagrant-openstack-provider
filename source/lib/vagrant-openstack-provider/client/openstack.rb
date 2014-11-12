@@ -2,6 +2,7 @@ require 'log4r'
 require 'restclient'
 require 'json'
 
+require 'vagrant-openstack-provider/client/heat'
 require 'vagrant-openstack-provider/client/keystone'
 require 'vagrant-openstack-provider/client/nova'
 require 'vagrant-openstack-provider/client/neutron'
@@ -38,6 +39,10 @@ module VagrantPlugins
 
     def self.nova
       Openstack::NovaClient.instance
+    end
+
+    def self.heat
+      Openstack::HeatClient.instance
     end
 
     def self.neutron
