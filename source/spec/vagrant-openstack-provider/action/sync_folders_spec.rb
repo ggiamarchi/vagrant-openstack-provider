@@ -23,6 +23,7 @@ describe VagrantPlugins::Openstack::Action::SyncFolders do
     double('provider_config').tap do |c|
       c.stub(:rsync_includes) { nil }
       c.stub(:ssh_disabled) { false }
+      c.stub(:rsync_ignore_files) { ['.gitignore'] }
     end
   end
 
