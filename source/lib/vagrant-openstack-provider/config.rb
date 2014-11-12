@@ -162,6 +162,7 @@ module VagrantPlugins
         @server_name = UNSET_VALUE
         @username = UNSET_VALUE
         @rsync_includes = []
+        @rsync_ignore_files = []
         @keypair_name = UNSET_VALUE
         @ssh_username = UNSET_VALUE
         @ssh_timeout = UNSET_VALUE
@@ -194,7 +195,7 @@ module VagrantPlugins
             # Don't set the value if it is the unset value, either.
             value = obj.instance_variable_get(key)
 
-            if [:@networks, :@volumes, :@rsync_includes].include? key
+            if [:@networks, :@volumes, :@rsync_includes, :@ignore_files].include? key
               result.instance_variable_set(key, value) unless value.empty?
             else
               result.instance_variable_set(key, value) if value != UNSET_VALUE
@@ -225,6 +226,7 @@ module VagrantPlugins
         @server_name = nil if @server_name == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
         @rsync_includes = nil if @rsync_includes.empty?
+        @rsync_ignore_files = nil if @rsync_ignore_files.empty?
         @floating_ip = nil if @floating_ip == UNSET_VALUE
         @floating_ip_pool = nil if @floating_ip_pool == UNSET_VALUE
         @floating_ip_pool_always_allocate = false if floating_ip_pool_always_allocate == UNSET_VALUE
