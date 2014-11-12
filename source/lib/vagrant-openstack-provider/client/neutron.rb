@@ -40,6 +40,15 @@ module VagrantPlugins
         get_networks(env, true)
       end
 
+      def get_subnets(env)
+        subnets_json = get(env, "#{@session.endpoints[:network]}/subnets")
+        subnets = []
+        JSON.parse(subnets_json)['subnets'].each do |n|
+          subnets << Subnet.new(n['id'], n['name'], n['cidr'], n['enable_dhcp'], n['network_id'])
+        end
+        subnets
+      end
+
       private
 
       def get_networks(env, all)

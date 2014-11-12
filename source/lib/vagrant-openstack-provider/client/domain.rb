@@ -136,6 +136,25 @@ module VagrantPlugins
           [@id, @name, @size, @status, @bootable, @instance_id, @device]
         end
       end
+
+      class Subnet < Item
+        attr_accessor :cidr
+        attr_accessor :enable_dhcp
+        attr_accessor :network_id
+
+        def initialize(id, name, cidr, enable_dhcp, network_id)
+          @cidr = cidr
+          @enable_dhcp = enable_dhcp
+          @network_id = network_id
+          super(id, name)
+        end
+
+        protected
+
+        def state
+          [@id, @name, @cidr, @enable_dhcp, @network_id]
+        end
+      end
     end
   end
 end

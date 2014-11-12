@@ -87,6 +87,38 @@ describe VagrantPlugins::Openstack::NeutronClient do
     end
   end
 
+  describe 'get_subnets' do
+    context 'with token' do
+      it 'returns all available subnets', :focus do
+
+        stub_request(:get, 'http://neutron/subnets')
+        .with(
+          headers:
+            {
+              'Accept' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+        .to_return(
+          status: 200,
+          body: '
+                {
+                  "subnets": [
+                    { "id": "subnet-01", "name": "Subnet 1", "cidr": "192.168.1.0/24", "enable_dhcp": true, "network_id": "net-01" },
+                    { "id": "subnet-02", "name": "Subnet 2", "cidr": "192.168.2.0/24", "enable_dhcp": false, "network_id": "net-01" },
+                    { "id": "subnet-03", "name": "Subnet 3", "cidr": "192.168.100.0/24", "enable_dhcp": true, "network_id": "net-02" }
+                  ]
+                }
+                ')
+
+        networks = @neutron_client.get_subnets(env)
+
+        expect(networks).to eq [Subnet.new('subnet-01', 'Subnet 1', '192.168.1.0/24', true, 'net-01'),
+                                Subnet.new('subnet-02', 'Subnet 2', '192.168.2.0/24', false, 'net-01'),
+                                Subnet.new('subnet-03', 'Subnet 3', '192.168.100.0/24', true, 'net-02')]
+      end
+    end
+  end
+
   describe 'get_api_version_list' do
     context 'basic' do
       it 'returns version list' do
