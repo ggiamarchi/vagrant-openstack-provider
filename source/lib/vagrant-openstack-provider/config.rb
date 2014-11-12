@@ -97,6 +97,12 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :sync_method
 
+      # Sync folder ignore files. A list of files containing exclude patterns to ignore in the rsync operation
+      #  performed by this provider
+      #
+      # @return [Array]
+      attr_accessor :rsync_ignore_files
+
       # Network list the VM will be connected to
       #
       # @return [Array]
