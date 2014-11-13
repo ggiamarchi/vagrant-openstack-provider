@@ -276,7 +276,7 @@ module VagrantPlugins
         errors << I18n.t('vagrant_openstack.config.username_required') unless @username
 
         validate_ssh_username(machine, errors)
-        # TODO(julienvey) Validate Stack config
+        validate_stack_config(errors)
         validate_ssh_timeout(errors)
 
         if machine.config.ssh.private_key_path
@@ -300,6 +300,12 @@ module VagrantPlugins
       end
 
       private
+
+      def validate_stack_config(errors)
+        @stacks.each do |stack|
+          errors << I18n.t('vagrant_openstack.config.invalid_stack') unless stack[:name] && stack[:template]
+        end unless @stacks.nil?
+      end
 
       def validate_ssh_username(machine, errors)
         puts I18n.t('vagrant_openstack.config.ssh_username_deprecated').yellow if @ssh_username

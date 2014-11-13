@@ -231,6 +231,39 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
 
+    context 'with invalid stack' do
+      it 'should raise an error' do
+        subject.stacks = [
+          {
+            name: 'test1'
+          }
+        ]
+        I18n.should_receive(:t).with('vagrant_openstack.config.invalid_stack').and_return error_message
+        validation_errors.first.should == error_message
+      end
+
+      it 'should raise an error' do
+        subject.stacks = [
+          {
+            name: 'test1',
+            tempslate: 'tes1'
+          }
+        ]
+        I18n.should_receive(:t).with('vagrant_openstack.config.invalid_stack').and_return error_message
+        validation_errors.first.should == error_message
+      end
+
+      it 'should not raise an error' do
+        subject.stacks = [
+          {
+            name: 'test1',
+            template: 'tes1'
+          }
+        ]
+        expect(validation_errors).to be_empty
+      end
+    end
+
     context 'with invalid key' do
       it 'should raise an error' do
         subject.nonsense1 = true

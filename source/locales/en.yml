@@ -77,6 +77,13 @@ en:
         A username is required.
       invalid_uri: |-
         The value for %{key} is not a valid URI: %{uri}
+      invalid_stack: |-
+        One of the stacks in the stacks provider configuration is invalid
+        The configuration option should have the following format:
+        os.stacks                = [{
+          name: 'mystack',
+          template: '/path/to/heat_template.yml',
+        }]
       metadata_must_be_hash: |-
         Metadata must be a hash.
       keypair_name_required: |-
