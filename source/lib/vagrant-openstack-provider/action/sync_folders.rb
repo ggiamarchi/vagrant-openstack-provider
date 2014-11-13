@@ -95,14 +95,14 @@ module VagrantPlugins
               "#{ssh_info[:username]}@#{ssh_info[:host]}:#{guestpath}"]
             command.compact!
 
-            # during rsync, ignore files specified in .hgignore and
-            # .gitignore traditional .gitignore or .hgignore files
-            ignore_files = ['.hgignore', '.gitignore']
+            # during rsync, ignore files specified in list of files containing exclude patterns
+            # ex: rsync_ignore_files = ['.hgignore', '.gitignore']
+            ignore_files = []
+            ignore_files = env[:machine].provider_config.rsync_ignore_files unless env[:machine].provider_config.rsync_ignore_files.nil?
             ignore_files.each do |ignore_file|
               abs_ignore_file = env[:root_path].to_s + '/' + ignore_file
               command += ['--exclude-from', abs_ignore_file] if File.exist?(abs_ignore_file)
             end
-
             r = Vagrant::Util::Subprocess.execute(*command)
             next if r.exit_code == 0
             fail Errors::RsyncError, guestpath: guestpath, hostpath: hostpath, stderr: r.stderr
