@@ -17,6 +17,7 @@ module VagrantPlugins
             if env[:machine_state_id] == :not_created
               b2.use Message, I18n.t('vagrant_openstack.not_created')
             else
+              b2.use DeleteStack
               b2.use DeleteServer
             end
           end
@@ -192,6 +193,7 @@ module VagrantPlugins
       autoload :ConnectOpenstack, action_root.join('connect_openstack')
       autoload :CreateServer, action_root.join('create_server')
       autoload :CreateStack, action_root.join('create_stack')
+      autoload :DeleteStack, action_root.join('delete_stack')
       autoload :DeleteServer, action_root.join('delete_server')
       autoload :StopServer, action_root.join('stop_server')
       autoload :StartServer, action_root.join('start_server')

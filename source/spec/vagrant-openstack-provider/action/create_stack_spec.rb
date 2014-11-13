@@ -17,7 +17,7 @@ describe VagrantPlugins::Openstack::Action::CreateStack do
             template: 'template.yml'
           },
           {
-            name: 'stack1',
+            name: 'stack2',
             template: 'template.yml'
           }
         ]
@@ -66,6 +66,8 @@ describe VagrantPlugins::Openstack::Action::CreateStack do
   describe 'call' do
     it 'should create stacks on heat twice' do
       heat.stub(:create_stack).and_return('idstack')
+      File.should_receive(:write).with('/stack_stack1_id', 'idstack')
+      File.should_receive(:write).with('/stack_stack2_id', 'idstack')
       # TODO(julienvey) assert content of create call is correct
       heat.should_receive(:create_stack).exactly(2).times
       heat.stub(:get_stack_details).and_return('stack_status' => 'CREATE_COMPLETE')

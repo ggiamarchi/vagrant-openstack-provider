@@ -104,4 +104,21 @@ describe VagrantPlugins::Openstack::NovaClient do
       end
     end
   end
+
+  describe 'delete_stack' do
+    context 'with token and project_id acquainted' do
+      it 'deletes the stack' do
+
+        stub_request(:delete, 'http://heat/a1b2c3/stacks/stack_id/stack_name')
+            .with(headers:
+              {
+                'Accept' => 'application/json',
+                'X-Auth-Token' => '123456'
+              })
+            .to_return(status: 204)
+
+        @heat_client.delete_stack(env, 'stack_id', 'stack_name')
+      end
+    end
+  end
 end

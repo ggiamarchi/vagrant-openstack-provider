@@ -33,6 +33,12 @@ module VagrantPlugins
         end
       end
 
+      def delete_stack(env, stack_name, stack_id)
+        stack_exists do
+          delete(env, "#{@session.endpoints[:orchestration]}/stacks/#{stack_name}/#{stack_id}")
+        end
+      end
+
       def stack_exists
         return yield
       rescue Errors::VagrantOpenstackError => e

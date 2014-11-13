@@ -19,6 +19,8 @@ en:
       The server is already created.
     create_stack: |-
       Creating Heat Stack.
+    delete_stack: |-
+      Deleting Heat Stack.
     already_suspended: |-
       The server is already suspended
     deleting_server: |-
@@ -275,9 +277,9 @@ en:
       long_suspending: |-
         The server is active and currently suspending, either by request or necessity.
       short_resuming: |-
-        resuming 
+        resuming
       long_resuming: |-
-        The server is suspended and currently resuming by request. 
+        The server is suspended and currently resuming by request.
       short_spawning: |-
         spawning
       long_spawning: |-
@@ -285,11 +287,11 @@ en:
       short_scheduling: |-
         scheduling
       long_scheduling: |-
-        The server is building and currently scheduling by necessity.  
+        The server is building and currently scheduling by necessity.
       short_deleting: |-
         deleting
       long_deleting: |-
-        The server is created and currently deleting by request. 
+        The server is created and currently deleting by request.
       short_rebooting: |-
         rebooting
       long_rebooting: |-
