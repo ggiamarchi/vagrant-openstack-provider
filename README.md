@@ -23,6 +23,7 @@ cloud.
 * Provision the instances with any built-in Vagrant provisioner
 * Boot instance from volume
 * Attach Cinder volumes to the instances
+* Create and delete Heat Orchestration stacks
 * Minimal synced folder support via `rsync`
 * Custom sub-commands within Vagrant CLI to query Openstack objects
 
@@ -203,6 +204,27 @@ end
 ```
 
 * `volume_boot` - Volume to boot the VM from. When booting from an existing volume, `image` is not necessary and must not be provided.
+
+### Orchestration Stacks
+
+* `stacks` - Heat Stacks that will be automatically created when running `vagrant up`, and deleted when running `vagrant destroy`
+
+Here comes an example that show two stacks :
+
+```ruby
+config.vm.provider :openstack do |os|
+ ...
+os.stacks = [
+  {
+    name: 'mystack1',
+    template: 'heat_template.yml'
+  }, {
+    name: 'mystack2',
+    template: '/path/to//my/heat_template.yml'
+  }]
+end
+```
+
 
 ### SSH authentication
 
