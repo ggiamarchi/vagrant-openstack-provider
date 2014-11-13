@@ -89,7 +89,7 @@ describe VagrantPlugins::Openstack::NeutronClient do
 
   describe 'get_subnets' do
     context 'with token' do
-      it 'returns all available subnets', :focus do
+      it 'returns all available subnets' do
 
         stub_request(:get, 'http://neutron/subnets')
         .with(
