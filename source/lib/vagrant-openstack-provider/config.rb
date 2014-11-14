@@ -149,7 +149,6 @@ module VagrantPlugins
       attr_accessor :ssh_disabled
 
       def initialize
-        @logger = Log4r::Logger.new('vagrant_openstack::action::config')
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
         @openstack_network_url = UNSET_VALUE
