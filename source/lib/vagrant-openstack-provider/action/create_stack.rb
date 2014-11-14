@@ -41,7 +41,7 @@ module VagrantPlugins
             File.write(file_path, stack_id)
 
             waiting_for_stack_to_be_created(env, stack[:name], stack_id)
-          end
+          end unless config.stacks.nil?
 
           @app.call(env)
         end

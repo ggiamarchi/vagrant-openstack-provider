@@ -17,8 +17,8 @@ module VagrantPlugins
             if env[:machine_state_id] == :not_created
               b2.use Message, I18n.t('vagrant_openstack.not_created')
             else
-              b2.use DeleteStack
               b2.use DeleteServer
+              b2.use DeleteStack
             end
           end
         end

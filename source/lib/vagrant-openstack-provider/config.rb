@@ -209,7 +209,7 @@ module VagrantPlugins
             # Don't set the value if it is the unset value, either.
             value = obj.instance_variable_get(key)
 
-            if [:@networks, :@volumes, :@rsync_includes, :@ignore_files, :@floating_ip_pool].include? key
+            if [:@networks, :@volumes, :@rsync_includes, :@ignore_files, :@floating_ip_pool, :@stacks].include? key
               result.instance_variable_set(key, value) unless value.empty?
             else
               result.instance_variable_set(key, value) if value != UNSET_VALUE

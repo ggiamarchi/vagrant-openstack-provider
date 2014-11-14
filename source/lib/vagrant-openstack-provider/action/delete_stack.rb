@@ -33,6 +33,9 @@ module VagrantPlugins
             waiting_for_stack_to_be_deleted(env, stack[:name], stack[:id])
           end
 
+          # This will remove all files in the .vagrant instance directory
+          env[:machine].id = nil
+
           @app.call(env)
         end
 
@@ -52,7 +55,7 @@ module VagrantPlugins
 
         def waiting_for_stack_to_be_deleted(env, stack_name, stack_id, retry_interval = 3, timeout = 200)
           @logger.info "Waiting for the stack with id #{stack_id} to be deleted..."
-          env[:ui].info(I18n.t('vagrant_openstack.waiting_for_stack'))
+          env[:ui].info(I18n.t('vagrant_openstack.waiting_for_stack_deleted'))
           timeout(timeout, Errors::Timeout) do
             stack_status = 'DELETE_IN_PROGRESS'
             until stack_status == 'DELETE_COMPLETE'
