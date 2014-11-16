@@ -40,11 +40,13 @@ module VagrantPlugins
         config = env[:machine].provider_config
         nova = env[:openstack_client].nova
         return config.floating_ip if config.floating_ip
-        fail Errors::UnableToResolveFloatingIP unless config.floating_ip_pool
-        nova.get_all_floating_ips(env).each do |single|
-          return single.ip if single.pool == config.floating_ip_pool && single.instance_id.nil?
-        end unless config.floating_ip_pool_always_allocate
-        nova.allocate_floating_ip(env, config.floating_ip_pool).ip
+        fail Errors::UnableToResolveFloatingIP if config.floating_ip_pool.nil? || config.floating_ip_pool.empty?
+        @logger.debug 'Searching for available ips'
+        free_ip = search_free_ip(config, nova, env)
+        return free_ip unless free_ip.nil?
+        @logger.debug 'Allocate new ip anyway'
+        allocated_ip = allocate_ip(config, nova, env)
+        return allocated_ip unless allocated_ip.nil?
       end
 
       def resolve_keypair(env)
@@ -132,6 +134,35 @@ module VagrantPlugins
       end
 
       private
+
+      def search_free_ip(config, nova, env)
+        @logger.debug 'Retrieving all allocated floating ips on tenant'
+        all_floating_ips = nova.get_all_floating_ips(env)
+        all_floating_ips.each do |floating_ip|
+          log_attach = floating_ip.instance_id ? "attached to #{floating_ip.instance_id}" : 'not attached'
+          @logger.debug "#{floating_ip.ip} #{log_attach}" if config.floating_ip_pool.include? floating_ip.pool
+          return floating_ip.ip if (config.floating_ip_pool.include? floating_ip.pool) && floating_ip.instance_id.nil?
+        end unless config.floating_ip_pool_always_allocate
+        @logger.debug 'No free ip found'
+        nil
+      end
+
+      def allocate_ip(config, nova, env)
+        allocation_error = nil
+        config.floating_ip_pool.each do |floating_ip_pool|
+          begin
+            @logger.debug "Allocating ip in pool #{floating_ip_pool}"
+            return nova.allocate_floating_ip(env, floating_ip_pool).ip
+          rescue Errors::VagrantOpenstackError => e
+            @logger.warn "Error allocating ip in pool #{floating_ip_pool} : #{e}"
+            allocation_error = e
+            next if e.extra_data[:code] == 404
+            raise allocation_error
+          end
+        end
+        @logger.warn 'Impossible to allocate a new IP'
+        fail allocation_error
+      end
 
       def generate_keypair(env)
         key = SSHKey.generate
