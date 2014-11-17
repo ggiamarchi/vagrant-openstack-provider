@@ -19,6 +19,10 @@ en:
       The server is already created.
     already_suspended: |-
       The server is already suspended
+    ongoing_task_or_not_resumed: |-
+      The server cannot be suspend whether because a task is ongoing or the vm_state is not "resumed".
+    ongoing_task_or_not_suspended: |-
+      The server canot be resumed whether because a task is ongoing or the vm_state is not "suspended".
     deleting_server: |-
       Deleting server...
     finding_flavor: |-
