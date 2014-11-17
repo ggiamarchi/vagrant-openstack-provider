@@ -130,24 +130,24 @@ Here's an example which connect the instance to six Networks :
 ```ruby
 config.vm.provider :openstack do |os|
   ...
-    os.networks = [
-      'net-name-01',
-      '287132f0-57e6-4c31-a1ee-4823e9786ff2',
-      {
-        name: 'net-name-03',
-        address: '192.168.22.43'
-      },
-      {
-        id: '7dfdcf01-5177-4774-9473-2ae92a6447d4',
-        address: '192.168.43.76'
-      },
-      {
-        name: 'net-name-05'
-      },
-      {
-        id: '01e0950f-c668-4efe-821b-93ff6e427562'
-      }
-    ]
+  os.networks = [
+    'net-name-01',
+    '287132f0-57e6-4c31-a1ee-4823e9786ff2',
+    {
+      name: 'net-name-03',
+      address: '192.168.22.43'
+    },
+    {
+      id: '7dfdcf01-5177-4774-9473-2ae92a6447d4',
+      address: '192.168.43.76'
+    },
+    {
+      name: 'net-name-05'
+    },
+    {
+      id: '01e0950f-c668-4efe-821b-93ff6e427562'
+    }
+  ]
   ...
 end
 ```
@@ -162,25 +162,26 @@ Here comes an example that show six volumes attached to a server :
 
 ```ruby
 config.vm.provider :openstack do |os|
- ...
-os.volumes = [
-  '619e027c-f4a9-493d-8c15-c89de81cb949',
-  'vol-name-02',
-  {
-    id: '410096ff-ef71-4ca4-8006-e5bd9e99239a',
-    device: '/dev/vdc'
-  },
-  {
-    name: 'vol-name-04',
-    device: '/dev/vde'
-  },
-  {
-    name: 'vol-name-05'
-  },
-  {
-    id: '9e419e91-8f66-4803-bc45-4600182cfd8d'
-  }
-]
+  ...
+  os.volumes = [
+    '619e027c-f4a9-493d-8c15-c89de81cb949',
+    'vol-name-02',
+    {
+      id: '410096ff-ef71-4ca4-8006-e5bd9e99239a',
+      device: '/dev/vdc'
+    },
+    {
+      name: 'vol-name-04',
+      device: '/dev/vde'
+    },
+    {
+      name: 'vol-name-05'
+    },
+    {
+      id: '9e419e91-8f66-4803-bc45-4600182cfd8d'
+    }
+  ]
+  ...
 end
 ```
 
@@ -263,7 +264,7 @@ For instance `vagrant openstack image-list` lists images available in Glance.
 $ vagrant openstack image-list
 
 +--------------------------------------+---------------------+
-| 'Id'                                 | 'Name'              |
+| Id                                   | Name                |
 +--------------------------------------+---------------------+
 | 594f1287-9de3-4f3e-b82a-6ad223943ab2 | ubuntu-12.04_x86_64 |
 | 3e5aca4a-bf12-4721-87df-7bc8fd1fc36c | debian7_x86_64      |
