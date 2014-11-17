@@ -102,14 +102,31 @@ vagrant will authenticate against the UK authentication endpoint.
   can be overridden with this.
 * `flavor` - The name of the flavor to use for the VM
 * `image` - The name of the image to use for the VM
-* `floating_ip` - The floating IP to associate with the VM. This IP must be formerly allocated.
-* `floating_ip_pool` - The floating IP Pool from which a floating IP will be allocated to be associated with the VM. alternative to the `floating_ip` option.
-* `floating_ip_pool_always_allocate` - if set to true, vagrant will always allocate floating ip instead of trying to reuse unassigned ones
 * `availability_zone` - Nova Availability zone used when creating VM
 * `security_groups` - List of strings representing the security groups to apply. e.g. ['ssh', 'http']
 * `user_data` - String of User data to be sent to the newly created OpenStack instance. Use this e.g. to inject a script at boot time.
 * `metadata` - A Hash of metadata that will be sent to the instance for configuration e.g. `os.metadata  = { 'key' => 'value' }`
 * `scheduler_hints` - Pass hints to the OpenStack scheduler, e.g. { "cell": "some cell name" }
+
+#### Floating IPs
+
+* `floating_ip` - The floating IP to associate with the VM. This IP must be formerly allocated.
+* `floating_ip_pool` - The floating IP Pool or a list of floating IP pool from which a floating IP will be allocated to be associated
+   with the VM. alternative to the `floating_ip` option.
+
+`floating_ip_pool` attribute can be either a string or an array. In case of an array, if an IP can't be allocated from the first pool
+for any reason, it will try with the second one and so on. Finally, if it does not manage to allocate a floating IP from any pools of
+the list, it will fail.
+
+```ruby
+config.vm.provider :openstack do |os|
+  ...
+  os.floating_ip_pool = ['External-Network-01', 'External-Network-02']
+  ...
+end
+```
+
+* `floating_ip_pool_always_allocate` - if set to true, vagrant will always allocate floating ip instead of trying to reuse unassigned ones
 
 #### Networks
 
