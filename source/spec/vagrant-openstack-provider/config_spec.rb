@@ -13,6 +13,7 @@ describe VagrantPlugins::Openstack::Config do
     its(:password)  { should be_nil }
     its(:openstack_compute_url) { should be_nil }
     its(:openstack_auth_url) { should be_nil }
+    its(:openstack_orchestration_url) { should be_nil }
     its(:flavor)   { should be_nil }
     its(:image)    { should be_nil }
     its(:server_name) { should be_nil }
@@ -43,6 +44,8 @@ describe VagrantPlugins::Openstack::Config do
       :floating_ip_pool_always_allocate,
       :scheduler_hints,
       :security_groups,
+      :openstack_orchestration_url,
+      :stacks,
       :user_data,
       :metadata,
       :availability_zone,
@@ -228,6 +231,39 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
 
+    context 'with invalid stack' do
+      it 'should raise an error' do
+        subject.stacks = [
+          {
+            name: 'test1'
+          }
+        ]
+        I18n.should_receive(:t).with('vagrant_openstack.config.invalid_stack').and_return error_message
+        validation_errors.first.should == error_message
+      end
+
+      it 'should raise an error' do
+        subject.stacks = [
+          {
+            name: 'test1',
+            tempslate: 'tes1'
+          }
+        ]
+        I18n.should_receive(:t).with('vagrant_openstack.config.invalid_stack').and_return error_message
+        validation_errors.first.should == error_message
+      end
+
+      it 'should not raise an error' do
+        subject.stacks = [
+          {
+            name: 'test1',
+            template: 'tes1'
+          }
+        ]
+        expect(validation_errors).to be_empty
+      end
+    end
+
     context 'with invalid key' do
       it 'should raise an error' do
         subject.nonsense1 = true
@@ -293,7 +329,7 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
 
-    [:openstack_compute_url, :openstack_auth_url].each do |url|
+    [:openstack_compute_url, :openstack_auth_url, :openstack_orchestration_url].each do |url|
       context "the #{url}" do
         it 'should not validate if the URL is invalid' do
           subject.send "#{url}=", 'baz'

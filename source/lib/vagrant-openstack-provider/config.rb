@@ -20,6 +20,10 @@ module VagrantPlugins
       #
       attr_accessor :openstack_volume_url
 
+      # The orchestration service url to access Openstack. If nil, it will read from hypermedia catalog form REST API
+      #
+      attr_accessor :openstack_orchestration_url
+
       # The image service url to access Openstack. If nil, it will read from hypermedia catalog form REST API
       #
       attr_accessor :openstack_image_url
@@ -113,6 +117,11 @@ module VagrantPlugins
       # @return [Array]
       attr_accessor :volumes
 
+      # Stack that will be created and associated to the instances
+      #
+      # @return [Array]
+      attr_accessor :stacks
+
       # Public key path to create OpenStack keypair
       #
       # @return [Array]
@@ -153,6 +162,7 @@ module VagrantPlugins
         @openstack_compute_url = UNSET_VALUE
         @openstack_network_url = UNSET_VALUE
         @openstack_volume_url = UNSET_VALUE
+        @openstack_orchestration_url = UNSET_VALUE
         @openstack_image_url = UNSET_VALUE
         @openstack_auth_url = UNSET_VALUE
         @flavor = UNSET_VALUE
@@ -172,6 +182,7 @@ module VagrantPlugins
         @sync_method = UNSET_VALUE
         @availability_zone = UNSET_VALUE
         @networks = []
+        @stacks = []
         @volumes = []
         @public_key_path = UNSET_VALUE
         @scheduler_hints = UNSET_VALUE
@@ -198,7 +209,7 @@ module VagrantPlugins
             # Don't set the value if it is the unset value, either.
             value = obj.instance_variable_get(key)
 
-            if [:@networks, :@volumes, :@rsync_includes, :@ignore_files, :@floating_ip_pool].include? key
+            if [:@networks, :@volumes, :@rsync_includes, :@ignore_files, :@floating_ip_pool, :@stacks].include? key
               result.instance_variable_set(key, value) unless value.empty?
             else
               result.instance_variable_set(key, value) if value != UNSET_VALUE
@@ -219,6 +230,7 @@ module VagrantPlugins
         @password = nil if @password == UNSET_VALUE
         @openstack_compute_url = nil if @openstack_compute_url == UNSET_VALUE
         @openstack_network_url = nil if @openstack_network_url == UNSET_VALUE
+        @openstack_orchestration_url = nil if @openstack_orchestration_url == UNSET_VALUE
         @openstack_volume_url = nil if @openstack_volume_url == UNSET_VALUE
         @openstack_image_url = nil if @openstack_image_url == UNSET_VALUE
         @openstack_auth_url = nil if @openstack_auth_url == UNSET_VALUE
@@ -249,6 +261,7 @@ module VagrantPlugins
         @ssh_timeout = 180 if @ssh_timeout == UNSET_VALUE
         @networks = nil if @networks.empty?
         @volumes = nil if @volumes.empty?
+        @stacks = nil if @stacks.empty?
       end
       # rubocop:enable Style/CyclomaticComplexity
 
@@ -263,6 +276,7 @@ module VagrantPlugins
         errors << I18n.t('vagrant_openstack.config.username_required') unless @username
 
         validate_ssh_username(machine, errors)
+        validate_stack_config(errors)
         validate_ssh_timeout(errors)
 
         if machine.config.ssh.private_key_path
@@ -275,6 +289,7 @@ module VagrantPlugins
           openstack_compute_url: @openstack_compute_url,
           openstack_network_url: @openstack_network_url,
           openstack_volume_url: @openstack_volume_url,
+          openstack_orchestration_url: @openstack_orchestration_url,
           openstack_image_url: @openstack_image_url,
           openstack_auth_url: @openstack_auth_url
         }.each_pair do |key, value|
@@ -285,6 +300,12 @@ module VagrantPlugins
       end
 
       private
+
+      def validate_stack_config(errors)
+        @stacks.each do |stack|
+          errors << I18n.t('vagrant_openstack.config.invalid_stack') unless stack[:name] && stack[:template]
+        end unless @stacks.nil?
+      end
 
       def validate_ssh_username(machine, errors)
         puts I18n.t('vagrant_openstack.config.ssh_username_deprecated').yellow if @ssh_username

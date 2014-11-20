@@ -17,6 +17,10 @@ en:
       describe features you would like to see in this provider.
     already_created: |-
       The server is already created.
+    create_stack: |-
+      Creating Heat Stack.
+    delete_stack: |-
+      Deleting Heat Stack.
     already_suspended: |-
       The server is already suspended
     deleting_server: |-
@@ -55,6 +59,12 @@ en:
       Waiting for the server to stop...
     waiting_start: |-
       Waiting for the server to start...
+    waiting_deleted: |-
+      Waiting for the server to be deleted...
+    waiting_for_stack: |-
+      Waiting for Heat Stack to be created...
+    waiting_for_stack_deleted: |-
+      Waiting for Heat Stack to be created...
     warn_networks: |-
       Warning! The Openstack provider doesn't support any of the Vagrant
       high-level network configurations (`config.vm.network`). They
@@ -71,6 +81,13 @@ en:
         A username is required.
       invalid_uri: |-
         The value for %{key} is not a valid URI: %{uri}
+      invalid_stack: |-
+        One of the stacks in the stacks provider configuration is invalid
+        The configuration option should have the following format:
+        os.stacks                = [{
+          name: 'mystack',
+          template: '/path/to/heat_template.yml',
+        }]
       metadata_must_be_hash: |-
         Metadata must be a hash.
       keypair_name_required: |-
@@ -179,6 +196,8 @@ en:
         Dashboard instead of using vagrant commands.
         We recommend using the command `vagrant openstack reset` to reset
         vagrant to a clear state
+      stack_not_found: |-
+        Heat stack not found
       nerwork_service_unavailable: |-
         Neutron service endpoint is not available, thus there is not way to retrieve
         network id from its name. You have to provide only ids in your Vagrantfile.
@@ -187,6 +206,8 @@ en:
         volume id from its name. You have to provide only ids in your Vagrantfile.
       server_status_error: |-
         Server '%{server}' is in error status.
+      stack_status_error: |-
+        Heat Stack '%{stack}' is in error status.
 
     states:
       short_active: |-
@@ -267,9 +288,9 @@ en:
       long_suspending: |-
         The server is active and currently suspending, either by request or necessity.
       short_resuming: |-
-        resuming 
+        resuming
       long_resuming: |-
-        The server is suspended and currently resuming by request. 
+        The server is suspended and currently resuming by request.
       short_spawning: |-
         spawning
       long_spawning: |-
@@ -277,11 +298,11 @@ en:
       short_scheduling: |-
         scheduling
       long_scheduling: |-
-        The server is building and currently scheduling by necessity.  
+        The server is building and currently scheduling by necessity.
       short_deleting: |-
         deleting
       long_deleting: |-
-        The server is created and currently deleting by request. 
+        The server is created and currently deleting by request.
       short_rebooting: |-
         rebooting
       long_rebooting: |-

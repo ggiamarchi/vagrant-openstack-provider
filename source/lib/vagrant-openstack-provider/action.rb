@@ -18,6 +18,7 @@ module VagrantPlugins
               b2.use Message, I18n.t('vagrant_openstack.not_created')
             else
               b2.use DeleteServer
+              b2.use DeleteStack
             end
           end
         end
@@ -99,6 +100,7 @@ module VagrantPlugins
             when :not_created
               b2.use Provision
               b2.use SyncFolders
+              b2.use CreateStack
               b2.use CreateServer
               b2.use WaitForServerToBeAccessible
             when :shutoff
@@ -190,6 +192,8 @@ module VagrantPlugins
       autoload :Message, action_root.join('message')
       autoload :ConnectOpenstack, action_root.join('connect_openstack')
       autoload :CreateServer, action_root.join('create_server')
+      autoload :CreateStack, action_root.join('create_stack')
+      autoload :DeleteStack, action_root.join('delete_stack')
       autoload :DeleteServer, action_root.join('delete_server')
       autoload :StopServer, action_root.join('stop_server')
       autoload :StartServer, action_root.join('start_server')
