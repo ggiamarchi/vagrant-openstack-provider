@@ -153,6 +153,16 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
           {
             'endpoints' => [
               {
+                'publicURL' => 'http://nova',
+                'id' => '1'
+              }
+            ],
+            'type' => 'compute',
+            'name' => 'nova'
+          },
+          {
+            'endpoints' => [
+              {
                 'publicURL' => 'http://neutron/alt',
                 'id' => '2'
               },
@@ -174,7 +184,31 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
 
         @action.call(env)
 
-        expect(env[:openstack_client].session.endpoints).to eq(network: 'http://neutron/v2.0')
+        expect(env[:openstack_client].session.endpoints).to eq(compute: 'http://nova', network: 'http://neutron/v2.0')
+      end
+    end
+
+    context 'with nova endpoint missing' do
+      it 'raise an error' do
+        catalog = [
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://keystone',
+                'id' => '1'
+              }
+            ],
+            'type' => 'identity',
+            'name' => 'keystone'
+          }
+        ]
+
+        double.tap do |keystone|
+          keystone.stub(:authenticate).with(anything) { catalog }
+          env[:openstack_client].stub(:keystone) { keystone }
+        end
+
+        expect { @action.call(env) }.to raise_error Errors::MissingNovaEndpoint
       end
     end
 

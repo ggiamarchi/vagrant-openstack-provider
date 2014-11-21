@@ -218,6 +218,9 @@ en:
         Server '%{server}' is in error status.
       stack_status_error: |-
         Heat Stack '%{stack}' is in error status.
+      missing_nova_endpoint: |-
+        Nova endpoint must either be present in your keystone service catalog or be
+        specified using the provider's attribute 'openstack_compute_url'
 
     states:
       short_active: |-
