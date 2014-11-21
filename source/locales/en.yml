@@ -22,7 +22,11 @@ en:
     delete_stack: |-
       Deleting Heat Stack.
     already_suspended: |-
-      The server is already suspended
+      The server is already suspended.
+    ongoing_task: |-
+      The server is currently running a task and cannot execute your request.
+    not_suspended: |-
+      The server is not currently "suspended" and cannot be resumed.
     deleting_server: |-
       Deleting server...
     finding_flavor: |-

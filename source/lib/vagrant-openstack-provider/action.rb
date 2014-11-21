@@ -130,17 +130,21 @@ module VagrantPlugins
 
       # This is the action that is primarily responsible for suspending
       # the virtual machine.
+      # Vm cannot be suspended when the machine_state_id is not "active" (typically a task is ongoing)
       def self.action_suspend
         new_builder.tap do |b|
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
-            if env[:machine_state_id] == :not_created
+            case env[:machine_state_id]
+            when :not_created
               b2.use Message, I18n.t('vagrant_openstack.not_created')
-            elsif env[:machine_state_id] == :suspended
+            when :suspended
               b2.use Message, I18n.t('vagrant_openstack.already_suspended')
-            else
+            when :active
               b2.use Suspend
+            else
+              b2.use Message, I18n.t('vagrant_openstack.ongoing_task')
             end
           end
         end
@@ -148,15 +152,19 @@ module VagrantPlugins
 
       # This is the action that is primarily responsible for resuming
       # suspended machines.
+      # Vm cannot be resumed when the machine_state_id is not suspended.
       def self.action_resume
         new_builder.tap do |b|
           b.use ConfigValidate
           b.use ConnectOpenstack
           b.use Call, ReadState do |env, b2|
-            if env[:machine_state_id] == :not_created
+            case env[:machine_state_id]
+            when :not_created
               b2.use Message, I18n.t('vagrant_openstack.not_created')
-            else
+            when :suspended
               b2.use Resume
+            else
+              b2.use Message, I18n.t('vagrant_openstack.not_suspended')
             end
           end
         end
