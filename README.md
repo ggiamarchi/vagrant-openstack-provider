@@ -24,6 +24,7 @@ cloud.
 * Boot instance from volume
 * Attach Cinder volumes to the instances
 * Create and delete Heat Orchestration stacks
+* Support Openstack regions
 * Minimal synced folder support via `rsync`
 * Custom sub-commands within Vagrant CLI to query Openstack objects
 
@@ -89,6 +90,7 @@ This provider exposes quite a few provider-specific configuration options:
 * `username` - The username with which to access Openstack.
 * `password` - The API key for accessing Openstack.
 * `tenant_name` - The Openstack project name to work on
+* `region` - The Openstack region to work on
 * `openstack_auth_url` - The endpoint to authentication against. By default, vagrant will use the global
 openstack authentication endpoint for all regions with the exception of :lon. IF :lon region is specified
 vagrant will authenticate against the UK authentication endpoint.
