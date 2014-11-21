@@ -34,6 +34,8 @@ module VagrantPlugins
         def read_endpoint_catalog(env, catalog)
           config = env[:machine].provider_config
           client = env[:openstack_client]
+          endpoints = client.session.endpoints
+
           @logger.info(I18n.t('vagrant_openstack.client.looking_for_available_endpoints'))
 
           catalog.each do |service|
@@ -43,16 +45,16 @@ module VagrantPlugins
               env[:ui].warn "  => #{service['endpoints'][0]['publicURL']}"
             end
             url = se[0]['publicURL'].strip
-            client.session.endpoints[service['type'].to_sym] = url unless url.empty?
+            endpoints[service['type'].to_sym] = url unless url.empty?
           end
 
-          client.session.endpoints[:network] = choose_api_version('Neutron', 'openstack_network_url', 'v2') do
-            client.neutron.get_api_version_list(env)
-          end if config.openstack_network_url.nil? && !client.session.endpoints[:network].nil?
+          endpoints[:network] = choose_api_version('Neutron', 'openstack_network_url', 'v2') do
+            client.neutron.get_api_version_list(:network)
+          end if config.openstack_network_url.nil? && !endpoints[:network].nil?
 
-          client.session.endpoints[:image] = choose_api_version('Glance', 'openstack_image_url', 'v2', false) do
-            client.glance.get_api_version_list(env)
-          end if config.openstack_image_url.nil? && !client.session.endpoints[:image].nil?
+          endpoints[:image] = choose_api_version('Glance', 'openstack_image_url', 'v2', false) do
+            client.glance.get_api_version_list(:image)
+          end if config.openstack_image_url.nil? && !endpoints[:image].nil?
         end
 
         def choose_api_version(service_name, url_property, version_prefix = nil, fail_if_not_found = true)
@@ -71,11 +73,12 @@ module VagrantPlugins
         def override_endpoint_catalog_with_user_config(env)
           client = env[:openstack_client]
           config = env[:machine].provider_config
-          client.session.endpoints[:compute] = config.openstack_compute_url unless config.openstack_compute_url.nil?
-          client.session.endpoints[:network] = config.openstack_network_url unless config.openstack_network_url.nil?
-          client.session.endpoints[:volume]  = config.openstack_volume_url  unless config.openstack_volume_url.nil?
-          client.session.endpoints[:image]   = config.openstack_image_url   unless config.openstack_image_url.nil?
-          client.session.endpoints.delete_if { |_, value| value.nil? || value.empty? }
+          endpoints = client.session.endpoints
+          endpoints[:compute] = config.openstack_compute_url unless config.openstack_compute_url.nil?
+          endpoints[:network] = config.openstack_network_url unless config.openstack_network_url.nil?
+          endpoints[:volume]  = config.openstack_volume_url  unless config.openstack_volume_url.nil?
+          endpoints[:image]   = config.openstack_image_url   unless config.openstack_image_url.nil?
+          endpoints.delete_if { |_, value| value.nil? || value.empty? }
         end
 
         def log_endpoint_catalog(env)

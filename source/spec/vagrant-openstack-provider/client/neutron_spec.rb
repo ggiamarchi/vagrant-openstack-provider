@@ -150,7 +150,7 @@ describe VagrantPlugins::Openstack::NeutronClient do
               }
             ]}')
 
-        versions = @neutron_client.get_api_version_list(env)
+        versions = @neutron_client.get_api_version_list(:network)
 
         expect(versions.size).to eq(2)
       end

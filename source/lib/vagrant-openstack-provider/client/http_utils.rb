@@ -55,6 +55,24 @@ module VagrantPlugins
         end
       end
 
+      def get_api_version_list(service_type)
+        url = @session.endpoints[service_type]
+        headers = { 'X-Auth-Token' => @session.token, :accept => :json }
+        log_request(:GET, url, headers)
+        json = RestClient.get(url, headers) do |response|
+          log_response(response)
+          case response.code
+          when 200, 300
+            response
+          when 401
+            fail Errors::AuthenticationFailed
+          else
+            fail Errors::VagrantOpenstackError, message: response.to_s
+          end
+        end
+        JSON.parse(json)['versions']
+      end
+
       private
 
       ERRORS =

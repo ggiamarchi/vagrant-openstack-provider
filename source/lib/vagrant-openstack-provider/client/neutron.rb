@@ -17,21 +17,6 @@ module VagrantPlugins
         @session = VagrantPlugins::Openstack.session
       end
 
-      def get_api_version_list(_env)
-        json = RestClient.get(@session.endpoints[:network], 'X-Auth-Token' => @session.token, :accept => :json) do |response|
-          log_response(response)
-          case response.code
-          when 200, 300
-            response
-          when 401
-            fail Errors::AuthenticationFailed
-          else
-            fail Errors::VagrantOpenstackError, message: response.to_s
-          end
-        end
-        JSON.parse(json)['versions']
-      end
-
       def get_private_networks(env)
         get_networks(env, false)
       end
