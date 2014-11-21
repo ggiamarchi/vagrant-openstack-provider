@@ -21,6 +21,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
       config.stub(:tenant_name) { 'testTenant' }
       config.stub(:username) { 'username' }
       config.stub(:password) { 'password' }
+      config.stub(:region) { nil }
     end
   end
 
@@ -43,6 +44,25 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
     end
   end
 
+  let(:neutron_france) do
+    double.tap do |neutron|
+      neutron.stub(:get_api_version_list).with(anything) do
+        [
+          {
+            'status' => 'CURRENT',
+            'id' => 'v2.0',
+            'links' => [
+              {
+                'href' => 'http://france.neutron/v2.0',
+                'rel' => 'self'
+              }
+            ]
+          }
+        ]
+      end
+    end
+  end
+
   let(:glance) do
     double.tap do |glance|
       glance.stub(:get_api_version_list).with(anything) do
@@ -53,6 +73,25 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
             'links' => [
               {
                 'href' => 'http://glance/v2.0',
+                'rel' => 'self'
+              }
+            ]
+          }
+        ]
+      end
+    end
+  end
+
+  let(:glance_france) do
+    double.tap do |glance|
+      glance.stub(:get_api_version_list).with(anything) do
+        [
+          {
+            'status' => 'CURRENT',
+            'id' => 'v2.1',
+            'links' => [
+              {
+                'href' => 'http://france.glance/v2.0',
                 'rel' => 'self'
               }
             ]
@@ -144,6 +183,77 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
                  network: 'http://neutron/v2.0',
                  volume:  'http://cinder/v2/projectId',
                  image:   'http://glance/v2.0')
+      end
+    end
+
+    context 'with multiple regions' do
+      it 'read service catalog and stores endpoints URL for desired regions in session' do
+        catalog = [
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://france.nova/v2/projectId',
+                'id' => '1',
+                'region' => 'france'
+              },
+              {
+                'publicURL' => 'http://us.nova/v2/projectId',
+                'id' => '4',
+                'region' => 'us'
+              }
+            ],
+            'type' => 'compute',
+            'name' => 'nova'
+          },
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://france.neutron',
+                'id' => '2',
+                'region' => 'france'
+              },
+              {
+                'publicURL' => 'http://us.neutron',
+                'id' => '5',
+                'region' => 'us'
+              }
+            ],
+            'type' => 'network',
+            'name' => 'neutron'
+          },
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://france.glance',
+                'id' => '3',
+                'region' => 'france'
+              },
+              {
+                'publicURL' => 'http://us.glance',
+                'id' => '6',
+                'region' => 'us'
+              }
+            ],
+            'type' => 'image',
+            'name' => 'glance'
+          }
+        ]
+
+        double.tap do |keystone|
+          keystone.stub(:authenticate).with(anything) { catalog }
+          env[:openstack_client].stub(:keystone) { keystone }
+        end
+
+        env[:openstack_client].stub(:neutron)  { neutron_france }
+        env[:openstack_client].stub(:glance)   { glance_france }
+        config.stub(:region) { 'france' }
+
+        @action.call(env)
+
+        expect(env[:openstack_client].session.endpoints)
+        .to eq(compute: 'http://france.nova/v2/projectId',
+               network: 'http://france.neutron/v2.0',
+               image:   'http://france.glance/v2.0')
       end
     end
 

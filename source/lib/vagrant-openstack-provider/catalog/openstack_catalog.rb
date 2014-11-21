@@ -10,17 +10,23 @@ module VagrantPlugins
           config = env[:machine].provider_config
           client = env[:openstack_client]
           endpoints = client.session.endpoints
-
           @logger.info(I18n.t('vagrant_openstack.client.looking_for_available_endpoints'))
+          @logger.info("Selecting endpoints matching region '#{config.region}'") unless config.region.nil?
 
           catalog.each do |service|
             se = service['endpoints']
-            if se.size > 1
-              env[:ui].warn I18n.t('vagrant_openstack.client.multiple_endpoint', size: se.size, type: service['type'])
-              env[:ui].warn "  => #{service['endpoints'][0]['publicURL']}"
+            if config.region.nil?
+              if se.size > 1
+                env[:ui].warn I18n.t('vagrant_openstack.client.multiple_endpoint', size: se.size, type: service['type'])
+                env[:ui].warn "  => #{service['endpoints'][0]['publicURL']}"
+              end
+              url = se[0]['publicURL'].strip
+            else
+              se.each do |endpoint|
+                url = endpoint['publicURL'].strip if endpoint['region'].eql? config.region
+              end
             end
-            url = se[0]['publicURL'].strip
-            endpoints[service['type'].to_sym] = url unless url.empty?
+            endpoints[service['type'].to_sym] = url unless url.nil? || url.empty?
           end
 
           endpoints[:network] = choose_api_version('Neutron', 'openstack_network_url', 'v2') do
