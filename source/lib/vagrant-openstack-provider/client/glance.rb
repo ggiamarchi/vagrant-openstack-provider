@@ -32,9 +32,31 @@ module VagrantPlugins
         JSON.parse(json)['versions']
       end
 
+      # Endpoint /images exists on both v1 and v2 API
+      # The attribute 'visibility' is used to detect
+      # if the call has been made on v1 or v2
+      #
+      # In case of v2 we have all the needed information,
+      # but in case of v1 we don't and we have to call
+      # /images/detail to get full details
+      #
       def get_all_images(env)
         images_json = get(env, "#{@session.endpoints[:image]}/images")
-        JSON.parse(images_json)['images'].map { |i| Image.new(i['id'], i['name'], i['visibility'], i['size'], i['min_ram'], i['min_disk']) }
+        images = JSON.parse(images_json)['images']
+
+        return images if images.empty?
+
+        is_v1 = false
+        unless images[0].key? 'visibility'
+          is_v1 = true
+          images_json = get(env, "#{@session.endpoints[:image]}/images/detail")
+          images = JSON.parse(images_json)['images']
+        end
+
+        images.map do |i|
+          i['visibility'] = i['is_public'] ? 'public' : 'private' if is_v1
+          Image.new(i['id'], i['name'], i['visibility'], i['size'], i['min_ram'], i['min_disk'])
+        end
       end
     end
   end

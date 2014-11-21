@@ -19,27 +19,73 @@ describe VagrantPlugins::Openstack::GlanceClient do
 
   describe 'get_all_images' do
     context 'with token and project_id acquainted' do
-      it 'returns all images with details' do
-        stub_request(:get, 'http://glance/images')
-        .with(
-          headers:
+      context 'and api version is v2' do
+        it 'returns all images with details' do
+          stub_request(:get, 'http://glance/images')
+          .with(
+            headers:
+              {
+                'Accept' => 'application/json',
+                'X-Auth-Token' => '123456'
+              })
+          .to_return(
+            status: 200,
+            body: '
             {
-              'Accept' => 'application/json',
-              'X-Auth-Token' => '123456'
-            })
-        .to_return(
-          status: 200,
-          body: '{
-                   "images": [
-                     { "id": "i1", "name": "image1", "visibility": "public",  "size": "1024", "min_ram": "1", "min_disk": "10" },
-                     { "id": "i2", "name": "image2", "visibility": "private", "size": "2048", "min_ram": "2", "min_disk": "20" }
-                   ]
-                 }')
+              "images": [
+                { "id": "i1", "name": "image1", "visibility": "public",  "size": "1024", "min_ram": "1", "min_disk": "10" },
+                { "id": "i2", "name": "image2", "visibility": "private", "size": "2048", "min_ram": "2", "min_disk": "20" }
+              ]
+            }')
 
-        images = @glance_client.get_all_images(env)
+          images = @glance_client.get_all_images(env)
 
-        expect(images).to eq [Image.new('i1', 'image1', 'public',  '1024', '1', '10'),
-                              Image.new('i2', 'image2', 'private', '2048', '2', '20')]
+          expect(images).to eq [Image.new('i1', 'image1', 'public',  '1024', '1', '10'),
+                                Image.new('i2', 'image2', 'private', '2048', '2', '20')]
+        end
+      end
+
+      context 'and api version is v1' do
+        it 'returns all images with details' do
+          stub_request(:get, 'http://glance/images')
+          .with(
+            headers:
+              {
+                'Accept' => 'application/json',
+                'X-Auth-Token' => '123456'
+              })
+          .to_return(
+            status: 200,
+            body: '
+            {
+              "images": [
+                { "id": "i1", "name": "image1", "is_public": true  },
+                { "id": "i2", "name": "image2", "is_public": false }
+              ]
+            }')
+
+          stub_request(:get, 'http://glance/images/detail')
+          .with(
+            headers:
+              {
+                'Accept' => 'application/json',
+                'X-Auth-Token' => '123456'
+              })
+          .to_return(
+            status: 200,
+            body: '
+            {
+              "images": [
+                { "id": "i1", "name": "image1", "is_public": true,  "size": "1024", "min_ram": "1", "min_disk": "10" },
+                { "id": "i2", "name": "image2", "is_public": false, "size": "2048", "min_ram": "2", "min_disk": "20" }
+              ]
+            }')
+
+          images = @glance_client.get_all_images(env)
+
+          expect(images).to eq [Image.new('i1', 'image1', 'public',  '1024', '1', '10'),
+                                Image.new('i2', 'image2', 'private', '2048', '2', '20')]
+        end
       end
     end
   end
