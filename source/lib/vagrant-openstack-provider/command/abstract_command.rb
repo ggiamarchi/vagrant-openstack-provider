@@ -21,7 +21,7 @@ module VagrantPlugins
           cmd(name, @argv, env)
           @env.ui.info('')
         # rubocop:disable Lint/RescueException
-        rescue Errors::VagrantOpenstackError => e
+        rescue Errors::VagrantOpenstackError, SystemExit, Interrupt => e
           raise e
         rescue Exception => e
           puts I18n.t('vagrant_openstack.global_error').red unless e.message && e.message.start_with?('Catched Error:')
