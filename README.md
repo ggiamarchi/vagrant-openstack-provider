@@ -95,6 +95,7 @@ vagrant will authenticate against the UK authentication endpoint.
 * `openstack_compute_url` - The compute service URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 * `openstack_network_url` - The network service URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 * `openstack_volume_url` - The block storage URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
+* `openstack_image_url` - The image URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 
 ### VM Configuration
 
