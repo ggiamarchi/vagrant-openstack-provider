@@ -234,7 +234,10 @@ end
 
 If neither `keypair_name` nor `public_key_path` are set, vagrant will generate a new ssh key and automatically import it in Openstack.
 
-* `ssh_disabled` - if set to `true`, all ssh actions managed by the provider will be disabled. We recommend to use this option only to create private VMs that won't be accessed directly from vagrant. Some actions might still want to connect with SSH (provisionners...). In this case, we will just warn you that the ssh action is likely to fail, but we won't forbid it
+* `ssh_disabled` - if set to `true`, all ssh actions managed by the provider will be disabled during the `vagrant up`.
+   We recommend to use this option only to create private VMs that won't be accessed directly from vagrant. By contrast,
+   others commands like `vagrant ssh` or `vagrant provision` is run normally but it is likely to fail. Default value is
+   `false`.
 
 ### Synced folders
 
