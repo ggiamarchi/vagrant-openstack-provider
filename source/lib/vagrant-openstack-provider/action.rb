@@ -98,11 +98,13 @@ module VagrantPlugins
           b.use Call, ReadState do |env, b2|
             case env[:machine_state_id]
             when :not_created
-              b2.use Provision
+              ssh_disabled = env[:machine].provider_config.ssh_disabled
+              b2.use Provision unless ssh_disabled
               b2.use SyncFolders
               b2.use CreateStack
               b2.use CreateServer
-              b2.use WaitForServerToBeAccessible
+              b2.use Message, I18n.t('vagrant_openstack.ssh_disabled_provisioning') if ssh_disabled
+              b2.use WaitForServerToBeAccessible unless ssh_disabled
             when :shutoff
               b2.use StartServer
             when :suspended
