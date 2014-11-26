@@ -42,13 +42,21 @@ module VagrantPlugins
 
         def choose_api_version(service_name, url_property, version_prefix = nil, fail_if_not_found = true)
           versions = yield
-          return versions.first['links'].first['href'] unless versions.size > 1
+
+          return versions.first['links'].first['href'] if version_prefix.nil?
+
+          if versions.size == 1
+            return versions.first['links'].first['href'] if versions.first['id'].start_with?(version_prefix)
+            fail Errors::NoMatchingApiVersion, api_name: service_name, url_property: url_property, version_list: version_list if fail_if_not_found
+          end
+
           version_list = ''
           versions.each do |version|
-            return version['links'].first['href'] if version['id'].start_with? version_prefix if version_prefix
+            return version['links'].first['href'] if version['id'].start_with?(version_prefix)
             links = version['links'].map { |l| l['href'] }
             version_list << "#{version['id'].ljust(6)} #{version['status'].ljust(10)} #{links}\n"
           end
+
           fail Errors::NoMatchingApiVersion, api_name: service_name, url_property: url_property, version_list: version_list if fail_if_not_found
           nil
         end
