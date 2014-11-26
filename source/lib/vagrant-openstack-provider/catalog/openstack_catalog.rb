@@ -33,7 +33,7 @@ module VagrantPlugins
             client.neutron.get_api_version_list(:network)
           end if config.openstack_network_url.nil? && !endpoints[:network].nil?
 
-          endpoints[:image] = choose_api_version('Glance', 'openstack_image_url', 'v2', false) do
+          endpoints[:image] = choose_api_version('Glance', 'openstack_image_url', nil, false) do
             client.glance.get_api_version_list(:image)
           end if config.openstack_image_url.nil? && !endpoints[:image].nil?
         end

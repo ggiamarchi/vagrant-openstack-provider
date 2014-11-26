@@ -82,6 +82,25 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
     end
   end
 
+  let(:glance_v1) do
+    double.tap do |glance|
+      glance.stub(:get_api_version_list).with(anything) do
+        [
+          {
+            'status' => 'CURRENT',
+            'id' => 'v1.0',
+            'links' => [
+              {
+                'href' => 'http://glance/v1',
+                'rel' => 'self'
+              }
+            ]
+          }
+        ]
+      end
+    end
+  end
+
   let(:glance_france) do
     double.tap do |glance|
       glance.stub(:get_api_version_list).with(anything) do
@@ -295,6 +314,45 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
         @action.call(env)
 
         expect(env[:openstack_client].session.endpoints).to eq(compute: 'http://nova', network: 'http://neutron/v2.0')
+      end
+    end
+
+    context 'with glance v1 only' do
+      it 'read service catalog and stores endpoints URL in session', :focus do
+        catalog = [
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://nova/v2/projectId',
+                'id' => '1'
+              }
+            ],
+            'type' => 'compute',
+            'name' => 'nova'
+          },
+          {
+            'endpoints' => [
+              {
+                'publicURL' => 'http://glance',
+                'id' => '2'
+              }
+            ],
+            'type' => 'image',
+            'name' => 'glance'
+          }
+        ]
+
+        double.tap do |keystone|
+          keystone.stub(:authenticate).with(anything) { catalog }
+          env[:openstack_client].stub(:keystone) { keystone }
+        end
+        env[:openstack_client].stub(:glance) { glance_v1 }
+
+        @action.call(env)
+
+        expect(env[:openstack_client].session.endpoints)
+        .to eq(compute: 'http://nova/v2/projectId',
+               image:   'http://glance/v1')
       end
     end
 
