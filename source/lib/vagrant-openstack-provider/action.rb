@@ -103,7 +103,7 @@ module VagrantPlugins
               b2.use SyncFolders
               b2.use CreateStack
               b2.use CreateServer
-              b2.use Message, 'Provisioning will not be performed because provider config ssh_disabled is set to true' if ssh_disabled
+              b2.use Message, I18n.t('vagrant_openstack.ssh_disabled_provisioning') if ssh_disabled
               b2.use WaitForServerToBeAccessible unless ssh_disabled
             when :shutoff
               b2.use StartServer

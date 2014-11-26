@@ -31,7 +31,7 @@ module VagrantPlugins
 
         def call(env)
           @app.call(env)
-          env[:ui].info('Sync folders are disabled in the provider configuration')
+          env[:ui].info(I18n.t('vagrant_openstack.disabled_sync_folders'))
         end
       end
 
@@ -48,7 +48,7 @@ module VagrantPlugins
           @app.call(env)
 
           if env[:machine].provider_config.ssh_disabled
-            env[:ui].info('Folders will not be synced because provider config ssh_disabled is set to true')
+            env[:ui].info(I18n.t('vagrant_openstack.ssh_disabled_sync_folders'))
             return
           end
 

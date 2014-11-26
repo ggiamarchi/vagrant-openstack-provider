@@ -77,6 +77,12 @@ en:
       As Neutron endpoint is not available, the identifier '%{network}' is assumed to be an id (not a name).
     warn_volume_identifier_is_assumed_to_be_an_id: |-
       As Cinder endpoint is not available, the identifier '%{volume}' is assumed to be an id (not a name).
+    ssh_disabled_provisioning: |-
+      Provisioning will not be performed because provider config ssh_disabled is set to true
+    ssh_disabled_sync_folders: |-
+      Folders will not be synced because provider config ssh_disabled is set to true
+    disabled_sync_folders: |-
+      Sync folders are disabled in the provider configuration
 
     config:
       password_required: |-
