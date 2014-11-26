@@ -14,9 +14,8 @@ module VagrantPlugins
 
         def execute(env)
           sync_method = env[:machine].provider_config.sync_method
-          ssh_disabled = env[:machine].provider_config.ssh_disabled
-          if sync_method == 'none' || ssh_disabled
-            NoSyncFolders.new(@app, env, ssh_disabled).call(env)
+          if sync_method == 'none'
+            NoSyncFolders.new(@app, env).call(env)
           elsif sync_method == 'rsync'
             RsyncFolders.new(@app, env).call(env)
           else
@@ -26,15 +25,13 @@ module VagrantPlugins
       end
 
       class NoSyncFolders
-        def initialize(app, _env, ssh_disabled)
+        def initialize(app, _env)
           @app = app
-          @ssh_disabled = ssh_disabled
         end
 
         def call(env)
           @app.call(env)
-          env[:ui].info('Folders will not be synced because provider config ssh_disabled is set to true') if @ssh_disabled
-          env[:ui].info('Sync folders are disabled in the provider configuration') unless @ssh_disabled
+          env[:ui].info('Sync folders are disabled in the provider configuration')
         end
       end
 
@@ -49,6 +46,11 @@ module VagrantPlugins
 
         def call(env)
           @app.call(env)
+
+          if env[:machine].provider_config.ssh_disabled
+            env[:ui].info('Folders will not be synced because provider config ssh_disabled is set to true')
+            return
+          end
 
           ssh_info = env[:machine].ssh_info
 
