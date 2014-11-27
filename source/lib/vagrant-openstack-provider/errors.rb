@@ -163,6 +163,10 @@ module VagrantPlugins
       class StackStatusError < VagrantOpenstackError
         error_key(:stack_status_error)
       end
+
+      class MissingNovaEndpoint < VagrantOpenstackError
+        error_key(:missing_nova_endpoint)
+      end
     end
   end
 end

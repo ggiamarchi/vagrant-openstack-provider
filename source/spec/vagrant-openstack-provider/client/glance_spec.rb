@@ -120,7 +120,7 @@ describe VagrantPlugins::Openstack::GlanceClient do
             }
           ]}')
 
-      versions = @glance_client.get_api_version_list(env)
+      versions = @glance_client.get_api_version_list(:image)
 
       expect(versions.size).to eq(2)
     end
