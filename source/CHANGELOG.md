@@ -1,3 +1,35 @@
+# 0.6.0 (November 28, 2014)
+
+FEATURES:
+
+  - First implementation of Heat Stacks [#170](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/170)
+  - Allow public and private networks to be specified [#148](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/148)
+  - Add custom command "subnet-list" [#160](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/160)
+  - Allow public and private networks to be specified [#148](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/148)
+  - Add config parameter os.region [#128](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/128)
+
+IMPROVEMENTS:
+
+  - Rsync all files [#166](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/166)
+  - Support glance API v1 [#168](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/168)
+  - Replace fail <string> by fail Errors::... [#152](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/152)
+  - When an unknown error occurs, provide information to debug and submit issue [#115](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/115)
+  - Print more information for command "vagrant openstack image-list" [#104](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/104)
+  - Cannot 'resume' while instance is in vm_state active [#91](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/91)
+  - Allow config.floating_ip_pool to take an array as input [#90](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/90)
+  - Display the current task value in the status option [#89](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/89)
+
+BUG FIXES:
+
+  - Fix ssh_disabled [#182](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/182)
+  - Avoid printing contribution message on user interruption [#169](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/169)
+  - Network configuration is lost when machine definition overrides provider's configuration [#146](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/146)
+  - When VM status is "ERROR" continue waiting for startup [#62](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/62)
+
+DOCUMENTATION:
+
+  - Add a CONTRIBUTING.md file [#151](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/151)
+
 # 0.5.2 (November 6, 2014)
 
 BUG FIXES:
