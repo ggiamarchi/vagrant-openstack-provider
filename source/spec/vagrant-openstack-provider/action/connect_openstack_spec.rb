@@ -44,6 +44,25 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
     end
   end
 
+  let(:neutron_admin_url) do
+    double.tap do |neutron|
+      neutron.stub(:get_api_version_list).with(anything) do
+        [
+          {
+            'status' => 'CURRENT',
+            'id' => 'v2.0',
+            'links' => [
+              {
+                'href' => 'http://neutron/v2.0/admin',
+                'rel' => 'self'
+              }
+            ]
+          }
+        ]
+      end
+    end
+  end
+
   let(:neutron_france) do
     double.tap do |neutron|
       neutron.stub(:get_api_version_list).with(anything) do
@@ -73,6 +92,25 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
             'links' => [
               {
                 'href' => 'http://glance/v2.0',
+                'rel' => 'self'
+              }
+            ]
+          }
+        ]
+      end
+    end
+  end
+
+  let(:glance_admin_url) do
+    double.tap do |glance|
+      glance.stub(:get_api_version_list).with(anything) do
+        [
+          {
+            'status' => 'CURRENT',
+            'id' => 'v2.1',
+            'links' => [
+              {
+                'href' => 'http://glance/v2.0/admin',
                 'rel' => 'self'
               }
             ]
@@ -314,6 +352,257 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
         @action.call(env)
 
         expect(env[:openstack_client].session.endpoints).to eq(compute: 'http://nova', network: 'http://neutron/v2.0')
+      end
+    end
+
+    describe 'endpoint_type' do
+      context 'with adminURL specified' do
+        it 'read service catalog and stores endpoints URL in session' do
+          catalog = [
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://nova/v2/projectId',
+                  'adminURL' => 'http://nova/v2/projectId/admin',
+                  'id' => '1'
+                }
+              ],
+              'type' => 'compute',
+              'name' => 'nova'
+            },
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://neutron',
+                  'adminURL' => 'http://neutron/admin',
+                  'id' => '2'
+                }
+              ],
+              'type' => 'network',
+              'name' => 'neutron'
+            },
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://cinder/v2/projectId',
+                  'adminURL' => 'http://cinder/v2/projectId/admin',
+                  'id' => '2'
+                }
+              ],
+              'type' => 'volume',
+              'name' => 'cinder'
+            },
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://glance',
+                  'adminURL' => 'http://glance/admin',
+                  'id' => '2'
+                }
+              ],
+              'type' => 'image',
+              'name' => 'glance'
+            }
+          ]
+
+          double.tap do |keystone|
+            keystone.stub(:authenticate).with(anything) { catalog }
+            env[:openstack_client].stub(:keystone) { keystone }
+          end
+          env[:openstack_client].stub(:neutron)  { neutron_admin_url }
+          env[:openstack_client].stub(:glance)   { glance_admin_url }
+          env[:endpoint_type] = 'adminURL'
+
+          @action.call(env)
+
+          expect(env[:openstack_client].session.endpoints)
+          .to eq(compute: 'http://nova/v2/projectId/admin',
+                 network: 'http://neutron/v2.0/admin',
+                 volume:  'http://cinder/v2/projectId/admin',
+                 image:   'http://glance/v2.0/admin')
+        end
+      end
+    end
+
+    describe 'endpoint_type' do
+      context 'with internalURL specified' do
+        it 'read service catalog and stores endpoints URL in session' do
+          catalog = [
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://nova/v2/projectId',
+                  'adminURL' => 'http://nova/v2/projectId/admin',
+                  'internalURL' => 'http://nova/v2/projectId/internal',
+                  'id' => '1'
+                }
+              ],
+              'type' => 'compute',
+              'name' => 'nova'
+            },
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://cinder/v2/projectId',
+                  'adminURL' => 'http://cinder/v2/projectId/admin',
+                  'internalURL' => 'http://cinder/v2/projectId/internal',
+                  'id' => '2'
+                }
+              ],
+              'type' => 'volume',
+              'name' => 'cinder'
+            }
+          ]
+
+          double.tap do |keystone|
+            keystone.stub(:authenticate).with(anything) { catalog }
+            env[:openstack_client].stub(:keystone) { keystone }
+          end
+          env[:endpoint_type] = 'internalURL'
+
+          @action.call(env)
+
+          expect(env[:openstack_client].session.endpoints)
+          .to eq(compute: 'http://nova/v2/projectId/internal',
+                 volume:  'http://cinder/v2/projectId/internal')
+        end
+      end
+    end
+
+    describe 'endpoint_type' do
+      context 'with publicURL specified' do
+        it 'read service catalog and stores endpoints URL in session' do
+          catalog = [
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://nova/v2/projectId',
+                  'adminURL' => 'http://nova/v2/projectId/admin',
+                  'id' => '1'
+                }
+              ],
+              'type' => 'compute',
+              'name' => 'nova'
+            },
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://neutron',
+                  'adminURL' => 'http://neutron/admin',
+                  'id' => '2'
+                }
+              ],
+              'type' => 'network',
+              'name' => 'neutron'
+            },
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://cinder/v2/projectId',
+                  'adminURL' => 'http://cinder/v2/projectId/admin',
+                  'id' => '2'
+                }
+              ],
+              'type' => 'volume',
+              'name' => 'cinder'
+            },
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://glance',
+                  'adminURL' => 'http://glance/admin',
+                  'id' => '2'
+                }
+              ],
+              'type' => 'image',
+              'name' => 'glance'
+            }
+          ]
+
+          double.tap do |keystone|
+            keystone.stub(:authenticate).with(anything) { catalog }
+            env[:openstack_client].stub(:keystone) { keystone }
+          end
+          env[:openstack_client].stub(:neutron)  { neutron }
+          env[:openstack_client].stub(:glance)   { glance }
+          env[:endpoint_type] = 'publicURL'
+
+          @action.call(env)
+
+          expect(env[:openstack_client].session.endpoints)
+          .to eq(compute: 'http://nova/v2/projectId',
+                 network: 'http://neutron/v2.0',
+                 volume:  'http://cinder/v2/projectId',
+                 image:   'http://glance/v2.0')
+        end
+      end
+    end
+
+    describe 'endpoint_type' do
+      context 'with nothing specified' do
+        it 'read service catalog and stores endpoints URL in session taking publicURL by default' do
+          catalog = [
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://nova/v2/projectId',
+                  'adminURL' => 'http://nova/v2/projectId/admin',
+                  'id' => '1'
+                }
+              ],
+              'type' => 'compute',
+              'name' => 'nova'
+            },
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://neutron',
+                  'adminURL' => 'http://neutron/admin',
+                  'id' => '2'
+                }
+              ],
+              'type' => 'network',
+              'name' => 'neutron'
+            },
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://cinder/v2/projectId',
+                  'adminURL' => 'http://cinder/v2/projectId/admin',
+                  'id' => '2'
+                }
+              ],
+              'type' => 'volume',
+              'name' => 'cinder'
+            },
+            {
+              'endpoints' => [
+                {
+                  'publicURL' => 'http://glance',
+                  'adminURL' => 'http://glance/admin',
+                  'id' => '2'
+                }
+              ],
+              'type' => 'image',
+              'name' => 'glance'
+            }
+          ]
+
+          double.tap do |keystone|
+            keystone.stub(:authenticate).with(anything) { catalog }
+            env[:openstack_client].stub(:keystone) { keystone }
+          end
+          env[:openstack_client].stub(:neutron)  { neutron }
+          env[:openstack_client].stub(:glance)   { glance }
+
+          @action.call(env)
+
+          expect(env[:openstack_client].session.endpoints)
+          .to eq(compute: 'http://nova/v2/projectId',
+                 network: 'http://neutron/v2.0',
+                 volume:  'http://cinder/v2/projectId',
+                 image:   'http://glance/v2.0')
+        end
       end
     end
 

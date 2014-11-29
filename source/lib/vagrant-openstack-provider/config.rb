@@ -168,6 +168,7 @@ module VagrantPlugins
         @openstack_orchestration_url = UNSET_VALUE
         @openstack_image_url = UNSET_VALUE
         @openstack_auth_url = UNSET_VALUE
+        @endpoint_type = UNSET_VALUE
         @region = UNSET_VALUE
         @flavor = UNSET_VALUE
         @image = UNSET_VALUE
