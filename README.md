@@ -91,9 +91,7 @@ This provider exposes quite a few provider-specific configuration options:
 * `password` - The API key for accessing Openstack.
 * `tenant_name` - The Openstack project name to work on
 * `region` - The Openstack region to work on
-* `openstack_auth_url` - The endpoint to authentication against. By default, vagrant will use the global
-openstack authentication endpoint for all regions with the exception of :lon. IF :lon region is specified
-vagrant will authenticate against the UK authentication endpoint.
+* `openstack_auth_url` - The endpoint to authenticate against.
 * `openstack_compute_url` - The compute service URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 * `openstack_network_url` - The network service URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 * `openstack_volume_url` - The block storage URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
