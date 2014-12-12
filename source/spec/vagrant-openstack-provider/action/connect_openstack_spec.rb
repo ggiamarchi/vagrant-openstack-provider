@@ -22,6 +22,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
       config.stub(:username) { 'username' }
       config.stub(:password) { 'password' }
       config.stub(:region) { nil }
+      config.stub(:endpoint_type) { 'publicURL' }
     end
   end
 
@@ -182,7 +183,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
 
   describe 'ConnectOpenstack' do
     context 'with one endpoint by service' do
-      it 'read service catalog and stores endpoints URL in session' do
+      it 'read service catalog and stores endpoints URL in session', :focus do
         catalog = [
           {
             'endpoints' => [
@@ -411,7 +412,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
           end
           env[:openstack_client].stub(:neutron)  { neutron_admin_url }
           env[:openstack_client].stub(:glance)   { glance_admin_url }
-          env[:endpoint_type] = 'adminURL'
+          config.stub(:endpoint_type) { 'adminURL' }
 
           @action.call(env)
 
@@ -458,7 +459,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
             keystone.stub(:authenticate).with(anything) { catalog }
             env[:openstack_client].stub(:keystone) { keystone }
           end
-          env[:endpoint_type] = 'internalURL'
+          config.stub(:endpoint_type) { 'internalURL' }
 
           @action.call(env)
 
@@ -525,75 +526,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
           end
           env[:openstack_client].stub(:neutron)  { neutron }
           env[:openstack_client].stub(:glance)   { glance }
-          env[:endpoint_type] = 'publicURL'
-
-          @action.call(env)
-
-          expect(env[:openstack_client].session.endpoints)
-          .to eq(compute: 'http://nova/v2/projectId',
-                 network: 'http://neutron/v2.0',
-                 volume:  'http://cinder/v2/projectId',
-                 image:   'http://glance/v2.0')
-        end
-      end
-    end
-
-    describe 'endpoint_type' do
-      context 'with nothing specified' do
-        it 'read service catalog and stores endpoints URL in session taking publicURL by default' do
-          catalog = [
-            {
-              'endpoints' => [
-                {
-                  'publicURL' => 'http://nova/v2/projectId',
-                  'adminURL' => 'http://nova/v2/projectId/admin',
-                  'id' => '1'
-                }
-              ],
-              'type' => 'compute',
-              'name' => 'nova'
-            },
-            {
-              'endpoints' => [
-                {
-                  'publicURL' => 'http://neutron',
-                  'adminURL' => 'http://neutron/admin',
-                  'id' => '2'
-                }
-              ],
-              'type' => 'network',
-              'name' => 'neutron'
-            },
-            {
-              'endpoints' => [
-                {
-                  'publicURL' => 'http://cinder/v2/projectId',
-                  'adminURL' => 'http://cinder/v2/projectId/admin',
-                  'id' => '2'
-                }
-              ],
-              'type' => 'volume',
-              'name' => 'cinder'
-            },
-            {
-              'endpoints' => [
-                {
-                  'publicURL' => 'http://glance',
-                  'adminURL' => 'http://glance/admin',
-                  'id' => '2'
-                }
-              ],
-              'type' => 'image',
-              'name' => 'glance'
-            }
-          ]
-
-          double.tap do |keystone|
-            keystone.stub(:authenticate).with(anything) { catalog }
-            env[:openstack_client].stub(:keystone) { keystone }
-          end
-          env[:openstack_client].stub(:neutron)  { neutron }
-          env[:openstack_client].stub(:glance)   { glance }
+          config.stub(:endpoint_type) { 'publicURL' }
 
           @action.call(env)
 

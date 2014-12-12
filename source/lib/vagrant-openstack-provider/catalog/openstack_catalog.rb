@@ -10,10 +10,10 @@ module VagrantPlugins
           config = env[:machine].provider_config
           client = env[:openstack_client]
           endpoints = client.session.endpoints
+          endpoint_type = config.endpoint_type
           @logger.info(I18n.t('vagrant_openstack.client.looking_for_available_endpoints'))
           @logger.info("Selecting endpoints matching region '#{config.region}'") unless config.region.nil?
 
-          endpoint_type = env[:endpoint_type].nil? ? 'publicURL' : env[:endpoint_type]
           catalog.each do |service|
             se = service['endpoints']
             if config.region.nil?
