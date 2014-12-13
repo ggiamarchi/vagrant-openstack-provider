@@ -7,7 +7,6 @@ Vagrant.configure('2') do |config|
   config.ssh.username = ENV['OS_SSH_USERNAME']
 
   config.vm.provider :openstack do |os|
-    os.endpoint_type         = ENV['OS_ENDPOINT_TYPE']
     os.openstack_auth_url    = ENV['OS_AUTH_URL']
     os.tenant_name           = ENV['OS_TENANT_NAME']
     os.username              = ENV['OS_USERNAME']
