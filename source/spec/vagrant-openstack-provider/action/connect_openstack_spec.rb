@@ -183,7 +183,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
 
   describe 'ConnectOpenstack' do
     context 'with one endpoint by service' do
-      it 'read service catalog and stores endpoints URL in session', :focus do
+      it 'read service catalog and stores endpoints URL in session' do
         catalog = [
           {
             'endpoints' => [
@@ -540,7 +540,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
     end
 
     context 'with glance v1 only' do
-      it 'read service catalog and stores endpoints URL in session', :focus do
+      it 'read service catalog and stores endpoints URL in session' do
         catalog = [
           {
             'endpoints' => [
