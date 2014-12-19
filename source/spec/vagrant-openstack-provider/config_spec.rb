@@ -10,13 +10,14 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
 
-    its(:password)  { should be_nil }
+    its(:password)  { should eq(ENV['OS_PASSWORD']) }
     its(:openstack_compute_url) { should be_nil }
-    its(:openstack_auth_url) { should be_nil }
+    its(:openstack_auth_url) { should eq(ENV['OS_AUTH_URL']) }
     its(:flavor)   { should be_nil }
     its(:image)    { should be_nil }
     its(:server_name) { should be_nil }
-    its(:username) { should be_nil }
+    its(:tenant_name) { should eq(ENV['OS_TENANT_NAME']) }
+    its(:username) { should eq(ENV['OS_USERNAME']) }
     its(:rsync_includes) { should be_nil }
     its(:keypair_name) { should be_nil }
     its(:public_key_path) { should be_nil }

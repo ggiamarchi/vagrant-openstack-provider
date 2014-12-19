@@ -217,17 +217,28 @@ module VagrantPlugins
       # rubocop:disable Style/CyclomaticComplexity
       def finalize!
         @password = nil if @password == UNSET_VALUE
+        @password = ENV['OS_PASSWORD'] unless @password.nil?
+
         @openstack_compute_url = nil if @openstack_compute_url == UNSET_VALUE
         @openstack_network_url = nil if @openstack_network_url == UNSET_VALUE
         @openstack_volume_url = nil if @openstack_volume_url == UNSET_VALUE
         @openstack_image_url = nil if @openstack_image_url == UNSET_VALUE
+
         @openstack_auth_url = nil if @openstack_auth_url == UNSET_VALUE
+        @openstack_auth_url = ENV['OS_AUTH_URL'] unless @openstack_auth_url.nil?
+
         @flavor = nil if @flavor == UNSET_VALUE
         @image = nil if @image == UNSET_VALUE
         @volume_boot = nil if @volume_boot == UNSET_VALUE
+
         @tenant_name = nil if @tenant_name == UNSET_VALUE
+        @tenant_name = ENV['OS_TENANT_NAME'] unless @tenant_name.nil?
+
         @server_name = nil if @server_name == UNSET_VALUE
+
         @username = nil if @username == UNSET_VALUE
+        @username = ENV['OS_USERNAME'] unless @username.nil?
+
         @rsync_includes = nil if @rsync_includes.empty?
         @rsync_ignore_files = nil if @rsync_ignore_files.empty?
         @floating_ip = nil if @floating_ip == UNSET_VALUE
