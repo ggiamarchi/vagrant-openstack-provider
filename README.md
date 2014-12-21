@@ -96,6 +96,7 @@ This provider exposes quite a few provider-specific configuration options:
 * `openstack_network_url` - The network service URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 * `openstack_volume_url` - The block storage URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 * `openstack_image_url` - The image URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
+* `endpoint_type` - The endpoint type to use : publicURL, adminURL, internalURL. If not provided, vagrant will use publicURL by default.
 
 ### VM Configuration
 

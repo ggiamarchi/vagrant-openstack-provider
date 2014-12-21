@@ -10,6 +10,7 @@ module VagrantPlugins
           config = env[:machine].provider_config
           client = env[:openstack_client]
           endpoints = client.session.endpoints
+          endpoint_type = config.endpoint_type
           @logger.info(I18n.t('vagrant_openstack.client.looking_for_available_endpoints'))
           @logger.info("Selecting endpoints matching region '#{config.region}'") unless config.region.nil?
 
@@ -18,12 +19,12 @@ module VagrantPlugins
             if config.region.nil?
               if se.size > 1
                 env[:ui].warn I18n.t('vagrant_openstack.client.multiple_endpoint', size: se.size, type: service['type'])
-                env[:ui].warn "  => #{service['endpoints'][0]['publicURL']}"
+                env[:ui].warn "  => #{service['endpoints'][0][endpoint_type]}"
               end
-              url = se[0]['publicURL'].strip
+              url = se[0][endpoint_type].strip
             else
               se.each do |endpoint|
-                url = endpoint['publicURL'].strip if endpoint['region'].eql? config.region
+                url = endpoint[endpoint_type].strip if endpoint['region'].eql? config.region
               end
             end
             endpoints[service['type'].to_sym] = url unless url.nil? || url.empty?

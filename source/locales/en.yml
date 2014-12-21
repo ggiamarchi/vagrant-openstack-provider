@@ -98,6 +98,8 @@ en:
           name: 'mystack',
           template: '/path/to/heat_template.yml',
         }]
+      invalid_endpoint_type: |-
+        endpoint_type must be publicURL, adminURL or internalURL (if not provided, default is publicURL)
       metadata_must_be_hash: |-
         Metadata must be a hash.
       keypair_name_required: |-

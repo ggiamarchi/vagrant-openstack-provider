@@ -160,6 +160,11 @@ module VagrantPlugins
       # @return [Boolean]
       attr_accessor :ssh_disabled
 
+      # Specify the endpoint_type to use : publicURL, adminURL, or internalURL (default is publicURL)
+      #
+      # @return [String]
+      attr_accessor :endpoint_type
+
       def initialize
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
@@ -168,6 +173,7 @@ module VagrantPlugins
         @openstack_orchestration_url = UNSET_VALUE
         @openstack_image_url = UNSET_VALUE
         @openstack_auth_url = UNSET_VALUE
+        @endpoint_type = UNSET_VALUE
         @region = UNSET_VALUE
         @flavor = UNSET_VALUE
         @image = UNSET_VALUE
@@ -238,6 +244,7 @@ module VagrantPlugins
         @openstack_volume_url = nil if @openstack_volume_url == UNSET_VALUE
         @openstack_image_url = nil if @openstack_image_url == UNSET_VALUE
         @openstack_auth_url = nil if @openstack_auth_url == UNSET_VALUE
+        @endpoint_type = 'publicURL' if @endpoint_type == UNSET_VALUE
         @region = nil if @region == UNSET_VALUE
         @flavor = nil if @flavor == UNSET_VALUE
         @image = nil if @image == UNSET_VALUE
@@ -279,6 +286,7 @@ module VagrantPlugins
 
         errors << I18n.t('vagrant_openstack.config.password_required') unless @password
         errors << I18n.t('vagrant_openstack.config.username_required') unless @username
+        errors << I18n.t('vagrant_openstack.config.invalid_endpoint_type') unless  %w(publicURL adminURL internalURL).include?(@endpoint_type)
 
         validate_ssh_username(machine, errors)
         validate_stack_config(errors)
