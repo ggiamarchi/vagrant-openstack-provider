@@ -275,17 +275,21 @@ module VagrantPlugins
         { id: volume_id, device: device }
       end
 
-      # This method finds a matching _thing_ in a collection of
-      # _things_. This works matching if the ID or NAME equals to
-      # `name`. Or, if `name` is a regexp, a partial match is chosen
+      # This method finds any matching _thing_ from a list of names
+      # in a collection of _things_. The first to match is the returned
+      # one. Names in list can be a regexp, a partial match is chosen
       # as well.
-      def find_matching(collection, name)
-        collection.each do |single|
-          return single if single.id == name
-          return single if single.name == name
-          return single if name.is_a?(Regexp) && name =~ single.name
+
+      def find_matching(collection, name_or_names)
+        name_or_names = [name_or_names] if name_or_names.class != Array
+        name_or_names.each do |name|
+          collection.each do |single|
+            return single if single.id == name
+            return single if single.name == name
+            return single if name.is_a?(Regexp) && name =~ single.name
+          end
         end
-        @logger.error "Element '#{name}' not found in collection #{collection}"
+        @logger.error "No element of '#{name_or_names}' found in collection #{collection}"
         nil
       end
     end

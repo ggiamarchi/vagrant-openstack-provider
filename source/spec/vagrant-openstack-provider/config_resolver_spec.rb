@@ -160,6 +160,16 @@ describe VagrantPlugins::Openstack::ConfigResolver do
         @action.resolve_flavor(env).should eq(Flavor.new('fl-002', 'flavor-02', 4, 2048, 50))
       end
     end
+    context 'with list' do
+      it 'returns the first matching flavor' do
+        config.stub(:flavor) { %w(not-existing flavor-02 flavor-01) }
+        nova.stub(:get_all_flavors).with(anything) do
+          [Flavor.new('fl-001', 'flavor-01', 2, 1024, 10),
+           Flavor.new('fl-002', 'flavor-02', 4, 2048, 50)]
+        end
+        @action.resolve_flavor(env).should eq(Flavor.new('fl-002', 'flavor-02', 4, 2048, 50))
+      end
+    end
     context 'with invalid identifier' do
       it 'raise an error' do
         config.stub(:flavor) { 'not-existing' }
