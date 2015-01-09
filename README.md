@@ -34,7 +34,7 @@ Install using standard Vagrant 1.1+ plugin installation methods. After
 installing, `vagrant up` and specify the `openstack` provider. An example is
 shown below.
 
-```
+```console
 $ vagrant plugin install vagrant-openstack-provider
 ...
 $ vagrant up --provider=openstack
@@ -287,7 +287,7 @@ provider-specific configuration for this provider.
 Custom commands are provided for Openstack. Type `vagrant openstack` to
 show available commands.
 
-```
+```console
 $ vagrant openstack
 
 Usage: vagrant openstack command
@@ -304,7 +304,7 @@ Available subcommands:
 
 For instance `vagrant openstack image-list` lists images available in Glance.
 
-```
+```console
 $ vagrant openstack image-list
 
 +--------------------------------------+---------------------+
@@ -328,19 +328,19 @@ To work on the `vagrant-openstack` plugin, clone this repository out, and use
 Note: Vagrant 1.6 requires bundler version < 1.7. We recommend using last 1.6
 version.
 
-```
+```console
 $ gem install bundler -v 1.6.6
 ```
 
 Install the plugin dependencies
 
-```
+```console
 $ bundle install
 ```
 
 Once you have the dependencies, verify the unit tests pass with `rake`:
 
-```
+```console
 $ bundle exec rake
 ```
 
@@ -349,7 +349,7 @@ the plugin without installing it into your Vagrant environment by just
 creating a `Vagrantfile` in the top level of this directory (it is gitignored)
 that uses it, and uses bundler to execute Vagrant:
 
-```
+```console
 $ bundle exec vagrant up --provider=openstack
 ```
 
@@ -372,7 +372,7 @@ you may experience the error:
 
 The best way to take deal with this error is to upgrade to Vagrant 1.4 or
 later, and enable:
-```
+```ruby
 config.ssh.pty = true
 ```
 
