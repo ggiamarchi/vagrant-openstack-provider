@@ -28,10 +28,11 @@ module VagrantPlugins
 
         private
 
-        def waiting_for_instance_to_be_deleted(env, instance_id, retry_interval = 3, timeout = 200)
+        def waiting_for_instance_to_be_deleted(env, instance_id, retry_interval = 3)
           @logger.info "Waiting for the instance with id #{instance_id} to be deleted..."
           env[:ui].info(I18n.t('vagrant_openstack.waiting_deleted'))
-          timeout(timeout, Errors::Timeout) do
+          config = env[:machine].provider_config
+          timeout(config.server_delete_timeout, Errors::Timeout) do
             delete_ok = false
             until delete_ok
               begin

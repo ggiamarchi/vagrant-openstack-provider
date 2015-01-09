@@ -7,18 +7,18 @@ module VagrantPlugins
   module Openstack
     module Action
       class WaitForServerToStop < AbstractAction
-        def initialize(app, _env, retry_interval = 3, timeout = 200)
+        def initialize(app, _env, retry_interval = 3)
           @app    = app
           @logger = Log4r::Logger.new('vagrant_openstack::action::stop_server')
           @retry_interval = retry_interval
-          @timeout = timeout
         end
 
         def execute(env)
           if env[:machine].id
             env[:ui].info(I18n.t('vagrant_openstack.waiting_stop'))
             client = env[:openstack_client].nova
-            timeout(@timeout, Errors::Timeout) do
+            config = env[:machine].provider_config
+            timeout(config.server_stop_timeout, Errors::Timeout) do
               while client.get_server_details(env, env[:machine].id)['status'] != 'SHUTOFF'
                 sleep @retry_interval
                 @logger.info('Waiting for server to stop')
