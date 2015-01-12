@@ -15,6 +15,10 @@ describe VagrantPlugins::Openstack::Action::DeleteServer do
     end
   end
 
+  let(:config) do
+    double('config')
+  end
+
   let(:env) do
     Hash.new.tap do |env|
       env[:ui] = double('ui')
@@ -22,6 +26,7 @@ describe VagrantPlugins::Openstack::Action::DeleteServer do
       env[:ui].stub(:error).with(anything)
       env[:openstack_client] = openstack_client
       env[:machine] = OpenStruct.new.tap do |m|
+        m.provider_config = config
         m.id = 'server_id'
       end
     end
@@ -59,22 +64,26 @@ describe VagrantPlugins::Openstack::Action::DeleteServer do
         nova.stub(:get_server_details).once.and_return('status' => 'ACTIVE')
         nova.stub(:get_server_details).once.and_raise(Errors::InstanceNotFound)
         nova.should_receive(:get_server_details).with(env, 'server-01').exactly(1).times
-        @action.waiting_for_instance_to_be_deleted(env, 'server-01', 1, 5)
+        config.stub(:server_delete_timeout) { 5 }
+        @action.waiting_for_instance_to_be_deleted(env, 'server-01', 1)
       end
       it 'become deleted after one retry' do
         nova.stub(:get_server_details).and_return({ 'status' => 'ACTIVE' }, { 'status' => 'DELETED' })
         nova.should_receive(:get_server_details).with(env, 'server-01').exactly(2).times
-        @action.waiting_for_instance_to_be_deleted(env, 'server-01', 1, 5)
+        config.stub(:server_delete_timeout) { 5 }
+        @action.waiting_for_instance_to_be_deleted(env, 'server-01', 1)
       end
       it 'timeout before the server become active' do
         nova.stub(:get_server_details).and_return({ 'status' => 'ACTIVE' }, { 'status' => 'ACTIVE' })
         nova.should_receive(:get_server_details).with(env, 'server-01').at_least(2).times
-        expect { @action.waiting_for_instance_to_be_deleted(env, 'server-01', 1, 3) }.to raise_error Errors::Timeout
+        config.stub(:server_delete_timeout) { 3 }
+        expect { @action.waiting_for_instance_to_be_deleted(env, 'server-01', 1) }.to raise_error Errors::Timeout
       end
       it 'raise an error after one retry' do
         nova.stub(:get_server_details).and_return({ 'status' => 'ACTIVE' }, { 'status' => 'ERROR' })
         nova.should_receive(:get_server_details).with(env, 'server-01').exactly(2).times
-        expect { @action.waiting_for_instance_to_be_deleted(env, 'server-01', 1, 3) }.to raise_error Errors::ServerStatusError
+        config.stub(:server_delete_timeout) { 3 }
+        expect { @action.waiting_for_instance_to_be_deleted(env, 'server-01', 1) }.to raise_error Errors::ServerStatusError
       end
     end
   end

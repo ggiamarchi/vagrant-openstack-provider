@@ -165,6 +165,30 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :endpoint_type
 
+      #
+      # @return [Integer]
+      attr_accessor :server_create_timeout
+
+      #
+      # @return [Integer]
+      attr_accessor :server_active_timeout
+
+      #
+      # @return [Integer]
+      attr_accessor :server_stop_timeout
+
+      #
+      # @return [Integer]
+      attr_accessor :server_delete_timeout
+
+      #
+      # @return [Integer]
+      attr_accessor :stack_create_timeout
+
+      #
+      # @return [Integer]
+      attr_accessor :stack_delete_timeout
+
       def initialize
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
@@ -200,6 +224,12 @@ module VagrantPlugins
         @user_data = UNSET_VALUE
         @metadata = UNSET_VALUE
         @ssh_disabled = UNSET_VALUE
+        @server_create_timeout = UNSET_VALUE
+        @server_active_timeout = UNSET_VALUE
+        @server_stop_timeout = UNSET_VALUE
+        @server_delete_timeout = UNSET_VALUE
+        @stack_create_timeout = UNSET_VALUE
+        @stack_delete_timeout = UNSET_VALUE
       end
 
       def merge(other)
@@ -271,6 +301,12 @@ module VagrantPlugins
         # `config.ssh` values are used.
         @ssh_username = nil if @ssh_username == UNSET_VALUE
         @ssh_timeout = 180 if @ssh_timeout == UNSET_VALUE
+        @server_create_timeout = 200 if @server_create_timeout == UNSET_VALUE
+        @server_active_timeout = 200 if @server_active_timeout == UNSET_VALUE
+        @server_stop_timeout = 200 if @server_stop_timeout == UNSET_VALUE
+        @server_delete_timeout = 200 if @server_delete_timeout == UNSET_VALUE
+        @stack_create_timeout = 200 if @stack_create_timeout == UNSET_VALUE
+        @stack_delete_timeout = 200 if @stack_delete_timeout == UNSET_VALUE
         @networks = nil if @networks.empty?
         @volumes = nil if @volumes.empty?
         @stacks = nil if @stacks.empty?

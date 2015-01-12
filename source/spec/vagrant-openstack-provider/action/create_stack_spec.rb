@@ -22,6 +22,7 @@ describe VagrantPlugins::Openstack::Action::CreateStack do
           }
         ]
       end
+      config.stub(:stack_create_timeout) { 200 }
     end
   end
 
@@ -80,17 +81,20 @@ describe VagrantPlugins::Openstack::Action::CreateStack do
       it 'become active after one retry' do
         heat.stub(:get_stack_details).and_return({ 'stack_status' => 'CREATE_IN_PROGRESS' }, { 'stack_status' => 'CREATE_COMPLETE' })
         heat.should_receive(:get_stack_details).with(env, 'stack1', 'id-01').exactly(2).times
-        @action.waiting_for_stack_to_be_created(env, 'stack1', 'id-01', 1, 5)
+        config.stub(:stack_create_timeout) { 5 }
+        @action.waiting_for_stack_to_be_created(env, 'stack1', 'id-01', 1)
       end
       it 'timeout before the server become active' do
         heat.stub(:get_stack_details).and_return({ 'stack_status' => 'CREATE_IN_PROGRESS' }, { 'stack_status' => 'CREATE_IN_PROGRESS' })
         heat.should_receive(:get_stack_details).with(env, 'stack1', 'id-01').at_least(2).times
-        expect { @action.waiting_for_stack_to_be_created(env, 'stack1', 'id-01', 1, 3) }.to raise_error Errors::Timeout
+        config.stub(:stack_create_timeout) { 3 }
+        expect { @action.waiting_for_stack_to_be_created(env, 'stack1', 'id-01', 1) }.to raise_error Errors::Timeout
       end
       it 'raise an error after one retry' do
         heat.stub(:get_stack_details).and_return({ 'stack_status' => 'CREATE_IN_PROGRESS' }, { 'stack_status' => 'CREATE_FAILED' })
         heat.should_receive(:get_stack_details).with(env, 'stack1', 'id-01').exactly(2).times
-        expect { @action.waiting_for_stack_to_be_created(env, 'stack1', 'id-01', 1, 3) }.to raise_error Errors::StackStatusError
+        config.stub(:stack_create_timeout) { 3 }
+        expect { @action.waiting_for_stack_to_be_created(env, 'stack1', 'id-01', 1) }.to raise_error Errors::StackStatusError
       end
     end
   end

@@ -53,10 +53,11 @@ module VagrantPlugins
           stack_files
         end
 
-        def waiting_for_stack_to_be_deleted(env, stack_name, stack_id, retry_interval = 3, timeout = 200)
+        def waiting_for_stack_to_be_deleted(env, stack_name, stack_id, retry_interval = 3)
           @logger.info "Waiting for the stack with id #{stack_id} to be deleted..."
           env[:ui].info(I18n.t('vagrant_openstack.waiting_for_stack_deleted'))
-          timeout(timeout, Errors::Timeout) do
+          config = env[:machine].provider_config
+          timeout(config.stack_delete_timeout, Errors::Timeout) do
             stack_status = 'DELETE_IN_PROGRESS'
             until stack_status == 'DELETE_COMPLETE'
               @logger.debug('Waiting for stack to be DELETED')

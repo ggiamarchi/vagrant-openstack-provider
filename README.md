@@ -110,6 +110,10 @@ This provider exposes quite a few provider-specific configuration options:
 * `user_data` - String of User data to be sent to the newly created OpenStack instance. Use this e.g. to inject a script at boot time.
 * `metadata` - A Hash of metadata that will be sent to the instance for configuration e.g. `os.metadata  = { 'key' => 'value' }`
 * `scheduler_hints` - Pass hints to the OpenStack scheduler, e.g. { "cell": "some cell name" }
+* `server_create_timeout` - Time to wait in seconds for the server to be created when `vagrant up`. Default is `200`
+* `server_active_timeout` - Time to wait in seconds for the server to become active when `vagrant up` or `vagrant resume`. Default is `200`
+* `server_stop_timeout` - Time to wait in seconds for the server to stop when `vagrant halt`. Default is `200`
+* `server_delete_timeout` - Time to wait in seconds for the server to be deleted when `vagrant destroy`. Default is `200`
 
 #### Floating IPs
 
