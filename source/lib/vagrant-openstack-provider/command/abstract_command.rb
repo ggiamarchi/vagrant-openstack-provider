@@ -16,7 +16,7 @@ module VagrantPlugins
             env[:ui] = @env.ui
           end
 
-          VagrantPlugins::Openstack::Action::ConnectOpenstack.new(nil, env).call(env)
+          before_cmd(name, @argv, env)
 
           cmd(name, @argv, env)
           @env.ui.info('')
@@ -36,6 +36,9 @@ module VagrantPlugins
           return args if args.nil?
           args.pop if args.size > 0 && args.last == '--'
           args
+        end
+
+        def before_cmd(_name, _argv, _env)
         end
 
         def cmd(_name, _argv, _env)

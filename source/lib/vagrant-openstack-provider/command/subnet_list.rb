@@ -1,12 +1,9 @@
-require 'vagrant-openstack-provider/command/utils'
-require 'vagrant-openstack-provider/command/abstract_command'
+require 'vagrant-openstack-provider/command/openstack_command'
 
 module VagrantPlugins
   module Openstack
     module Command
-      class SubnetList < AbstractCommand
-        include VagrantPlugins::Openstack::Command::Utils
-
+      class SubnetList < OpenstackCommand
         def self.synopsis
           I18n.t('vagrant_openstack.command.subnet_list_synopsis')
         end

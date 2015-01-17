@@ -1,15 +1,13 @@
-require 'vagrant-openstack-provider/command/utils'
-require 'vagrant-openstack-provider/command/abstract_command'
+require 'vagrant-openstack-provider/command/openstack_command'
 
 module VagrantPlugins
   module Openstack
     module Command
-      class FloatingIpList < AbstractCommand
-        include VagrantPlugins::Openstack::Command::Utils
-
+      class FloatingIpList < OpenstackCommand
         def self.synopsis
           I18n.t('vagrant_openstack.command.flaotingip_list_synopsis')
         end
+
         def cmd(name, argv, env)
           fail Errors::NoArgRequiredForCommand, cmd: name unless argv.size == 0
 
