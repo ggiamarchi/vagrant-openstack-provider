@@ -15,6 +15,20 @@ en:
 
       We are looking for feedback, so feel free to ask questions or
       describe features you would like to see in this provider.
+    version_outdated: |-
+      You're not using the latest version of the 'vagrant-openstack-provider' plugin.
+      The latest version is %{latest}, yours is %{current}. You should update to the latest
+      version running the command :
+
+          $ vagrant plugin update vagrant-openstack-provider
+    version_unstable: |-
+      You're not running a stable version of the 'vagrant-openstack-provider' plugin.
+      Unless you are either developing on vagrant or have deliberatly installed a not
+      stable version, you should uninstall it an install the latest stable version
+      running commands :
+
+          $ vagrant plugin uninstall vagrant-openstack-provider
+          $ vagrant plugin install vagrant-openstack-provider
     already_created: |-
       The server is already created.
     create_stack: |-
