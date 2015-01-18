@@ -222,6 +222,7 @@ describe VagrantPlugins::Openstack::Config do
       machine.stub(:config) { config }
       subject.username = 'foo'
       subject.password = 'bar'
+      subject.tenant_name = 'tenant'
       subject.keypair_name = 'keypair'
     end
 
@@ -299,7 +300,7 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
 
-    context 'the API key' do
+    context 'the password' do
       it 'should error if not given' do
         subject.password = nil
         I18n.should_receive(:t).with('vagrant_openstack.config.password_required').and_return error_message
@@ -311,6 +312,14 @@ describe VagrantPlugins::Openstack::Config do
       it 'should error if not given' do
         subject.username = nil
         I18n.should_receive(:t).with('vagrant_openstack.config.username_required').and_return error_message
+        validation_errors.first.should == error_message
+      end
+    end
+
+    context 'the tenant name' do
+      it 'should error if not given' do
+        subject.tenant_name = nil
+        I18n.should_receive(:t).with('vagrant_openstack.config.tenant_name_required').and_return error_message
         validation_errors.first.should == error_message
       end
     end
