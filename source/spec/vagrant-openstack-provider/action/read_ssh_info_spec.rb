@@ -25,8 +25,17 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
 
   let(:nova) do
     double('nova').tap do |nova|
-      nova.stub(:get_all_floating_ips).with(anything) do
-        [FloatingIP.new('80.81.82.83', 'pool-1', nil), FloatingIP.new('30.31.32.33', 'pool-2', '1234')]
+      nova.stub(:get_server_details).with(env, '1234') do
+        {
+          'addresses' => {
+            'net' => [
+              {
+                'addr' => '80.80.80.80',
+                'OS-EXT-IPS:type' => 'floating'
+              }
+            ]
+          }
+        }
       end
     end
   end
@@ -136,7 +145,19 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
           config.stub(:floating_ip) { '80.80.80.80' }
           config.stub(:keypair_name) { nil }
           config.stub(:public_key_path) { nil }
-          nova.stub(:get_server_details) { { 'key_name' => 'my_keypair_name' } }
+          nova.stub(:get_server_details) do
+            {
+              'key_name' => 'my_keypair_name',
+              'addresses' => {
+                'net' => [
+                  {
+                    'addr' => '80.80.80.80',
+                    'OS-EXT-IPS:type' => 'floating'
+                  }
+                ]
+              }
+            }
+          end
           expect(nova).to receive(:get_server_details).with(env, '1234')
           @action.read_ssh_info(env).should eq(
             host: '80.80.80.80',
