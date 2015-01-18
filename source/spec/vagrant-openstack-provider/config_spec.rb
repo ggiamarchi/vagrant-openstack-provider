@@ -75,7 +75,7 @@ describe VagrantPlugins::Openstack::Config do
 
     subject { foo_class.new }
 
-    context 'with original network not empty' do
+    context 'with original network not empty array' do
       it 'should overidde the config' do
         one = foo_class.new
         one.networks = ['foo']
@@ -88,7 +88,7 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
 
-    context 'with original network empty' do
+    context 'with original network empty array' do
       it 'should add the network to the existing list' do
         one = foo_class.new
         one.networks = []
@@ -101,7 +101,7 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
 
-    context 'with original network not empty and new empty' do
+    context 'with original network not empty array and new empty array' do
       it 'should keep the original network' do
         one = foo_class.new
         one.networks = ['foo']
@@ -111,6 +111,32 @@ describe VagrantPlugins::Openstack::Config do
 
         result = one.merge(two)
         result.networks.should =~ ['foo']
+      end
+    end
+
+    context 'with original network is a string and new empty array' do
+      it 'should keep the original network and wrap it into an array' do
+        one = foo_class.new
+        one.networks = 'foo'
+
+        two = foo_class.new
+        two.networks = []
+
+        result = one.merge(two)
+        result.networks.should =~ ['foo']
+      end
+    end
+
+    context 'with original network is a string and new is a string' do
+      it 'should overidde the config and wrap it into an array' do
+        one = foo_class.new
+        one.networks = 'foo'
+
+        two = foo_class.new
+        two.networks = 'bar'
+
+        result = one.merge(two)
+        result.networks.should =~ ['bar']
       end
     end
 
