@@ -246,6 +246,9 @@ module VagrantPlugins
             # Let user inputs a string or an array for floating ip pool attribute
             obj.floating_ip_pool = [obj.floating_ip_pool].flatten if key.eql?(:@floating_ip_pool) && !obj.floating_ip_pool.nil?
 
+            # Let user inputs a string or an array for networks attribute
+            obj.networks = [obj.networks].flatten if key.eql?(:@networks) && !obj.networks.nil?
+
             # Don't set the value if it is the unset value, either.
             value = obj.instance_variable_get(key)
 
