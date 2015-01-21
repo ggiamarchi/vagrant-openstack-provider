@@ -89,6 +89,8 @@ en:
         A password is required.
       username_required: |-
         A username is required.
+      tenant_name_required: |-
+        A tenant name is required.
       invalid_uri: |-
         The value for %{key} is not a valid URI: %{uri}
       invalid_stack: |-
