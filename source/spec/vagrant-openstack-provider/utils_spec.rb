@@ -41,7 +41,7 @@ describe VagrantPlugins::Openstack::Utils do
           nova.stub(:get_server_details).with(env, '1234id') do
             {
               'addresses' => {
-                'toto' => [{
+                'net' => [{
                   'addr' => '13.13.13.13'
                 }, {
                   'addr' => '12.12.12.12',
@@ -55,13 +55,13 @@ describe VagrantPlugins::Openstack::Utils do
       end
 
       context 'without floating ip in nova details' do
-        context 'with on single ip in nova details' do
+        context 'with a single ip in nova details' do
           it 'returns the single ip' do
             config.stub(:floating_ip) { nil }
             nova.stub(:get_server_details).with(env, '1234id') do
               {
                 'addresses' => {
-                  'toto' => [{
+                  'net' => [{
                     'addr' => '13.13.13.13',
                     'OS-EXT-IPS:type' => 'fixed'
                   }]
@@ -73,21 +73,28 @@ describe VagrantPlugins::Openstack::Utils do
         end
 
         context 'with multiple ips in nova details' do
-          it 'fails' do
+          it 'return the one corresponding to the first network in the Vagrantfile' do
             config.stub(:floating_ip) { nil }
+            config.stub(:networks) { %w(net-2 net-1 net-3) }
             nova.stub(:get_server_details).with(env, '1234id') do
               {
                 'addresses' => {
-                  'toto' => [{
-                    'addr' => '13.13.13.13'
-                  }, {
+                  'net-1' => [{
+                    'addr' => '11.11.11.11',
+                    'OS-EXT-IPS:type' => 'fixed'
+                  }],
+                  'net-2' => [{
                     'addr' => '12.12.12.12',
-                    'OS-EXT-IPS:type' => 'private'
+                    'OS-EXT-IPS:type' => 'fixed'
+                  }],
+                  'net-3' => [{
+                    'addr' => '13.13.13.13',
+                    'OS-EXT-IPS:type' => 'fixed'
                   }]
                 }
               }
             end
-            expect(@action.get_ip_address(env)).to eq('13.13.13.13')
+            expect(@action.get_ip_address(env)).to eq('12.12.12.12')
           end
         end
 
@@ -97,7 +104,7 @@ describe VagrantPlugins::Openstack::Utils do
             nova.stub(:get_server_details).with(env, '1234id') do
               {
                 'addresses' => {
-                  'toto' => []
+                  'net' => []
                 }
               }
             end
@@ -116,13 +123,6 @@ describe VagrantPlugins::Openstack::Utils do
             expect { @action.get_ip_address(env) }.to raise_error(Errors::UnableToResolveIP)
           end
         end
-      end
-    end
-
-    context 'with config.floating_ip' do
-      it 'returns floating_ip' do
-        config.stub(:floating_ip) { '1.2.3.4' }
-        @action.get_ip_address(env).should eq('1.2.3.4')
       end
     end
   end

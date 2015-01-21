@@ -135,6 +135,9 @@ end
 
 * `floating_ip_pool_always_allocate` - if set to true, vagrant will always allocate floating ip instead of trying to reuse unassigned ones
 
+__N.B.__
+> If the instance have a floating IP, this IP will be used to SSH into the instance.
+
 #### Networks
 
 * `networks` - Network list the server must be connected on. Can be omitted if only one private network exists
@@ -175,6 +178,10 @@ config.vm.provider :openstack do |os|
   ...
 end
 ```
+
+__N.B.__
+> If the instance does not have a floating IP, the IP of the
+> first network in the list will be used to SSH into the instance
 
 #### Volumes
 
