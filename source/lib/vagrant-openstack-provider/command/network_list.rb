@@ -1,15 +1,13 @@
-require 'vagrant-openstack-provider/command/utils'
-require 'vagrant-openstack-provider/command/abstract_command'
+require 'vagrant-openstack-provider/command/openstack_command'
 
 module VagrantPlugins
   module Openstack
     module Command
-      class NetworkList < AbstractCommand
-        include VagrantPlugins::Openstack::Command::Utils
-
+      class NetworkList < OpenstackCommand
         def self.synopsis
           I18n.t('vagrant_openstack.command.network_list_synopsis')
         end
+
         def cmd(name, argv, env)
           fail Errors::UnrecognizedArgForCommand, cmd: name, arg: argv[1] if argv.size > 1
           if argv.size == 0
