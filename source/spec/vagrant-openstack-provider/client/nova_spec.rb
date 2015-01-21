@@ -6,6 +6,13 @@ describe VagrantPlugins::Openstack::NovaClient do
   let(:filename) { 'key.pub' }
   let(:ssh_key_content) { 'my public key' }
 
+  let(:http) do
+    double('http').tap do |http|
+      http.stub(:read_timeout) { 42 }
+      http.stub(:open_timeout) { 43 }
+    end
+  end
+
   let(:config) do
     double('config').tap do |config|
       config.stub(:openstack_auth_url) { 'http://novaAuthV2' }
@@ -13,6 +20,7 @@ describe VagrantPlugins::Openstack::NovaClient do
       config.stub(:tenant_name) { 'testTenant' }
       config.stub(:username) { 'username' }
       config.stub(:password) { 'password' }
+      config.stub(:http) { http }
     end
   end
 

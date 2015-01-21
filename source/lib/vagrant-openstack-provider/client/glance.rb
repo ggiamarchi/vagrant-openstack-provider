@@ -1,8 +1,8 @@
 require 'log4r'
-require 'restclient'
 require 'json'
 
 require 'vagrant-openstack-provider/client/http_utils'
+require 'vagrant-openstack-provider/client/rest_utils'
 require 'vagrant-openstack-provider/client/domain'
 
 module VagrantPlugins
@@ -17,8 +17,10 @@ module VagrantPlugins
         @session = VagrantPlugins::Openstack.session
       end
 
-      def get_api_version_list(_env)
-        json = RestClient.get(@session.endpoints[:image], 'X-Auth-Token' => @session.token, :accept => :json) do |response|
+      def get_api_version_list(env)
+        json = RestUtils.get(env, @session.endpoints[:image],
+                             'X-Auth-Token' => @session.token,
+                             :accept => :json) do |response|
           log_response(response)
           case response.code
           when 200, 300

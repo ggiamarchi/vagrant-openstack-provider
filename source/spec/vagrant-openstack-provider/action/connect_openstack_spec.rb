@@ -28,7 +28,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
 
   let(:neutron) do
     double.tap do |neutron|
-      neutron.stub(:get_api_version_list).with(anything) do
+      neutron.stub(:get_api_version_list).with(anything, anything) do
         [
           {
             'status' => 'CURRENT',
@@ -47,7 +47,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
 
   let(:neutron_admin_url) do
     double.tap do |neutron|
-      neutron.stub(:get_api_version_list).with(anything) do
+      neutron.stub(:get_api_version_list).with(anything, anything) do
         [
           {
             'status' => 'CURRENT',
@@ -66,7 +66,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
 
   let(:neutron_france) do
     double.tap do |neutron|
-      neutron.stub(:get_api_version_list).with(anything) do
+      neutron.stub(:get_api_version_list).with(anything, anything) do
         [
           {
             'status' => 'CURRENT',
@@ -606,7 +606,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
 
       let(:neutron) do
         double.tap do |neutron|
-          neutron.stub(:get_api_version_list).with(anything) do
+          neutron.stub(:get_api_version_list).with(anything, anything) do
             [
               {
                 'status' => 'CURRENT',

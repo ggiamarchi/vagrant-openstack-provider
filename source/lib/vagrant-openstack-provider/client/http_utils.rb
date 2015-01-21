@@ -1,9 +1,9 @@
 require 'log4r'
-require 'restclient'
 require 'json'
 
 require 'vagrant-openstack-provider/client/keystone'
 require 'vagrant-openstack-provider/client/request_logger'
+require 'vagrant-openstack-provider/client/rest_utils'
 
 module VagrantPlugins
   module Openstack
@@ -19,7 +19,7 @@ module VagrantPlugins
         log_request(:GET, url, headers)
 
         authenticated(env) do
-          RestClient.get(url, headers) { |res| handle_response(res) }.tap do
+          RestUtils.get(env, url, headers) { |res| handle_response(res) }.tap do
             @logger.debug("#{calling_method} - end")
           end
         end
@@ -34,7 +34,7 @@ module VagrantPlugins
         log_request(:POST, url, body, headers)
 
         authenticated(env) do
-          RestClient.post(url, body, headers) { |res| handle_response(res) }.tap do
+          RestUtils.post(env, url, body, headers) { |res| handle_response(res) }.tap do
             @logger.debug("#{calling_method} - end")
           end
         end
@@ -49,17 +49,18 @@ module VagrantPlugins
         log_request(:DELETE, url, headers)
 
         authenticated(env) do
-          RestClient.delete(url, headers) { |res| handle_response(res) }.tap do
+          RestUtils.delete(env, url, headers) { |res| handle_response(res) }.tap do
             @logger.debug("#{calling_method} - end")
           end
         end
       end
 
-      def get_api_version_list(service_type)
+      def get_api_version_list(env, service_type)
         url = @session.endpoints[service_type]
         headers = { 'X-Auth-Token' => @session.token, :accept => :json }
         log_request(:GET, url, headers)
-        json = RestClient.get(url, headers) do |response|
+
+        json = RestUtils.get(env, url, headers) do |response|
           log_response(response)
           case response.code
           when 200, 300

@@ -1,5 +1,4 @@
 require 'log4r'
-require 'restclient'
 require 'json'
 
 require 'vagrant-openstack-provider/client/openstack'
