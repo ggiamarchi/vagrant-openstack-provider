@@ -13,3 +13,5 @@ gemfile:
   - gemfiles/minimal_release.gemfile
   - gemfiles/previous_release.gemfile
   - gemfiles/latest_stable.gemfile
+sudo: false
+
