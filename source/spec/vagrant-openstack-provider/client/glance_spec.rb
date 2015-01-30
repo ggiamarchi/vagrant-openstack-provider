@@ -2,8 +2,24 @@ require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::GlanceClient do
 
+  let(:http) do
+    double('http').tap do |http|
+      http.stub(:read_timeout) { 42 }
+      http.stub(:open_timeout) { 43 }
+    end
+  end
+
+  let(:config) do
+    double('config').tap do |config|
+      config.stub(:http) { http }
+    end
+  end
+
   let(:env) do
-    Hash.new
+    Hash.new.tap do |env|
+      env[:machine] = double('machine')
+      env[:machine].stub(:provider_config) { config }
+    end
   end
 
   let(:session) do
@@ -120,7 +136,7 @@ describe VagrantPlugins::Openstack::GlanceClient do
             }
           ]}')
 
-      versions = @glance_client.get_api_version_list(:image)
+      versions = @glance_client.get_api_version_list(env)
 
       expect(versions.size).to eq(2)
     end

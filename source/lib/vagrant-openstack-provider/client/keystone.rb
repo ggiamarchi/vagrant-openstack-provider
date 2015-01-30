@@ -1,5 +1,4 @@
 require 'log4r'
-require 'restclient'
 require 'json'
 
 require 'vagrant-openstack-provider/client/request_logger'
@@ -37,9 +36,11 @@ module VagrantPlugins
 
         post_body[:auth][:passwordCredentials][:password] = config.password
 
-        authentication = RestClient.post(config.openstack_auth_url, post_body.to_json,
-                                         content_type: :json,
-                                         accept: :json) do |response|
+        authentication = RestUtils.post(env, config.openstack_auth_url, post_body.to_json,
+                                        content_type: :json,
+                                        accept: :json,
+                                        timeout: config.http.read_timeout,
+                                        open_timeout: config.http.open_timeout) do |response|
           log_response(response)
           case response.code
           when 200

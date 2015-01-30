@@ -1,5 +1,6 @@
 require 'vagrant'
 require 'colorize'
+require 'vagrant-openstack-provider/config/http'
 
 module VagrantPlugins
   module Openstack
@@ -189,6 +190,10 @@ module VagrantPlugins
       # @return [Integer]
       attr_accessor :stack_delete_timeout
 
+      #
+      # @return [HttpConfig]
+      attr_accessor :http
+
       def initialize
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
@@ -230,6 +235,7 @@ module VagrantPlugins
         @server_delete_timeout = UNSET_VALUE
         @stack_create_timeout = UNSET_VALUE
         @stack_delete_timeout = UNSET_VALUE
+        @http = HttpConfig.new
       end
 
       def merge(other)
@@ -254,6 +260,8 @@ module VagrantPlugins
 
             if [:@networks, :@volumes, :@rsync_includes, :@ignore_files, :@floating_ip_pool, :@stacks].include? key
               result.instance_variable_set(key, value) unless value.empty?
+            elsif [:@http].include? key
+              result.instance_variable_set(key, instance_variable_get(key).merge(other.instance_variable_get(key))) if value != UNSET_VALUE
             else
               result.instance_variable_set(key, value) if value != UNSET_VALUE
             end
@@ -313,6 +321,7 @@ module VagrantPlugins
         @networks = nil if @networks.empty?
         @volumes = nil if @volumes.empty?
         @stacks = nil if @stacks.empty?
+        @http.finalize!
       end
       # rubocop:enable Style/CyclomaticComplexity
 

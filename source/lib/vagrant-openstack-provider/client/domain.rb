@@ -1,5 +1,4 @@
 require 'log4r'
-require 'restclient'
 require 'json'
 
 module VagrantPlugins
