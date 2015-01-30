@@ -1,3 +1,18 @@
+# 0.6.1 (January 30, 2015)
+
+IMPROVEMENTS:
+
+  - Straightforward syntax to define single networks [#193](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/193)
+  - Network preference for SSH [#194](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/194)
+  - Allow lists in flavor values [#189](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/189)
+  - Allow "wait active" timeout to be configurable [#185](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/185)
+  - Allow setting timeout value for REST calls [#183](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/183)
+
+BUG FIXES:
+
+  - Vagrant openstack reset fails when the instance is not found [#195](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/195)
+  - Show explicit error when tenant is missing in credentials [#186](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/186)
+
 # 0.6.0 (November 28, 2014)
 
 FEATURES:
