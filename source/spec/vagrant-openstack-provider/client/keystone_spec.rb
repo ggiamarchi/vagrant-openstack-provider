@@ -11,7 +11,7 @@ describe VagrantPlugins::Openstack::KeystoneClient do
 
   let(:config) do
     double('config').tap do |config|
-      config.stub(:openstack_auth_url) { 'http://keystoneAuthV2' }
+      config.stub(:openstack_auth_url) { 'http://keystoneAuthV2/tokens' }
       config.stub(:openstack_compute_url) { nil }
       config.stub(:openstack_network_url) { nil }
       config.stub(:tenant_name) { 'testTenant' }
@@ -60,7 +60,7 @@ describe VagrantPlugins::Openstack::KeystoneClient do
 
     context 'with good credentials' do
       it 'store token and tenant id' do
-        stub_request(:post, 'http://keystoneAuthV2')
+        stub_request(:post, 'http://keystoneAuthV2/tokens')
         .with(
             body: keystone_request_body,
             headers: keystone_request_headers)
@@ -78,7 +78,7 @@ describe VagrantPlugins::Openstack::KeystoneClient do
 
     context 'with wrong credentials' do
       it 'raise an unauthorized error' do
-        stub_request(:post, 'http://keystoneAuthV2')
+        stub_request(:post, 'http://keystoneAuthV2/tokens')
         .with(
             body: keystone_request_body,
             headers: keystone_request_headers)
@@ -99,7 +99,7 @@ describe VagrantPlugins::Openstack::KeystoneClient do
 
     context 'with bad endpoint' do
       it 'raise a BadAuthenticationEndpoint error' do
-        stub_request(:post, 'http://keystoneAuthV2')
+        stub_request(:post, 'http://keystoneAuthV2/tokens')
         .with(
             body: keystone_request_body,
             headers: keystone_request_headers)
@@ -110,9 +110,29 @@ describe VagrantPlugins::Openstack::KeystoneClient do
       end
     end
 
+    context 'with /tokens suffix missing in URL' do
+      it 'raise add the suffix' do
+        config.stub(:openstack_auth_url) { 'http://keystoneAuthV2' }
+
+        stub_request(:post, 'http://keystoneAuthV2/tokens')
+        .with(
+            body: keystone_request_body,
+            headers: keystone_request_headers)
+        .to_return(
+            status: 200,
+            body: keystone_response_body,
+            headers: keystone_request_headers)
+
+        @keystone_client.authenticate(env)
+
+        session.token.should eq('0123456789')
+        session.project_id.should eq('testTenantId')
+      end
+    end
+
     context 'with internal server error' do
       it 'raise a VagrantOpenstackError error with response body as message' do
-        stub_request(:post, 'http://keystoneAuthV2')
+        stub_request(:post, 'http://keystoneAuthV2/tokens')
         .with(
             body: keystone_request_body,
             headers: keystone_request_headers)
