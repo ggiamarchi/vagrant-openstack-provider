@@ -1,7 +1,6 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::KeystoneClient do
-
   let(:http) do
     double('http').tap do |http|
       http.stub(:read_timeout) { 42 }
@@ -22,7 +21,7 @@ describe VagrantPlugins::Openstack::KeystoneClient do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui')
       env[:ui].stub(:info).with(anything)
       env[:machine] = double('machine')
@@ -35,7 +34,6 @@ describe VagrantPlugins::Openstack::KeystoneClient do
   end
 
   describe 'authenticate' do
-
     let(:keystone_request_headers) do
       {
         'Accept' => 'application/json',
@@ -61,10 +59,10 @@ describe VagrantPlugins::Openstack::KeystoneClient do
     context 'with good credentials' do
       it 'store token and tenant id' do
         stub_request(:post, 'http://keystoneAuthV2/tokens')
-        .with(
+          .with(
             body: keystone_request_body,
             headers: keystone_request_headers)
-        .to_return(
+          .to_return(
             status: 200,
             body: keystone_response_body,
             headers: keystone_request_headers)
@@ -79,10 +77,10 @@ describe VagrantPlugins::Openstack::KeystoneClient do
     context 'with wrong credentials' do
       it 'raise an unauthorized error' do
         stub_request(:post, 'http://keystoneAuthV2/tokens')
-        .with(
+          .with(
             body: keystone_request_body,
             headers: keystone_request_headers)
-        .to_return(
+          .to_return(
             status: 401,
             body: '{
                 "error": {
@@ -100,10 +98,10 @@ describe VagrantPlugins::Openstack::KeystoneClient do
     context 'with bad endpoint' do
       it 'raise a BadAuthenticationEndpoint error' do
         stub_request(:post, 'http://keystoneAuthV2/tokens')
-        .with(
+          .with(
             body: keystone_request_body,
             headers: keystone_request_headers)
-        .to_return(
+          .to_return(
             status: 404)
 
         expect { @keystone_client.authenticate(env) }.to raise_error(Errors::BadAuthenticationEndpoint)
@@ -115,10 +113,10 @@ describe VagrantPlugins::Openstack::KeystoneClient do
         config.stub(:openstack_auth_url) { 'http://keystoneAuthV2' }
 
         stub_request(:post, 'http://keystoneAuthV2/tokens')
-        .with(
+          .with(
             body: keystone_request_body,
             headers: keystone_request_headers)
-        .to_return(
+          .to_return(
             status: 200,
             body: keystone_response_body,
             headers: keystone_request_headers)
@@ -133,10 +131,10 @@ describe VagrantPlugins::Openstack::KeystoneClient do
     context 'with internal server error' do
       it 'raise a VagrantOpenstackError error with response body as message' do
         stub_request(:post, 'http://keystoneAuthV2/tokens')
-        .with(
+          .with(
             body: keystone_request_body,
             headers: keystone_request_headers)
-        .to_return(
+          .to_return(
             status: 500,
             body: 'Internal server error')
 

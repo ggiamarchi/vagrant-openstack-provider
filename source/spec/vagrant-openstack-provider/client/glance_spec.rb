@@ -1,7 +1,6 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::GlanceClient do
-
   let(:http) do
     double('http').tap do |http|
       http.stub(:read_timeout) { 42 }
@@ -16,7 +15,7 @@ describe VagrantPlugins::Openstack::GlanceClient do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:machine] = double('machine')
       env[:machine].stub(:provider_config) { config }
     end
@@ -38,21 +37,21 @@ describe VagrantPlugins::Openstack::GlanceClient do
       context 'and api version is v2' do
         it 'returns all images with details' do
           stub_request(:get, 'http://glance/images')
-          .with(
-            headers:
+            .with(
+              headers:
+                {
+                  'Accept' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+            .to_return(
+              status: 200,
+              body: '
               {
-                'Accept' => 'application/json',
-                'X-Auth-Token' => '123456'
-              })
-          .to_return(
-            status: 200,
-            body: '
-            {
-              "images": [
-                { "id": "i1", "name": "image1", "visibility": "public",  "size": "1024", "min_ram": "1", "min_disk": "10" },
-                { "id": "i2", "name": "image2", "visibility": "private", "size": "2048", "min_ram": "2", "min_disk": "20" }
-              ]
-            }')
+                "images": [
+                  { "id": "i1", "name": "image1", "visibility": "public",  "size": "1024", "min_ram": "1", "min_disk": "10" },
+                  { "id": "i2", "name": "image2", "visibility": "private", "size": "2048", "min_ram": "2", "min_disk": "20" }
+                ]
+              }')
 
           images = @glance_client.get_all_images(env)
 
@@ -64,38 +63,38 @@ describe VagrantPlugins::Openstack::GlanceClient do
       context 'and api version is v1' do
         it 'returns all images with details' do
           stub_request(:get, 'http://glance/images')
-          .with(
-            headers:
+            .with(
+              headers:
+                {
+                  'Accept' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+            .to_return(
+              status: 200,
+              body: '
               {
-                'Accept' => 'application/json',
-                'X-Auth-Token' => '123456'
-              })
-          .to_return(
-            status: 200,
-            body: '
-            {
-              "images": [
-                { "id": "i1", "name": "image1", "is_public": true  },
-                { "id": "i2", "name": "image2", "is_public": false }
-              ]
-            }')
+                "images": [
+                  { "id": "i1", "name": "image1", "is_public": true  },
+                  { "id": "i2", "name": "image2", "is_public": false }
+                ]
+              }')
 
           stub_request(:get, 'http://glance/images/detail')
-          .with(
-            headers:
+            .with(
+              headers:
+                {
+                  'Accept' => 'application/json',
+                  'X-Auth-Token' => '123456'
+                })
+            .to_return(
+              status: 200,
+              body: '
               {
-                'Accept' => 'application/json',
-                'X-Auth-Token' => '123456'
-              })
-          .to_return(
-            status: 200,
-            body: '
-            {
-              "images": [
-                { "id": "i1", "name": "image1", "is_public": true,  "size": "1024", "min_ram": "1", "min_disk": "10" },
-                { "id": "i2", "name": "image2", "is_public": false, "size": "2048", "min_ram": "2", "min_disk": "20" }
-              ]
-            }')
+                "images": [
+                  { "id": "i1", "name": "image1", "is_public": true,  "size": "1024", "min_ram": "1", "min_disk": "10" },
+                  { "id": "i2", "name": "image2", "is_public": false, "size": "2048", "min_ram": "2", "min_disk": "20" }
+                ]
+              }')
 
           images = @glance_client.get_all_images(env)
 
@@ -109,32 +108,32 @@ describe VagrantPlugins::Openstack::GlanceClient do
   describe 'get_api_version_list' do
     it 'returns version list' do
       stub_request(:get, 'http://glance/')
-      .with(header: { 'Accept' => 'application/json' })
-      .to_return(
-        status: 200,
-        body: '{
-          "versions": [
-            {
-              "status": "...",
-              "id": "v1.0",
-              "links": [
-                {
-                  "href": "http://glance/v1.0",
-                  "rel": "self"
-                }
-              ]
-            },
-            {
-              "status": "CURRENT",
-              "id": "v2.0",
-              "links": [
-                {
-                  "href": "http://glance/v2.0",
-                  "rel": "self"
-                }
-              ]
-            }
-          ]}')
+        .with(header: { 'Accept' => 'application/json' })
+        .to_return(
+          status: 200,
+          body: '{
+            "versions": [
+              {
+                "status": "...",
+                "id": "v1.0",
+                "links": [
+                  {
+                    "href": "http://glance/v1.0",
+                    "rel": "self"
+                  }
+                ]
+              },
+              {
+                "status": "CURRENT",
+                "id": "v2.0",
+                "links": [
+                  {
+                    "href": "http://glance/v2.0",
+                    "rel": "self"
+                  }
+                ]
+              }
+            ]}')
 
       versions = @glance_client.get_api_version_list(env)
 

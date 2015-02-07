@@ -1,7 +1,6 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::Action::Message do
-
   let(:ui) do
     double('ui').tap do |ui|
       ui.stub(:info).with(anything)
@@ -10,7 +9,7 @@ describe VagrantPlugins::Openstack::Action::Message do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = ui
     end
   end

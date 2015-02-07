@@ -3,7 +3,6 @@ require 'vagrant-openstack-provider/spec_helper'
 include VagrantPlugins::Openstack
 
 describe VagrantPlugins::Openstack::HttpUtils do
-
   let(:keystone) do
     double('keystone').tap do |keystone|
       keystone.stub(:authenticate).with(anything)
@@ -11,7 +10,7 @@ describe VagrantPlugins::Openstack::HttpUtils do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui')
       env[:ui].stub(:warn).with(anything)
       env[:openstack_client] = double('openstack_client')
@@ -37,7 +36,6 @@ describe VagrantPlugins::Openstack::HttpUtils do
   end
 
   describe 'authenticated' do
-
     before :each do
       TestUtils.send(:public, *TestUtils.private_instance_methods)
       @utils = TestUtils.new

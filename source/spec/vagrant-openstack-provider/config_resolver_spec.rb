@@ -1,7 +1,6 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::ConfigResolver do
-
   let(:config) do
     double('config').tap do |config|
       config.stub(:tenant_name) { 'testTenant' }
@@ -75,7 +74,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui')
       env[:ui].stub(:info).with(anything)
       env[:machine] = double('machine')
@@ -400,7 +399,6 @@ describe VagrantPlugins::Openstack::ConfigResolver do
     context 'neutron service is available' do
       context 'with network configured in all possible ways' do
         it 'returns normalized network list' do
-
           config.stub(:networks) do
             ['001',
              'net-02',
@@ -653,7 +651,6 @@ describe VagrantPlugins::Openstack::ConfigResolver do
     context 'cinder service is available' do
       context 'with volume attached in all possible ways' do
         it 'returns normalized volume list' do
-
           config.stub(:volumes) do
             ['001',
              'vol-02',

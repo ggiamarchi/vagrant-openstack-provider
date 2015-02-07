@@ -7,7 +7,6 @@ include VagrantPlugins::Openstack::HttpUtils
 include VagrantPlugins::Openstack::Domain
 
 describe VagrantPlugins::Openstack::Action::CreateServer do
-
   let(:config) do
     double('config').tap do |config|
       config.stub(:tenant_name) { 'testTenant' }
@@ -41,7 +40,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui')
       env[:ui].stub(:info).with(anything)
       env[:machine] = double('machine')
@@ -124,18 +123,19 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
     context 'with all options specified' do
       it 'calls nova with all the options' do
         nova.stub(:create_server).with(
-        env,
-        name: 'testName',
-        flavor_ref: flavor.id,
-        image_ref: image.id,
-        volume_boot: nil,
-        networks: [{ uuid: 'test-networks-1' }, { uuid: 'test-networks-2', fixed_ip: '1.2.3.4' }],
-        keypair: 'test-keypair',
-        availability_zone: 'test-az',
-        scheduler_hints: 'test-sched-hints',
-        security_groups: ['test-sec-groups'],
-        user_data: 'test-user_data',
-        metadata: 'test-metadata') do '1234'
+          env,
+          name: 'testName',
+          flavor_ref: flavor.id,
+          image_ref: image.id,
+          volume_boot: nil,
+          networks: [{ uuid: 'test-networks-1' }, { uuid: 'test-networks-2', fixed_ip: '1.2.3.4' }],
+          keypair: 'test-keypair',
+          availability_zone: 'test-az',
+          scheduler_hints: 'test-sched-hints',
+          security_groups: ['test-sec-groups'],
+          user_data: 'test-user_data',
+          metadata: 'test-metadata') do
+          '1234'
         end
 
         options = {
@@ -169,7 +169,8 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
           scheduler_hints: nil,
           security_groups: [],
           user_data: nil,
-          metadata: nil) do '1234'
+          metadata: nil) do
+          '1234'
         end
 
         options = {
@@ -193,19 +194,19 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
   describe 'waiting_for_server_to_be_built' do
     context 'when server is not yet active' do
       it 'become active after one retry' do
-        nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, { 'status' => 'ACTIVE' })
+        nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, 'status' => 'ACTIVE')
         nova.should_receive(:get_server_details).with(env, 'server-01').exactly(2).times
         config.stub(:server_create_timeout) { 5 }
         @action.waiting_for_server_to_be_built(env, 'server-01', 1)
       end
       it 'timeout before the server become active' do
-        nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, { 'status' => 'BUILD' })
+        nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, 'status' => 'BUILD')
         nova.should_receive(:get_server_details).with(env, 'server-01').at_least(2).times
         config.stub(:server_create_timeout) { 3 }
         expect { @action.waiting_for_server_to_be_built(env, 'server-01', 1) }.to raise_error Errors::Timeout
       end
       it 'raise an error after one retry' do
-        nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, { 'status' => 'ERROR' })
+        nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, 'status' => 'ERROR')
         nova.should_receive(:get_server_details).with(env, 'server-01').exactly(2).times
         config.stub(:server_create_timeout) { 3 }
         expect { @action.waiting_for_server_to_be_built(env, 'server-01', 1) }.to raise_error Errors::ServerStatusError

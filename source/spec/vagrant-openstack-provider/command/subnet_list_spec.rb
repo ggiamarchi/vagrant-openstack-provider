@@ -2,7 +2,6 @@ require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::Command::SubnetList do
   describe 'cmd' do
-
     let(:neutron) do
       double('neutron').tap do |neutron|
         neutron.stub(:get_subnets) do
@@ -16,7 +15,7 @@ describe VagrantPlugins::Openstack::Command::SubnetList do
     end
 
     let(:env) do
-      Hash.new.tap do |env|
+      {}.tap do |env|
         env[:ui] = double('ui')
         env[:ui].stub(:info).with(anything)
         env[:openstack_client] = double

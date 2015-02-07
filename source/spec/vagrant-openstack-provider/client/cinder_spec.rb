@@ -1,7 +1,6 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::CinderClient do
-
   let(:http) do
     double('http').tap do |http|
       http.stub(:read_timeout) { 42 }
@@ -16,7 +15,7 @@ describe VagrantPlugins::Openstack::CinderClient do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:machine] = double('machine')
       env[:machine].stub(:provider_config) { config }
     end
@@ -36,15 +35,14 @@ describe VagrantPlugins::Openstack::CinderClient do
   describe 'get_all_volumes' do
     context 'on api v1' do
       it 'returns volumes with details' do
-
         stub_request(:get, 'http://cinder/volumes/detail')
-        .with(
+          .with(
             headers:
                 {
                   'Accept' => 'application/json',
                   'X-Auth-Token' => '123456'
                 })
-        .to_return(
+          .to_return(
             status: 200,
             body: '
                 {
@@ -83,15 +81,14 @@ describe VagrantPlugins::Openstack::CinderClient do
 
     context 'on api v2' do
       it 'returns volumes with details' do
-
         stub_request(:get, 'http://cinder/volumes/detail')
-        .with(
+          .with(
             headers:
                 {
                   'Accept' => 'application/json',
                   'X-Auth-Token' => '123456'
                 })
-        .to_return(
+          .to_return(
             status: 200,
             body: '
                 {

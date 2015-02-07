@@ -1,7 +1,6 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::Action::StartServer do
-
   let(:nova) do
     double('nova').tap do |nova|
       nova.stub(:start_server)
@@ -9,7 +8,7 @@ describe VagrantPlugins::Openstack::Action::StartServer do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui').tap do |ui|
         ui.stub(:info).with(anything)
         ui.stub(:error).with(anything)

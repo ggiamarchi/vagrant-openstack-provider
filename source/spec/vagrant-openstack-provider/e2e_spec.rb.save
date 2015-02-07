@@ -1,0 +1,27 @@
+require 'vagrant-openstack-provider/spec_helper'
+
+require 'aruba'
+require 'aruba/api'
+
+include Aruba::Api
+
+# spec/template_spec.rb
+require 'pathname'
+
+root = Pathname.new(__FILE__).parent.parent
+
+# Allows us to run commands directly, without worrying about the CWD
+ENV['PATH'] = "#{root.join('bin').to_s}#{File::PATH_SEPARATOR}#{ENV['PATH']}"
+
+describe "genud" do
+  context "YAML templates" do
+    it "should emit valid YAML to STDOUT", :focus do
+
+      puts '#####################'
+      # Run the command with Aruba's run_simple helper
+      run_simple "bundle exec vagrant openstack", false, 10
+
+#      assert_exit_status(0)
+    end
+  end
+end

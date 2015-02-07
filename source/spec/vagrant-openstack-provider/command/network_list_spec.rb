@@ -2,7 +2,6 @@ require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::Command::NetworkList do
   describe 'cmd' do
-
     let(:neutron) do
       double('neutron').tap do |neutron|
         neutron.stub(:get_private_networks) do
@@ -22,7 +21,7 @@ describe VagrantPlugins::Openstack::Command::NetworkList do
     end
 
     let(:env) do
-      Hash.new.tap do |env|
+      {}.tap do |env|
         env[:ui] = double('ui')
         env[:ui].stub(:info).with(anything)
         env[:openstack_client] = double
@@ -62,6 +61,5 @@ describe VagrantPlugins::Openstack::Command::NetworkList do
 
       @network_list_cmd.cmd('network-list', ['all'], env)
     end
-
   end
 end

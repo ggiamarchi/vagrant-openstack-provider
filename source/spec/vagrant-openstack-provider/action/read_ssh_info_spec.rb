@@ -5,7 +5,6 @@ include VagrantPlugins::Openstack::HttpUtils
 include VagrantPlugins::Openstack::Domain
 
 describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
-
   let(:config) do
     double('config').tap do |config|
       config.stub(:openstack_auth_url) { 'http://keystoneAuthV2' }
@@ -54,7 +53,7 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui')
       env[:ui].stub(:info).with(anything)
       env[:machine] = double('machine')
@@ -188,5 +187,4 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
       end
     end
   end
-
 end

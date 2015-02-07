@@ -31,7 +31,7 @@ describe VagrantPlugins::Openstack::NovaClient do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui')
       env[:ui].stub(:info).with(anything)
       env[:machine] = double('machine')
@@ -54,20 +54,19 @@ describe VagrantPlugins::Openstack::NovaClient do
     context 'instance not found' do
       it 'raise an InstanceNotFound error' do
         stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
-            .with(
-              body: '{"os-start":null}',
-              headers:
-              {
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-                'X-Auth-Token' => '123456'
-              })
-            .to_return(
-              status: 404,
-              body: '{"itemNotFound": {"message": "Instance could not be found", "code": 404}}')
+          .with(
+            body: '{"os-start":null}',
+            headers:
+            {
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(
+            status: 404,
+            body: '{"itemNotFound": {"message": "Instance could not be found", "code": 404}}')
 
         expect { @nova_client.start_server(env, 'o1o2o3') }.to raise_error(VagrantPlugins::Openstack::Errors::InstanceNotFound)
-
       end
     end
   end
@@ -76,19 +75,19 @@ describe VagrantPlugins::Openstack::NovaClient do
     context 'with token and project_id acquainted' do
       it 'returns all flavors' do
         stub_request(:get, 'http://nova/a1b2c3/flavors/detail')
-            .with(
-              headers:
-              {
-                'Accept' => 'application/json',
-                'X-Auth-Token' => '123456'
-              })
-            .to_return(
-              status: 200,
-              body: '{
-                "flavors": [
-                  { "id": "f1", "name": "flavor1", "vcpus":"1", "ram": "1024", "disk": "10"},
-                  { "id": "f2", "name": "flavor2", "vcpus":"2", "ram": "2048", "disk": "20"}
-                ]}')
+          .with(
+            headers:
+            {
+              'Accept' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(
+            status: 200,
+            body: '{
+              "flavors": [
+                { "id": "f1", "name": "flavor1", "vcpus":"1", "ram": "1024", "disk": "10"},
+                { "id": "f2", "name": "flavor2", "vcpus":"2", "ram": "2048", "disk": "20"}
+              ]}')
 
         flavors = @nova_client.get_all_flavors(env)
 
@@ -103,15 +102,15 @@ describe VagrantPlugins::Openstack::NovaClient do
     context 'with token and project_id acquainted' do
       it 'returns all images' do
         stub_request(:get, 'http://nova/a1b2c3/images')
-            .with(
-              headers:
-              {
-                'Accept' => 'application/json',
-                'X-Auth-Token' => '123456'
-              })
-            .to_return(
-              status: 200,
-              body: '{ "images": [ { "id": "i1", "name": "image1"}, { "id": "i2", "name": "image2"} ] }')
+          .with(
+            headers:
+            {
+              'Accept' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(
+            status: 200,
+            body: '{ "images": [ { "id": "i1", "name": "image1"}, { "id": "i2", "name": "image2"} ] }')
 
         images = @nova_client.get_all_images(env)
 
@@ -127,17 +126,16 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'create_server' do
     context 'with token and project_id acquainted' do
       it 'returns new instance id' do
-
         stub_request(:post, 'http://nova/a1b2c3/servers')
-            .with(
-              body: '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key"}}',
-              headers:
-              {
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-                'X-Auth-Token' => '123456'
-              })
-            .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
+          .with(
+            body: '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key"}}',
+            headers:
+            {
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
 
         instance_id = @nova_client.create_server(env, name: 'inst', image_ref: 'img', flavor_ref: 'flav', networks: nil, keypair: 'key')
 
@@ -147,17 +145,17 @@ describe VagrantPlugins::Openstack::NovaClient do
       context 'with all options specified' do
         it 'returns new instance id' do
           stub_request(:post, 'http://nova/a1b2c3/servers')
-              .with(
-                body: '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key",'\
-                '"security_groups":[{"name":"default"}],"user_data":"dXNlcl9kYXRhX3Rlc3Q=\n","metadata":"metadata_test"},'\
-                '"scheduler_hints":"sched_hints_test"}',
-                headers:
-                {
-                  'Accept' => 'application/json',
-                  'Content-Type' => 'application/json',
-                  'X-Auth-Token' => '123456'
-                })
-              .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
+            .with(
+              body: '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key",'\
+              '"security_groups":[{"name":"default"}],"user_data":"dXNlcl9kYXRhX3Rlc3Q=\n","metadata":"metadata_test"},'\
+              '"scheduler_hints":"sched_hints_test"}',
+              headers:
+              {
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'X-Auth-Token' => '123456'
+              })
+            .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
 
           instance_id = @nova_client.create_server(
             env,
@@ -177,9 +175,8 @@ describe VagrantPlugins::Openstack::NovaClient do
 
       context 'with two networks' do
         it 'returns new instance id' do
-
           stub_request(:post, 'http://nova/a1b2c3/servers')
-          .with(
+            .with(
               body: '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key","networks":[{"uuid":"net1"},{"uuid":"net2"}]}}',
               headers:
                   {
@@ -187,7 +184,7 @@ describe VagrantPlugins::Openstack::NovaClient do
                     'Content-Type' => 'application/json',
                     'X-Auth-Token' => '123456'
                   })
-          .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
+            .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
 
           instance_id = @nova_client.create_server(env, name: 'inst', image_ref: 'img', flavor_ref: 'flav',
                                                         networks: [{ uuid: 'net1' }, { uuid: 'net2' }], keypair: 'key')
@@ -198,9 +195,8 @@ describe VagrantPlugins::Openstack::NovaClient do
 
       context 'with availability_zone' do
         it 'returns new instance id' do
-
           stub_request(:post, 'http://nova/a1b2c3/servers')
-          .with(
+            .with(
               body: '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key","availability_zone":"avz"}}',
               headers:
                   {
@@ -208,7 +204,7 @@ describe VagrantPlugins::Openstack::NovaClient do
                     'Content-Type' => 'application/json',
                     'X-Auth-Token' => '123456'
                   })
-          .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
+            .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
 
           instance_id = @nova_client.create_server(env, name: 'inst', image_ref: 'img', flavor_ref: 'flav', keypair: 'key', availability_zone: 'avz')
 
@@ -218,9 +214,8 @@ describe VagrantPlugins::Openstack::NovaClient do
 
       context 'with volume_boot' do
         it 'returns new instance id' do
-
           stub_request(:post, 'http://nova/a1b2c3/servers')
-          .with(
+            .with(
               body: '{"server":{"name":"inst","block_device_mapping":[{"volume_id":"vol","device_name":"vda"}],"flavorRef":"flav","key_name":"key"}}',
               headers:
                   {
@@ -228,7 +223,7 @@ describe VagrantPlugins::Openstack::NovaClient do
                     'Content-Type' => 'application/json',
                     'X-Auth-Token' => '123456'
                   })
-          .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
+            .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
 
           instance_id = @nova_client.create_server(env, name: 'inst', volume_boot: { id: 'vol', device: 'vda' }, flavor_ref: 'flav', keypair: 'key')
 
@@ -241,17 +236,15 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'delete_server' do
     context 'with token and project_id acquainted' do
       it 'returns new instance id' do
-
         stub_request(:delete, 'http://nova/a1b2c3/servers/o1o2o3')
-            .with(
-              headers: {
-                'Accept' => 'application/json',
-                'X-Auth-Token' => '123456'
-              })
-            .to_return(status: 204)
+          .with(
+            headers: {
+              'Accept' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(status: 204)
 
         @nova_client.delete_server(env, 'o1o2o3')
-
       end
     end
   end
@@ -264,13 +257,13 @@ describe VagrantPlugins::Openstack::NovaClient do
         Kernel.stub(:rand).and_return(2_036_069_739_008)
 
         stub_request(:post, 'http://nova/a1b2c3/os-keypairs')
-            .with(
-              body: "{\"keypair\":{\"name\":\"vagrant-generated-pzcvcpa8\",\"public_key\":\"#{ssh_key_content}\"}}",
-              headers: {
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-                'X-Auth-Token' => '123456' })
-              .to_return(status: 200, body: '
+          .with(
+            body: "{\"keypair\":{\"name\":\"vagrant-generated-pzcvcpa8\",\"public_key\":\"#{ssh_key_content}\"}}",
+            headers: {
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'X-Auth-Token' => '123456' })
+          .to_return(status: 200, body: '
               {
                 "keypair": {
                   "name": "created_key_name"
@@ -278,7 +271,6 @@ describe VagrantPlugins::Openstack::NovaClient do
               }')
 
         @nova_client.import_keypair_from_file(env, filename)
-
       end
     end
   end
@@ -288,12 +280,12 @@ describe VagrantPlugins::Openstack::NovaClient do
       context 'with keypair not generated by vagrant' do
         it 'do nothing' do
           stub_request(:get, 'http://nova/a1b2c3/servers/o1o2o3')
-              .with(headers:
+            .with(headers:
                 {
                   'Accept' => 'application/json',
                   'X-Auth-Token' => '123456'
                 })
-              .to_return(status: 200, body: '
+            .to_return(status: 200, body: '
                 {
                   "server": {
                      "id": "o1o2o3",
@@ -308,15 +300,15 @@ describe VagrantPlugins::Openstack::NovaClient do
       context 'with keypair generated by vagrant' do
         it 'deletes the key on nova' do
           stub_request(:delete, 'http://nova/a1b2c3/os-keypairs/vagrant-generated-1234')
-                .with(headers: { 'X-Auth-Token' => '123456' })
-                .to_return(status: 202)
+            .with(headers: { 'X-Auth-Token' => '123456' })
+            .to_return(status: 202)
           stub_request(:get, 'http://nova/a1b2c3/servers/o1o2o3')
-              .with(headers:
+            .with(headers:
                 {
                   'Accept' => 'application/json',
                   'X-Auth-Token' => '123456'
                 })
-              .to_return(status: 200, body: '
+            .to_return(status: 200, body: '
                 {
                   "server": {
                      "id": "o1o2o3",
@@ -334,17 +326,16 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'suspend_server' do
     context 'with token and project_id acquainted' do
       it 'returns new instance id' do
-
         stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
-            .with(
-              body: '{"suspend":null}',
-              headers:
-              {
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-                'X-Auth-Token' => '123456'
-              })
-            .to_return(status: 202)
+          .with(
+            body: '{"suspend":null}',
+            headers:
+            {
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(status: 202)
 
         @nova_client.suspend_server(env, 'o1o2o3')
       end
@@ -354,17 +345,16 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'resume_server' do
     context 'with token and project_id acquainted' do
       it 'returns new instance id' do
-
         stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
-            .with(
-              body: '{"resume":null}',
-              headers:
-              {
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-                'X-Auth-Token' => '123456'
-              })
-            .to_return(status: 202)
+          .with(
+            body: '{"resume":null}',
+            headers:
+            {
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(status: 202)
 
         @nova_client.resume_server(env, 'o1o2o3')
       end
@@ -374,20 +364,18 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'stop_server' do
     context 'with token and project_id acquainted' do
       it 'returns new instance id' do
-
         stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
-            .with(
-              body: '{"os-stop":null}',
-              headers:
-              {
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-                'X-Auth-Token' => '123456'
-              })
-            .to_return(status: 202)
+          .with(
+            body: '{"os-stop":null}',
+            headers:
+            {
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(status: 202)
 
         @nova_client.stop_server(env, 'o1o2o3')
-
       end
     end
   end
@@ -395,20 +383,18 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'start_server' do
     context 'with token and project_id acquainted' do
       it 'returns new instance id' do
-
         stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
-            .with(
-              body: '{"os-start":null}',
-              headers:
-              {
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-                'X-Auth-Token' => '123456'
-              })
-            .to_return(status: 202)
+          .with(
+            body: '{"os-start":null}',
+            headers:
+            {
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(status: 202)
 
         @nova_client.start_server(env, 'o1o2o3')
-
       end
     end
   end
@@ -417,14 +403,14 @@ describe VagrantPlugins::Openstack::NovaClient do
     context 'with token and project_id acquainted' do
       it 'returns all floating ips' do
         stub_request(:get, 'http://nova/a1b2c3/os-floating-ips')
-         .with(headers:
+          .with(headers:
           {
             'Accept' => 'application/json',
             'Accept-Encoding' => 'gzip, deflate',
             'User-Agent' => 'Ruby',
             'X-Auth-Token' => '123456'
           })
-         .to_return(status: 200, body: '
+          .to_return(status: 200, body: '
          {
            "floating_ips": [
              {"instance_id": "1234",
@@ -460,12 +446,12 @@ describe VagrantPlugins::Openstack::NovaClient do
     context 'with token and project_id acquainted' do
       it 'return newly allocated floating_ip' do
         stub_request(:post, 'http://nova/a1b2c3/os-floating-ips')
-         .with(body: '{"pool":"pool-1"}',
-               headers: {
-                 'Accept' => 'application/json',
-                 'Content-Type' => 'application/json',
-                 'X-Auth-Token' => '123456' })
-         .to_return(status: 200, body: '
+          .with(body: '{"pool":"pool-1"}',
+                headers: {
+                  'Accept' => 'application/json',
+                  'Content-Type' => 'application/json',
+                  'X-Auth-Token' => '123456' })
+          .to_return(status: 200, body: '
          {
            "floating_ip": {
               "instance_id": null,
@@ -487,14 +473,13 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'get_server_details' do
     context 'with token and project_id acquainted' do
       it 'returns server details' do
-
         stub_request(:get, 'http://nova/a1b2c3/servers/o1o2o3')
-            .with(headers:
+          .with(headers:
               {
                 'Accept' => 'application/json',
                 'X-Auth-Token' => '123456'
               })
-            .to_return(status: 200, body: '
+          .to_return(status: 200, body: '
               {
                 "server": {
                    "addresses": { "private": [ { "addr": "192.168.0.3", "version": 4 } ] },
@@ -519,23 +504,20 @@ describe VagrantPlugins::Openstack::NovaClient do
         expect(server['tenant_id']).to eq('openstack')
         expect(server['image']['id']).to eq('i1')
         expect(server['flavor']['id']).to eq('1')
-
       end
     end
   end
 
   describe 'add_floating_ip' do
-
     context 'with token and project_id acquainted and IP available' do
       it 'returns server details' do
-
         stub_request(:get, 'http://nova/a1b2c3/os-floating-ips')
-            .with(headers:
+          .with(headers:
               {
                 'Accept' => 'application/json',
                 'X-Auth-Token' => '123456'
               })
-            .to_return(status: 200, body: '
+          .to_return(status: 200, body: '
               {
                   "floating_ips": [
                       {
@@ -556,14 +538,14 @@ describe VagrantPlugins::Openstack::NovaClient do
               }')
 
         stub_request(:post, 'http://nova/a1b2c3/servers/o1o2o3/action')
-            .with(body: '{"addFloatingIp":{"address":"1.2.3.4"}}',
-                  headers:
+          .with(body: '{"addFloatingIp":{"address":"1.2.3.4"}}',
+                headers:
                   {
                     'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
                     'X-Auth-Token' => '123456'
                   })
-            .to_return(status: 202)
+          .to_return(status: 202)
 
         @nova_client.add_floating_ip(env, 'o1o2o3', '1.2.3.4')
       end
@@ -571,14 +553,13 @@ describe VagrantPlugins::Openstack::NovaClient do
 
     context 'with token and project_id acquainted and IP already in use' do
       it 'raise an error' do
-
         stub_request(:get, 'http://nova/a1b2c3/os-floating-ips')
-            .with(headers:
+          .with(headers:
               {
                 'Accept' => 'application/json',
                 'X-Auth-Token' => '123456'
               })
-            .to_return(status: 200, body: '
+          .to_return(status: 200, body: '
               {
                   "floating_ips": [
                       {
@@ -604,14 +585,13 @@ describe VagrantPlugins::Openstack::NovaClient do
 
     context 'with token and project_id acquainted and IP not allocated' do
       it 'raise an error' do
-
         stub_request(:get, 'http://nova/a1b2c3/os-floating-ips')
-            .with(headers:
+          .with(headers:
               {
                 'Accept' => 'application/json',
                 'X-Auth-Token' => '123456'
               })
-            .to_return(status: 200, body: '
+          .to_return(status: 200, body: '
               {
                   "floating_ips": [
                       {
@@ -632,7 +612,6 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'get_floating_ip_pools' do
     context 'with token and project_id acquainted' do
       it 'should return floating ip pool' do
-
         stub_request(:get, 'http://nova/a1b2c3/os-floating-ip-pools')
           .with(headers: { 'Accept' => 'application/json', 'X-Auth-Token' => '123456' })
           .to_return(status: 200, body: '
@@ -659,7 +638,6 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'get_floating_ips' do
     context 'with token and project_id acquainted' do
       it 'should return floating ip list' do
-
         stub_request(:get, 'http://nova/a1b2c3/os-floating-ips')
           .with(headers: { 'Accept' => 'application/json', 'X-Auth-Token' => '123456' })
           .to_return(status: 200, body: '
@@ -701,13 +679,13 @@ describe VagrantPlugins::Openstack::NovaClient do
       context 'with volume id and device' do
         it 'call the nova api' do
           stub_request(:post, 'http://nova/a1b2c3/servers/9876/os-volume_attachments')
-          .with(headers:
+            .with(headers:
                   {
                     'Accept' => 'application/json',
                     'X-Auth-Token' => '123456'
                   },
-                body: '{"volumeAttachment":{"volumeId":"n1n2","device":"/dev/vdg"}}')
-          .to_return(status: 200, body: '
+                  body: '{"volumeAttachment":{"volumeId":"n1n2","device":"/dev/vdg"}}')
+            .to_return(status: 200, body: '
                   {
                     "volumeAttachment": {
                       "device": "/dev/vdg",
