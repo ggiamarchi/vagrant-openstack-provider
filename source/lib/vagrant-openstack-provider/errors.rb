@@ -4,6 +4,17 @@ module VagrantPlugins
   module Openstack
     module Errors
       class VagrantOpenstackError < Vagrant::Errors::VagrantError
+        #
+        # Added for vagrant 1.4.x compatibility This attribute had been
+        # added in Vagrant::Errors::VagrantError form the version 1.5.0
+        #
+        attr_accessor :extra_data
+
+        def initialize(args = nil)
+          @extra_data = args
+          super(args)
+        end
+
         error_namespace('vagrant_openstack.errors')
         error_key(:default)
       end
