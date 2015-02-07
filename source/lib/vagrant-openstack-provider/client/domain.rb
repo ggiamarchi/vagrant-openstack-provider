@@ -106,7 +106,7 @@ module VagrantPlugins
         #
         attr_accessor :device
 
-        # rubocop:disable Style/ParameterLists
+        # rubocop:disable Metrics/ParameterLists
         def initialize(id, name, size, status, bootable, instance_id, device)
           @size = size
           @status = status
@@ -115,7 +115,7 @@ module VagrantPlugins
           @device = device
           super(id, name)
         end
-        # rubocop:enable Style/ParameterLists
+        # rubocop:enable Metrics/ParameterLists
 
         def to_s
           {

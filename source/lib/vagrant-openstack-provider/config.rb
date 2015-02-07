@@ -276,7 +276,7 @@ module VagrantPlugins
         result
       end
 
-      # rubocop:disable Style/CyclomaticComplexity
+      # rubocop:disable Metrics/CyclomaticComplexity
       def finalize!
         @password = nil if @password == UNSET_VALUE
         @openstack_compute_url = nil if @openstack_compute_url == UNSET_VALUE
@@ -323,7 +323,7 @@ module VagrantPlugins
         @stacks = nil if @stacks.empty?
         @http.finalize!
       end
-      # rubocop:enable Style/CyclomaticComplexity
+      # rubocop:enable Metrics/CyclomaticComplexity
 
       def rsync_include(inc)
         @rsync_includes << inc

@@ -2,9 +2,8 @@ require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::Command::Reset do
   describe 'cmd' do
-
     let(:env) do
-      Hash.new.tap do |env|
+      {}.tap do |env|
         env[:ui] = double('ui')
         env[:ui].stub(:info).with(anything)
         env[:machine] = double('machine')

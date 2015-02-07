@@ -2,7 +2,6 @@ require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::Command::VolumeList do
   describe 'cmd' do
-
     let(:cinder) do
       double('cinder').tap do |cinder|
         cinder.stub(:get_all_volumes) do
@@ -13,7 +12,7 @@ describe VagrantPlugins::Openstack::Command::VolumeList do
     end
 
     let(:env) do
-      Hash.new.tap do |env|
+      {}.tap do |env|
         env[:ui] = double('ui')
         env[:ui].stub(:info).with(anything)
         env[:openstack_client] = double

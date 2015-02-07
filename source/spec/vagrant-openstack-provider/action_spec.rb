@@ -1,7 +1,6 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::Action do
-
   let(:builder) do
     double('builder').tap do |builder|
       builder.stub(:use)

@@ -22,7 +22,7 @@ describe VagrantPlugins::Openstack::NovaClient do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui')
       env[:ui].stub(:info).with(anything)
       env[:machine] = double('machine')
@@ -45,19 +45,18 @@ describe VagrantPlugins::Openstack::NovaClient do
     context 'stack not found' do
       it 'raise an StackNotFound error' do
         stub_request(:get, 'http://heat/a1b2c3/stacks/stack_name/stack_id')
-            .with(
-              headers:
-              {
-                'Accept' => 'application/json',
-                'Accept-Encoding' => 'gzip, deflate',
-                'X-Auth-Token' => '123456'
-              })
-            .to_return(
-              status: 404,
-              body: '{"itemNotFound": {"message": "Stack could not be found", "code": 404}}')
+          .with(
+            headers:
+            {
+              'Accept' => 'application/json',
+              'Accept-Encoding' => 'gzip, deflate',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(
+            status: 404,
+            body: '{"itemNotFound": {"message": "Stack could not be found", "code": 404}}')
 
         expect { @heat_client.get_stack_details(env, 'stack_name', 'stack_id') }.to raise_error(VagrantPlugins::Openstack::Errors::StackNotFound)
-
       end
     end
   end
@@ -65,17 +64,16 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'create_stack' do
     context 'with token and project_id acquainted' do
       it 'returns new stack id' do
-
         stub_request(:post, 'http://heat/a1b2c3/stacks')
-            .with(
-              body: '{"stack_name":"stck","template":"toto"}',
-              headers:
-              {
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-                'X-Auth-Token' => '123456'
-              })
-            .to_return(status: 202, body: '{ "stack": { "id": "o1o2o3" } }')
+          .with(
+            body: '{"stack_name":"stck","template":"toto"}',
+            headers:
+            {
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(status: 202, body: '{ "stack": { "id": "o1o2o3" } }')
 
         stack_id = @heat_client.create_stack(env, name: 'stck', template: 'toto')
 
@@ -87,14 +85,13 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'get_stack_details' do
     context 'with token and project_id acquainted' do
       it 'returns stack details' do
-
         stub_request(:get, 'http://heat/a1b2c3/stacks/stack_id/stack_name')
-            .with(headers:
+          .with(headers:
               {
                 'Accept' => 'application/json',
                 'X-Auth-Token' => '123456'
               })
-            .to_return(status: 200, body: '
+          .to_return(status: 200, body: '
             {
                 "stack": {
                     "description": "sample stack",
@@ -116,14 +113,13 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'delete_stack' do
     context 'with token and project_id acquainted' do
       it 'deletes the stack' do
-
         stub_request(:delete, 'http://heat/a1b2c3/stacks/stack_id/stack_name')
-            .with(headers:
+          .with(headers:
               {
                 'Accept' => 'application/json',
                 'X-Auth-Token' => '123456'
               })
-            .to_return(status: 204)
+          .to_return(status: 204)
 
         @heat_client.delete_stack(env, 'stack_id', 'stack_name')
       end

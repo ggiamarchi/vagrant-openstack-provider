@@ -2,7 +2,6 @@ require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::Command::FlavorList do
   describe 'cmd' do
-
     let(:nova) do
       double('nova').tap do |nova|
         nova.stub(:get_all_flavors) do
@@ -15,7 +14,7 @@ describe VagrantPlugins::Openstack::Command::FlavorList do
     end
 
     let(:env) do
-      Hash.new.tap do |env|
+      {}.tap do |env|
         env[:ui] = double('ui')
         env[:ui].stub(:info).with(anything)
         env[:openstack_client] = double

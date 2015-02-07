@@ -7,7 +7,6 @@ include VagrantPlugins::Openstack::HttpUtils
 include VagrantPlugins::Openstack::Domain
 
 describe VagrantPlugins::Openstack::Action::CreateStack do
-
   let(:config) do
     double('config').tap do |config|
       config.stub(:stacks) do
@@ -31,7 +30,7 @@ describe VagrantPlugins::Openstack::Action::CreateStack do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui')
       env[:ui].stub(:info).with(anything)
       env[:machine] = double('machine')
@@ -61,7 +60,6 @@ describe VagrantPlugins::Openstack::Action::CreateStack do
             image: CoreOS
             flavor: 1_vCPU_RAM_512M_HD_10G
     '))
-
   end
 
   describe 'call' do
@@ -79,19 +77,19 @@ describe VagrantPlugins::Openstack::Action::CreateStack do
   describe 'waiting_for_server_to_be_built' do
     context 'when server is not yet active' do
       it 'become active after one retry' do
-        heat.stub(:get_stack_details).and_return({ 'stack_status' => 'CREATE_IN_PROGRESS' }, { 'stack_status' => 'CREATE_COMPLETE' })
+        heat.stub(:get_stack_details).and_return({ 'stack_status' => 'CREATE_IN_PROGRESS' }, 'stack_status' => 'CREATE_COMPLETE')
         heat.should_receive(:get_stack_details).with(env, 'stack1', 'id-01').exactly(2).times
         config.stub(:stack_create_timeout) { 5 }
         @action.waiting_for_stack_to_be_created(env, 'stack1', 'id-01', 1)
       end
       it 'timeout before the server become active' do
-        heat.stub(:get_stack_details).and_return({ 'stack_status' => 'CREATE_IN_PROGRESS' }, { 'stack_status' => 'CREATE_IN_PROGRESS' })
+        heat.stub(:get_stack_details).and_return({ 'stack_status' => 'CREATE_IN_PROGRESS' }, 'stack_status' => 'CREATE_IN_PROGRESS')
         heat.should_receive(:get_stack_details).with(env, 'stack1', 'id-01').at_least(2).times
         config.stub(:stack_create_timeout) { 3 }
         expect { @action.waiting_for_stack_to_be_created(env, 'stack1', 'id-01', 1) }.to raise_error Errors::Timeout
       end
       it 'raise an error after one retry' do
-        heat.stub(:get_stack_details).and_return({ 'stack_status' => 'CREATE_IN_PROGRESS' }, { 'stack_status' => 'CREATE_FAILED' })
+        heat.stub(:get_stack_details).and_return({ 'stack_status' => 'CREATE_IN_PROGRESS' }, 'stack_status' => 'CREATE_FAILED')
         heat.should_receive(:get_stack_details).with(env, 'stack1', 'id-01').exactly(2).times
         config.stub(:stack_create_timeout) { 3 }
         expect { @action.waiting_for_stack_to_be_created(env, 'stack1', 'id-01', 1) }.to raise_error Errors::StackStatusError

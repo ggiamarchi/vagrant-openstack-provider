@@ -1,7 +1,6 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::Action::WaitForServerToBeActive do
-
   let(:nova) do
     double('nova')
   end
@@ -11,7 +10,7 @@ describe VagrantPlugins::Openstack::Action::WaitForServerToBeActive do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui').tap do |ui|
         ui.stub(:info).with(anything)
         ui.stub(:error).with(anything)
@@ -35,7 +34,7 @@ describe VagrantPlugins::Openstack::Action::WaitForServerToBeActive do
   describe 'call' do
     context 'when server is not yet active' do
       it 'become active after one retry' do
-        nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, { 'status' => 'ACTIVE' })
+        nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, 'status' => 'ACTIVE')
         expect(nova).to receive(:get_server_details).with(env, 'server_id').exactly(2).times
         expect(app).to receive(:call)
         config.stub(:server_active_timeout) { 5 }
@@ -43,7 +42,7 @@ describe VagrantPlugins::Openstack::Action::WaitForServerToBeActive do
         @action.call(env)
       end
       it 'timeout after one retry' do
-        nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, { 'status' => 'BUILD' })
+        nova.stub(:get_server_details).and_return({ 'status' => 'BUILD' }, 'status' => 'BUILD')
         expect(nova).to receive(:get_server_details).with(env, 'server_id').at_least(2).times
         config.stub(:server_active_timeout) { 2 }
         @action = WaitForServerToBeActive.new(app, nil, 1)
