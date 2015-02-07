@@ -10,6 +10,7 @@ Gem::Specification.new do |gem|
   gem.description   = 'Enables Vagrant to manage machines in Openstack Cloud.'
   gem.summary       = 'Enables Vagrant to manage machines in Openstack Cloud.'
   gem.homepage      = 'https://github.com/ggiamarchi/vagrant-openstack-provider'
+  gem.license       = 'MIT'
 
   gem.add_dependency 'json', '1.7.7'
   gem.add_dependency 'rest-client', '~> 1.6.0'
