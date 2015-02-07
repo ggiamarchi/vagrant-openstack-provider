@@ -1,4 +1,4 @@
-# Vagrant Openstack Cloud Provider
+# Vagrant OpenStack Cloud Provider
 
 [![Build Status](https://api.travis-ci.org/ggiamarchi/vagrant-openstack-provider.png?branch=master)](https://travis-ci.org/ggiamarchi/vagrant-openstack-provider)
 [![Gem Version](https://badge.fury.io/rb/vagrant-openstack-provider.svg)](http://badge.fury.io/rb/vagrant-openstack-provider)
@@ -6,15 +6,15 @@
 [![Coverage Status](https://coveralls.io/repos/ggiamarchi/vagrant-openstack-provider/badge.png?branch=master)](https://coveralls.io/r/ggiamarchi/vagrant-openstack-provider?branch=master)
 
 This is a [Vagrant](http://www.vagrantup.com) 1.4+ plugin that adds an
-[Openstack Cloud](http://www.openstack.org/software/) provider to Vagrant,
-allowing Vagrant to control and provision machines within Openstack
+[OpenStack Cloud](http://www.openstack.org/software/) provider to Vagrant,
+allowing Vagrant to control and provision machines within OpenStack
 cloud.
 
 **Note:** This plugin was originally forked from [mitchellh/vagrant-rackspace](https://github.com/mitchellh/vagrant-rackspace)
 
 ## Features
 
-* Create and boot Openstack instances
+* Create and boot OpenStack instances
 * Halt and reboot instances
 * Suspend and resume instances
 * SSH into the instances
@@ -24,9 +24,9 @@ cloud.
 * Boot instance from volume
 * Attach Cinder volumes to the instances
 * Create and delete Heat Orchestration stacks
-* Support Openstack regions
+* Support OpenStack regions
 * Minimal synced folder support via `rsync`
-* Custom sub-commands within Vagrant CLI to query Openstack objects
+* Custom sub-commands within Vagrant CLI to query OpenStack objects
 
 ## Usage
 
@@ -41,7 +41,7 @@ $ vagrant up --provider=openstack
 ...
 ```
 
-Of course prior to doing this, you'll need to obtain an Openstack-compatible
+Of course prior to doing this, you'll need to obtain an OpenStack-compatible
 box file for Vagrant.
 
 ## Quick Start
@@ -87,10 +87,10 @@ This provider exposes quite a few provider-specific configuration options:
 
 ### Credentials
 
-* `username` - The username with which to access Openstack.
-* `password` - The API key for accessing Openstack.
-* `tenant_name` - The Openstack project name to work on
-* `region` - The Openstack region to work on
+* `username` - The username with which to access OpenStack.
+* `password` - The API key for accessing OpenStack.
+* `tenant_name` - The OpenStack project name to work on
+* `region` - The OpenStack region to work on
 * `openstack_auth_url` - The endpoint to authenticate against.
 * `openstack_compute_url` - The compute service URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 * `openstack_network_url` - The network service URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
@@ -100,7 +100,7 @@ This provider exposes quite a few provider-specific configuration options:
 
 ### VM Configuration
 
-* `server_name` - The name of the server within Openstack Cloud. This
+* `server_name` - The name of the server within OpenStack Cloud. This
   defaults to the name of the Vagrant machine (via `config.vm.define`), but
   can be overridden with this.
 * `flavor` - The name of the flavor to use for the VM
@@ -137,14 +137,14 @@ __N.B.__
 #### Networks
 
 * `networks` - Network list the server must be connected on. Can be omitted if only one private network exists
-  in the Openstack project
+  in the OpenStack project
 
 Networking features in the form of `config.vm.network` are not
 supported with `vagrant-openstack`, currently. If any of these are
 specified, Vagrant will emit a warning, but will otherwise boot
-the Openstack server.
+the OpenStack server.
 
-You can provide network id or name. However, in Openstack a network name is not unique, thus if there are two networks with
+You can provide network id or name. However, in OpenStack a network name is not unique, thus if there are two networks with
 the same name in your project the plugin will fail. If so, you have to use only ids. Optionally, you can specify the IP
 address that will be assigned to the instance if you need a static address or if DHCP is not enable for this network.
 
@@ -181,7 +181,7 @@ __N.B.__
 
 #### Volumes
 
-* `volumes` - Volume list that have to be attached to the server. You can provide volume id or name. However, in Openstack
+* `volumes` - Volume list that have to be attached to the server. You can provide volume id or name. However, in OpenStack
 a volume name is not unique, thus if there are two volumes with the same name in your project the plugin will fail. If so,
 you have to use only ids. Optionally, you can specify the device that will be assigned to the volume.
 
@@ -241,7 +241,7 @@ end
   be the matching pair for the private key configured with `config.ssh.private_key_path` on Vagrant.
 * `public_key_path` - if `keypair_name` is not provided, the path to the public key will be used by vagrant to generate a keypair on the OpenStack cloud. The keypair will be destroyed when the VM is destroyed.
 
-If neither `keypair_name` nor `public_key_path` are set, vagrant will generate a new ssh key and automatically import it in Openstack.
+If neither `keypair_name` nor `public_key_path` are set, vagrant will generate a new ssh key and automatically import it in OpenStack.
 
 * `ssh_disabled` - if set to `true`, all ssh actions managed by the provider will be disabled during the `vagrant up`.
    We recommend to use this option only to create private VMs that won't be accessed directly from vagrant. By contrast,
@@ -251,7 +251,7 @@ If neither `keypair_name` nor `public_key_path` are set, vagrant will generate a
 ### Synced folders
 
 * `sync_method` - Specify the synchronization method for shared folder between the host and the remote VM.
-  Currently, it can be "rsync" or "none". The default value is "rsync". If your Openstack image does not
+  Currently, it can be "rsync" or "none". The default value is "rsync". If your OpenStack image does not
   include rsync, you must set this parameter to "none".
 * `rsync_includes` - If `sync_method` is set to "rsync", this parameter give the list of local folders to sync
   on the remote VM.
@@ -259,7 +259,7 @@ If neither `keypair_name` nor `public_key_path` are set, vagrant will generate a
   that contain patterns to exclude from the rsync to /vagrant on a provisioned instance.  ".gitignore  or ".hgignore" for example.
 
 There is minimal support for synced folders. Upon `vagrant up`,
-`vagrant reload`, and `vagrant provision`, the Openstack provider will use
+`vagrant reload`, and `vagrant provision`, the OpenStack provider will use
 `rsync` (if available) to uni-directionally sync the folder to
 the remote machine over SSH.
 
@@ -301,7 +301,7 @@ provider-specific configuration for this provider.
 
 ## Custom commands
 
-Custom commands are provided for Openstack. Type `vagrant openstack` to
+Custom commands are provided for OpenStack. Type `vagrant openstack` to
 show available commands.
 
 ```console
@@ -375,7 +375,7 @@ $ bundle exec vagrant up --provider=openstack
 ### Logging
 
 To enable all Vagrant logs set environment variable `VAGRANT_LOG` to the desire
-log level (for instance `VAGRANT_LOG=debug`). If you want only Openstack provider
+log level (for instance `VAGRANT_LOG=debug`). If you want only OpenStack provider
 logs use the variable `VAGRANT_OPENSTACK_LOG`. if both variables are set, `VAGRANT_LOG`
 takes precedence.
 
