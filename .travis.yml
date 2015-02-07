@@ -1,17 +1,25 @@
 language: ruby
+
 rvm:
   - 2.0.0
   - 2.1.0
-before_install:
-  - gem install bundler -v 1.6.6
-  - cd source
-install:
-  - travis_retry bundle _1.6.6_ install --without debug
-script:
-  - bundle _1.6.6_ exec rake
-gemfile:
-  - gemfiles/minimal_release.gemfile
-  - gemfiles/previous_release.gemfile
-  - gemfiles/latest_stable.gemfile
-sudo: false
 
+before_install:
+  - gem install bundler -v ${BUNDLER_VERSION}
+  - cd source
+  - sed -i -e "s/\(gem 'vagrant'.*tag. \)'[^']*'\(.*\)/\1'${VAGRANT_VERSION}'\2/" Gemfile
+
+install:
+  - travis_retry bundle _${BUNDLER_VERSION}_ install --without debug
+
+script:
+  - bundle _${BUNDLER_VERSION}_ exec rake
+
+env:
+  matrix:
+    - VAGRANT_VERSION=v1.4.3 BUNDLER_VERSION=1.6.6
+    - VAGRANT_VERSION=v1.5.4 BUNDLER_VERSION=1.5.2
+    - VAGRANT_VERSION=v1.6.5 BUNDLER_VERSION=1.6.6
+    - VAGRANT_VERSION=v1.7.2 BUNDLER_VERSION=1.6.6
+
+sudo: false
