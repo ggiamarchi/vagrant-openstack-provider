@@ -7,8 +7,8 @@ Gem::Specification.new do |gem|
   gem.version       = VagrantPlugins::Openstack::VERSION
   gem.authors       = ['Guillaume Giamarchi', 'Julien Vey']
   gem.email         = ['guillaume.giamarchi@gmail.com', 'vey.julien@gmail.com']
-  gem.description   = 'Enables Vagrant to manage machines in Openstack Cloud.'
-  gem.summary       = 'Enables Vagrant to manage machines in Openstack Cloud.'
+  gem.description   = 'Enables Vagrant to manage machines in OpenStack Cloud.'
+  gem.summary       = 'Enables Vagrant to manage machines in OpenStack Cloud.'
   gem.homepage      = 'https://github.com/ggiamarchi/vagrant-openstack-provider'
   gem.license       = 'MIT'
 
