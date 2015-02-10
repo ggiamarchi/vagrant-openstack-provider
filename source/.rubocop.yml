@@ -1,6 +1,7 @@
 AllCops:
   Exclude:
     - 'out/**/*'
+    - '**/Vagrantfile'
 
 Style/FileName:
   Enabled: false
@@ -11,18 +12,24 @@ Style/Encoding:
 Style/Documentation:
   Enabled: false
 
-Style/ClassLength:
+Metrics/ClassLength:
   Max: 300
 
-Style/CyclomaticComplexity:
+Metrics/CyclomaticComplexity:
   Severity: warning
   Max: 15
 
-Style/MethodLength:
+Metrics/MethodLength:
   Max: 60
 
-Style/LineLength:
+Metrics/LineLength:
   Max: 150
 
-Style/ParameterLists:
+Metrics/ParameterLists:
   Max: 6
+
+Metrics/AbcSize:
+  Max: 110
+
+Metrics/PerceivedComplexity:
+  Max: 45

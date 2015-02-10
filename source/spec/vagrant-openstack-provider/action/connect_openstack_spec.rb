@@ -4,7 +4,6 @@ include VagrantPlugins::Openstack::Action
 include VagrantPlugins::Openstack::HttpUtils
 
 describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
-
   let(:app) do
     double.tap do |app|
       app.stub(:call)
@@ -160,7 +159,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double
       env[:ui].stub(:info).with(anything)
       env[:ui].stub(:warn).with(anything)
@@ -309,9 +308,9 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
         @action.call(env)
 
         expect(env[:openstack_client].session.endpoints)
-        .to eq(compute: 'http://france.nova/v2/projectId',
-               network: 'http://france.neutron/v2.0',
-               image:   'http://france.glance/v2.0')
+          .to eq(compute: 'http://france.nova/v2/projectId',
+                 network: 'http://france.neutron/v2.0',
+                 image:   'http://france.glance/v2.0')
       end
     end
 
@@ -417,10 +416,10 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
           @action.call(env)
 
           expect(env[:openstack_client].session.endpoints)
-          .to eq(compute: 'http://nova/v2/projectId/admin',
-                 network: 'http://neutron/v2.0/admin',
-                 volume:  'http://cinder/v2/projectId/admin',
-                 image:   'http://glance/v2.0/admin')
+            .to eq(compute: 'http://nova/v2/projectId/admin',
+                   network: 'http://neutron/v2.0/admin',
+                   volume:  'http://cinder/v2/projectId/admin',
+                   image:   'http://glance/v2.0/admin')
         end
       end
     end
@@ -464,8 +463,8 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
           @action.call(env)
 
           expect(env[:openstack_client].session.endpoints)
-          .to eq(compute: 'http://nova/v2/projectId/internal',
-                 volume:  'http://cinder/v2/projectId/internal')
+            .to eq(compute: 'http://nova/v2/projectId/internal',
+                   volume:  'http://cinder/v2/projectId/internal')
         end
       end
     end
@@ -531,10 +530,10 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
           @action.call(env)
 
           expect(env[:openstack_client].session.endpoints)
-          .to eq(compute: 'http://nova/v2/projectId',
-                 network: 'http://neutron/v2.0',
-                 volume:  'http://cinder/v2/projectId',
-                 image:   'http://glance/v2.0')
+            .to eq(compute: 'http://nova/v2/projectId',
+                   network: 'http://neutron/v2.0',
+                   volume:  'http://cinder/v2/projectId',
+                   image:   'http://glance/v2.0')
         end
       end
     end
@@ -573,8 +572,8 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
         @action.call(env)
 
         expect(env[:openstack_client].session.endpoints)
-        .to eq(compute: 'http://nova/v2/projectId',
-               image:   'http://glance/v1')
+          .to eq(compute: 'http://nova/v2/projectId',
+                 image:   'http://glance/v1')
       end
     end
 
@@ -603,7 +602,6 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
     end
 
     context 'with no matching versions for network service' do
-
       let(:neutron) do
         double.tap do |neutron|
           neutron.stub(:get_api_version_list).with(anything, anything) do
@@ -690,7 +688,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
         @action.call(env)
 
         expect(env[:openstack_client].session.endpoints)
-        .to eq(compute: 'http://nova/v2/projectId', identity: 'http://keystone/v2.0')
+          .to eq(compute: 'http://nova/v2/projectId', identity: 'http://keystone/v2.0')
       end
     end
   end

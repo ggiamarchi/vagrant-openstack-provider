@@ -1,13 +1,12 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::Action::WaitForServerToBeAccessible do
-
   let(:config) do
     double('config')
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui')
       env[:ui].stub(:info).with(anything)
       env[:ui].stub(:error).with(anything)

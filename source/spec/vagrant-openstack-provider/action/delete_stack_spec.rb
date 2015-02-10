@@ -1,7 +1,6 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::Action::DeleteStack do
-
   let(:heat) do
     double('heat').tap do |app|
       app.stub(:delete_stack)
@@ -15,7 +14,7 @@ describe VagrantPlugins::Openstack::Action::DeleteStack do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui')
       env[:ui].stub(:info).with(anything)
       env[:ui].stub(:error).with(anything)

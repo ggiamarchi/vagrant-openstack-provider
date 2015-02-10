@@ -2,7 +2,7 @@ module VagrantPlugins
   module Openstack
     module Command
       COMMANDS = [
-        { name: :'image-list', file: 'image_list' , clazz: 'ImageList' },
+        { name: :'image-list', file: 'image_list', clazz: 'ImageList' },
         { name: :'flavor-list', file: 'flavor_list', clazz: 'FlavorList' },
         { name: :'network-list', file: 'network_list', clazz: 'NetworkList' },
         { name: :'subnet-list', file: 'subnet_list', clazz: 'SubnetList' },

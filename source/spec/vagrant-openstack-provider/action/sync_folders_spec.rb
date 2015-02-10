@@ -6,7 +6,6 @@ require 'vagrant/util/subprocess'
 include VagrantPlugins::Openstack::Action
 
 describe VagrantPlugins::Openstack::Action::SyncFolders do
-
   let(:app) do
     double('app').tap do |app|
       app.stub(:call).with(anything)
@@ -34,7 +33,7 @@ describe VagrantPlugins::Openstack::Action::SyncFolders do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui').tap do |ui|
         ui.stub(:info).with(anything)
         ui.stub(:error).with(anything)

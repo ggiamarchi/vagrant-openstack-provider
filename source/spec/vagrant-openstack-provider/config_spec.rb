@@ -5,9 +5,7 @@ describe VagrantPlugins::Openstack::Config do
     let(:vagrant_public_key) { Vagrant.source_root.join('keys/vagrant.pub') }
 
     subject do
-      super().tap do |o|
-        o.finalize!
-      end
+      super().tap(&:finalize!)
     end
 
     its(:password)  { should be_nil }
@@ -253,9 +251,7 @@ describe VagrantPlugins::Openstack::Config do
     end
 
     subject do
-      super().tap do |o|
-        o.finalize!
-      end
+      super().tap(&:finalize!)
     end
 
     context 'with invalid stack' do

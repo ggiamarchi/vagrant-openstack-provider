@@ -1,7 +1,6 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::Command::ImageList do
-
   let(:nova) do
     double('nova').tap do |nova|
       nova.stub(:get_all_images) do
@@ -27,7 +26,7 @@ describe VagrantPlugins::Openstack::Command::ImageList do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:ui] = double('ui')
       env[:ui].stub(:info).with(anything)
       env[:openstack_client] = double
@@ -42,7 +41,6 @@ describe VagrantPlugins::Openstack::Command::ImageList do
 
   describe 'cmd' do
     context 'when glance is not available' do
-
       let(:session) do
         double('session').tap do |s|
           s.stub(:endpoints) { {} }
@@ -50,7 +48,6 @@ describe VagrantPlugins::Openstack::Command::ImageList do
       end
 
       it 'prints image list with only the id and the name' do
-
         env[:openstack_client].stub(:session) { session }
         allow(@image_list_cmd).to receive(:with_target_vms).and_return(nil)
         nova.should_receive(:get_all_images).with(env)
@@ -68,7 +65,6 @@ describe VagrantPlugins::Openstack::Command::ImageList do
     end
 
     context 'when glance is available' do
-
       let(:session) do
         double('session').tap do |s|
           s.stub(:endpoints) do
@@ -80,7 +76,6 @@ describe VagrantPlugins::Openstack::Command::ImageList do
       end
 
       it 'prints image list with id, name and details' do
-
         env[:openstack_client].stub(:session) { session }
         allow(@image_list_cmd).to receive(:with_target_vms).and_return(nil)
         glance.should_receive(:get_all_images).with(env)

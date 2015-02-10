@@ -1,7 +1,6 @@
 require 'vagrant-openstack-provider/spec_helper'
 
 describe VagrantPlugins::Openstack::Utils do
-
   let(:config) do
     double('config').tap do |config|
       config.stub(:tenant_name) { 'testTenant' }
@@ -19,7 +18,7 @@ describe VagrantPlugins::Openstack::Utils do
   end
 
   let(:env) do
-    Hash.new.tap do |env|
+    {}.tap do |env|
       env[:machine] = double('machine')
       env[:machine].stub(:provider_config) { config }
       env[:machine].stub(:id) { '1234id' }

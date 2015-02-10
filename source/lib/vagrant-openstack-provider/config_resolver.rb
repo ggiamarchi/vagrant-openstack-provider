@@ -65,7 +65,7 @@ module VagrantPlugins
         return resolve_networks_without_network_service(env) unless env[:openstack_client].session.endpoints.key? :network
 
         all_networks = env[:openstack_client].neutron.get_all_networks(env)
-        all_network_ids = all_networks.map { |v| v.id }
+        all_network_ids = all_networks.map(&:id)
 
         networks = []
         config.networks.each do |network|
@@ -82,7 +82,7 @@ module VagrantPlugins
         return resolve_volume_without_volume_service(env, config.volume_boot, 'vda') unless env[:openstack_client].session.endpoints.key? :volume
 
         volume_list = env[:openstack_client].cinder.get_all_volumes(env)
-        volume_ids = volume_list.map { |v| v.id }
+        volume_ids = volume_list.map(&:id)
 
         @logger.debug(volume_list)
 
@@ -100,7 +100,7 @@ module VagrantPlugins
         return resolve_volumes_without_volume_service(env) unless env[:openstack_client].session.endpoints.key? :volume
 
         volume_list = env[:openstack_client].cinder.get_all_volumes(env)
-        volume_ids = volume_list.map { |v| v.id }
+        volume_ids = volume_list.map(&:id)
 
         @logger.debug(volume_list)
 
