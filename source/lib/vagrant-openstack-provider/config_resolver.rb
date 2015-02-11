@@ -23,15 +23,14 @@ module VagrantPlugins
         flavor
       end
 
-      def resolve_image(env)
+      def resolve_image(env, image_name)
         @logger.info 'Resolving image'
-        config = env[:machine].provider_config
-        return nil if config.image.nil?
+        return nil if image_name.nil?
+
         nova = env[:openstack_client].nova
         env[:ui].info(I18n.t('vagrant_openstack.finding_image'))
         images = nova.get_all_images(env)
-        @logger.info "Finding image matching name '#{config.image}'"
-        image = find_matching(images, config.image)
+        image = find_matching(images, image_name)
         fail Errors::NoMatchingImage unless image
         image
       end
@@ -76,7 +75,6 @@ module VagrantPlugins
       end
 
       def resolve_volume_boot(env)
-        @logger.info 'Resolving image'
         config = env[:machine].provider_config
         return nil if config.volume_boot.nil?
         return resolve_volume_without_volume_service(env, config.volume_boot, 'vda') unless env[:openstack_client].session.endpoints.key? :volume
@@ -87,9 +85,14 @@ module VagrantPlugins
         @logger.debug(volume_list)
 
         volume = resolve_volume(config.volume_boot, volume_list, volume_ids)
-        device = volume[:device].nil? ? 'vda' : volume[:device]
 
-        { id: volume[:id], device: device }
+        device = (volume[:device].nil?) ? 'vda' : volume[:device]
+        size = (volume[:size].nil?) ? nil : volume[:size]
+        delete_on_destroy = (volume[:delete_on_destroy].nil?) ? nil : volume[:delete_on_destroy]
+
+        image = resolve_image(env, volume[:image]) unless volume[:image].nil?
+        image_id = (image.nil?) ? nil : image.id
+        { id: volume[:id], image: image_id, device: device, size: size, delete_on_destroy: delete_on_destroy }
       end
 
       def resolve_volumes(env)
@@ -258,17 +261,25 @@ module VagrantPlugins
       def resolve_volume_from_hash(volume, volume_list, volume_ids)
         device = nil
         device = volume[:device] if volume.key?(:device)
+
+        volume_id = nil
         if volume.key?(:id)
           fail Errors::ConflictVolumeNameId, volume: volume if volume.key?(:name)
+          fail Errors::ConflictVolumeNameId, volume: volume if volume.key?(:image)
           volume_id = volume[:id]
           fail Errors::UnresolvedVolumeId, id: volume_id unless volume_ids.include? volume_id
         elsif volume.key?(:name)
           volume_list.each do |v|
             next unless v.name.eql? volume[:name]
             fail Errors::MultipleVolumeName, name: volume[:name] unless volume_id.nil?
+            fail Errors::ConflictVolumeNameId, volume: volume if volume.key?(:image)
             volume_id = v.id
           end
           fail Errors::UnresolvedVolumeName, name: volume[:name] unless volume_ids.include? volume_id
+        elsif volume.key?(:image)
+          fail Errors::UnresolvedVolume, volume: volume unless volume.key?(:size)
+          delete_on_destroy = (volume[:delete_on_destroy].nil?) ? 'true' : volume[:delete_on_destroy]
+          return { id: volume_id, image: volume[:image], device: device, size: volume[:size], delete_on_destroy: delete_on_destroy }
         else
           fail Errors::ConflictVolumeNameId, volume: volume
         end
