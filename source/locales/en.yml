@@ -167,6 +167,9 @@ en:
       no_matching_image: |-
         No matching image was found! Please check your image setting to
         make sure you have a valid image chosen.
+      conflict_image_name: |-
+        One (and only one) image must be specified in the configuration.
+        Please check that an image name is not defined also in the 'volume_boot' definition.
       sync_method_error: |-
         Value '%{sync_method_value}' is not allowed for 'sync_method' configuration parameter. Valid values are 'rsync' and 'none'
       rsync_error: |-
