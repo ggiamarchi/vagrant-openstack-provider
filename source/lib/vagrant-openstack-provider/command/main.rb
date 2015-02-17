@@ -13,7 +13,6 @@ module VagrantPlugins
 
       class Main < Vagrant.plugin('2', :command)
         def self.synopsis
-          Openstack.init_i18n
           I18n.t('vagrant_openstack.command.main_synopsis')
         end
 
@@ -33,7 +32,6 @@ module VagrantPlugins
         end
 
         def execute
-          Openstack.init_i18n
           command_class = @commands.get(@sub_command.to_sym) if @sub_command
           return usage unless command_class && @sub_command
           command_class.new(@sub_args, @env).execute(@sub_command)

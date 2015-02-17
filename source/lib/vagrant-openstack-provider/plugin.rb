@@ -26,7 +26,6 @@ module VagrantPlugins
       end
 
       provider(:openstack, box_optional: true) do
-        # Setup some things
         Openstack.init_i18n
         Openstack.init_logging
         VagrantPlugins::Openstack.check_version
@@ -37,6 +36,8 @@ module VagrantPlugins
       end
 
       command('openstack') do
+        Openstack.init_i18n
+        Openstack.init_logging
         VagrantPlugins::Openstack.check_version
 
         require_relative 'command/main'
