@@ -4,6 +4,8 @@ rescue LoadError
   raise 'The Openstack Cloud provider must be run within Vagrant.'
 end
 
+require 'vagrant-openstack-provider/version_checker'
+
 # This is a sanity check to make sure no one is attempting to install
 # this into an early Vagrant version.
 if Vagrant::VERSION < '1.4.0'
@@ -27,6 +29,7 @@ module VagrantPlugins
         # Setup some things
         Openstack.init_i18n
         Openstack.init_logging
+        VagrantPlugins::Openstack.check_version
 
         # Load the actual provider
         require_relative 'provider'
@@ -34,6 +37,8 @@ module VagrantPlugins
       end
 
       command('openstack') do
+        VagrantPlugins::Openstack.check_version
+
         require_relative 'command/main'
         Command::Main
       end
