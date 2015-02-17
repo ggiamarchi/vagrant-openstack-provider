@@ -1,9 +1,6 @@
 require 'pathname'
 
 require 'vagrant/action/builder'
-require 'vagrant-openstack-provider/version_checker'
-
-VagrantPlugins::Openstack.check_version
 
 module VagrantPlugins
   module Openstack
