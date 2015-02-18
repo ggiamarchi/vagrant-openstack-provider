@@ -647,7 +647,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
       end
 
       context 'with hash containing an image_name with a size' do
-        it 'return nomalized volume' do
+        it 'return normalized volume' do
           config.stub(:volume_boot) { { image: 'image-01', size: '10' } }
           nova.stub(:get_all_images).with(anything) do
             [Item.new('img-001', 'image-01'),
@@ -658,7 +658,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
       end
 
       context 'with hash containing an image_name, size, device and delete_on_destroy' do
-        it 'return nomalized volume' do
+        it 'return normalized volume' do
           config.stub(:volume_boot) { { image: 'image-01', size: '10', device: 'vdb', delete_on_destroy: 'false' } }
           nova.stub(:get_all_images).with(anything) do
             [Item.new('img-001', 'image-01'),
