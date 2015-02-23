@@ -58,7 +58,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
       r.stub(:resolve_flavor).with(anything) do
         Flavor.new('flavor-01', 'small', nil, nil, nil)
       end
-      r.stub(:resolve_image).with(anything, anything) do
+      r.stub(:resolve_image).with(anything) do
         Item.new('image-01', 'ubuntu')
       end
       r.stub(:resolve_volume_boot).with(anything) { 'ubuntu-drive' }

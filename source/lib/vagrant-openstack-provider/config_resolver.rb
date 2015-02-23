@@ -23,16 +23,14 @@ module VagrantPlugins
         flavor
       end
 
-      def resolve_image(env, image_name)
+      def resolve_image(env)
         @logger.info 'Resolving image'
-        return nil if image_name.nil?
+        resolve_image_internal(env, env[:machine].provider_config.image)
+      end
 
-        nova = env[:openstack_client].nova
-        env[:ui].info(I18n.t('vagrant_openstack.finding_image'))
-        images = nova.get_all_images(env)
-        image = find_matching(images, image_name)
-        fail Errors::NoMatchingImage unless image
-        image
+      def resolve_volume_boot_image(env)
+        @logger.info 'Resolving image to create a volume from'
+        resolve_image_internal(env, env[:machine].provider_config.volume_boot[:image])
       end
 
       def resolve_floating_ip(env)
@@ -90,9 +88,13 @@ module VagrantPlugins
         size = (volume[:size].nil?) ? nil : volume[:size]
         delete_on_destroy = (volume[:delete_on_destroy].nil?) ? nil : volume[:delete_on_destroy]
 
-        image = resolve_image(env, volume[:image]) unless volume[:image].nil?
+        image = resolve_volume_boot_image(env) unless volume[:image].nil?
         image_id = (image.nil?) ? nil : image.id
-        { id: volume[:id], image: image_id, device: device, size: size, delete_on_destroy: delete_on_destroy }
+        if image.nil?
+          return { id: volume[:id], device: device }
+        else
+          { image: image_id, device: device, size: size, delete_on_destroy: delete_on_destroy }
+        end
       end
 
       def resolve_volumes(env)
@@ -137,6 +139,17 @@ module VagrantPlugins
       end
 
       private
+
+      def resolve_image_internal(env, image_name)
+        return nil if image_name.nil?
+
+        nova = env[:openstack_client].nova
+        env[:ui].info(I18n.t('vagrant_openstack.finding_image'))
+        images = nova.get_all_images(env)
+        image = find_matching(images, image_name)
+        fail Errors::NoMatchingImage unless image
+        image
+      end
 
       def search_free_ip(config, nova, env)
         @logger.debug 'Retrieving all allocated floating ips on tenant'
@@ -261,29 +274,35 @@ module VagrantPlugins
       def resolve_volume_from_hash(volume, volume_list, volume_ids)
         device = nil
         device = volume[:device] if volume.key?(:device)
+        delete_on_destroy = (volume[:delete_on_destroy].nil?) ? 'true' : volume[:delete_on_destroy]
 
         volume_id = nil
         if volume.key?(:id)
           fail Errors::ConflictVolumeNameId, volume: volume if volume.key?(:name)
-          fail Errors::ConflictVolumeNameId, volume: volume if volume.key?(:image)
+          check_boot_volume_conflict(volume)
           volume_id = volume[:id]
           fail Errors::UnresolvedVolumeId, id: volume_id unless volume_ids.include? volume_id
         elsif volume.key?(:name)
           volume_list.each do |v|
             next unless v.name.eql? volume[:name]
             fail Errors::MultipleVolumeName, name: volume[:name] unless volume_id.nil?
-            fail Errors::ConflictVolumeNameId, volume: volume if volume.key?(:image)
+            check_boot_volume_conflict(volume)
             volume_id = v.id
           end
           fail Errors::UnresolvedVolumeName, name: volume[:name] unless volume_ids.include? volume_id
         elsif volume.key?(:image)
           fail Errors::UnresolvedVolume, volume: volume unless volume.key?(:size)
-          delete_on_destroy = (volume[:delete_on_destroy].nil?) ? 'true' : volume[:delete_on_destroy]
-          return { id: volume_id, image: volume[:image], device: device, size: volume[:size], delete_on_destroy: delete_on_destroy }
+          fail Errors::ConflictBootVolume, volume: volume if volume.key?(:id)
+          fail Errors::ConflictBootVolume, volume: volume if volume.key?(:name)
+          return { image: volume[:image], device: device, size: volume[:size], delete_on_destroy: delete_on_destroy }
         else
-          fail Errors::ConflictVolumeNameId, volume: volume
+          fail Errors::ConflictBootVolume, volume: volume
         end
         { id: volume_id, device: device }
+      end
+
+      def check_boot_volume_conflict(volume)
+        fail Errors::ConflictBootVolume, volume: volume if volume.key?(:image) || volume.key?(:size) || volume.key?(:delete_on_destroy)
       end
 
       # This method finds any matching _thing_ from a list of names

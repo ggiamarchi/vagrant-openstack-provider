@@ -31,7 +31,7 @@ module VagrantPlugins
 
           options = {
             flavor: @resolver.resolve_flavor(env),
-            image: @resolver.resolve_image(env, config.image),
+            image: @resolver.resolve_image(env),
             volume_boot: @resolver.resolve_volume_boot(env),
             networks: @resolver.resolve_networks(env),
             volumes: @resolver.resolve_volumes(env),

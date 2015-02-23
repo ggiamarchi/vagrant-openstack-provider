@@ -52,7 +52,7 @@ module VagrantPlugins
           s['name'] = options[:name]
           if options[:image_ref].nil?
             s['block_device_mapping'] = [{ volume_id: options[:volume_boot][:id],
-                                           device_name: options[:volume_boot][:device] }] unless options[:volume_boot][:id].nil?
+                                           device_name: options[:volume_boot][:device] }] if options[:volume_boot].key?(:id)
             s['block_device_mapping_v2'] = [{ boot_index: '0',
                                               volume_size: options[:volume_boot][:size],
                                               uuid: options[:volume_boot][:image],
@@ -60,7 +60,7 @@ module VagrantPlugins
                                               source_type: 'image',
                                               destination_type: 'volume',
                                               delete_on_termination: options[:volume_boot][:delete_on_destroy] }]\
-                                              unless options[:volume_boot][:image].nil?
+                                              if options[:volume_boot].key?(:image)
           else
             s['imageRef'] = options[:image_ref]
           end

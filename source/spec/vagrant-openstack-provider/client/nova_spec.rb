@@ -222,10 +222,7 @@ describe VagrantPlugins::Openstack::NovaClient do
               headers:
               {
                 'Accept' => 'application/json',
-                'Accept-Encoding' => 'gzip, deflate',
-                'Content-Length' => '248',
                 'Content-Type' => 'application/json',
-                'User-Agent' => 'Ruby',
                 'X-Auth-Token' => '123456'
               })
             .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
@@ -250,10 +247,7 @@ describe VagrantPlugins::Openstack::NovaClient do
               headers:
               {
                 'Accept' => 'application/json',
-                'Accept-Encoding' => 'gzip, deflate',
-                'Content-Length' => '127',
                 'Content-Type' => 'application/json',
-                'User-Agent' => 'Ruby',
                 'X-Auth-Token' => '123456'
               })
             .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')

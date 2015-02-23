@@ -190,7 +190,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
           [Item.new('img-001', 'image-01'),
            Item.new('img-002', 'image-02')]
         end
-        @action.resolve_image(env, config.image).should eq(Item.new('img-001', 'image-01'))
+        @action.resolve_image(env).should eq(Item.new('img-001', 'image-01'))
       end
     end
     context 'with name' do
@@ -201,7 +201,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
           [Item.new('img-001', 'image-01'),
            Item.new('img-002', 'image-02')]
         end
-        @action.resolve_image(env, config.image).should eq(Item.new('img-002', 'image-02'))
+        @action.resolve_image(env).should eq(Item.new('img-002', 'image-02'))
       end
     end
     context 'with invalid identifier' do
@@ -212,7 +212,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
           [Item.new('img-001', 'image-01'),
            Item.new('img-002', 'image-02')]
         end
-        expect { @action.resolve_image(env, config.image) }.to raise_error(Errors::NoMatchingImage)
+        expect { @action.resolve_image(env) }.to raise_error(Errors::NoMatchingImage)
       end
     end
     context 'with no images in config' do
@@ -223,7 +223,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
           [Item.new('img-001', 'image-01'),
            Item.new('img-002', 'image-02')]
         end
-        @action.resolve_image(env, config.image).should eq(nil)
+        @action.resolve_image(env).should eq(nil)
       end
     end
   end
@@ -520,11 +520,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
       context 'with string volume id' do
         it 'returns normalized volume' do
           config.stub(:volume_boot) { '001' }
-          nova.stub(:get_all_images).with(anything) do
-            [Item.new('img-001', 'image-01'),
-             Item.new('img-002', 'image-02')]
-          end
-          expect(@action.resolve_volume_boot(env)).to eq id: '001', image: nil, device: 'vda', size: nil, delete_on_destroy: nil
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
         end
       end
 
@@ -535,18 +531,14 @@ describe VagrantPlugins::Openstack::ConfigResolver do
             [Item.new('img-001', 'image-01'),
              Item.new('img-002', 'image-02')]
           end
-          expect(@action.resolve_volume_boot(env)).to eq id: '001', image: nil, device: 'vda', size: nil, delete_on_destroy: nil
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
         end
       end
 
       context 'with hash volume id' do
         it 'returns normalized volume' do
           config.stub(:volume_boot) { { id: '001' } }
-          nova.stub(:get_all_images).with(anything) do
-            [Item.new('img-001', 'image-01'),
-             Item.new('img-002', 'image-02')]
-          end
-          expect(@action.resolve_volume_boot(env)).to eq id: '001', image: nil, device: 'vda', size: nil, delete_on_destroy: nil
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
         end
       end
 
@@ -557,18 +549,14 @@ describe VagrantPlugins::Openstack::ConfigResolver do
             [Item.new('img-001', 'image-01'),
              Item.new('img-002', 'image-02')]
           end
-          expect(@action.resolve_volume_boot(env)).to eq id: '001', image: nil, device: 'vda', size: nil, delete_on_destroy: nil
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vda'
         end
       end
 
       context 'with hash volume id and device' do
         it 'returns normalized volume' do
           config.stub(:volume_boot) { { id: '001', device: 'vdb' } }
-          nova.stub(:get_all_images).with(anything) do
-            [Item.new('img-001', 'image-01'),
-             Item.new('img-002', 'image-02')]
-          end
-          expect(@action.resolve_volume_boot(env)).to eq id: '001', image: nil, device: 'vdb', size: nil, delete_on_destroy: nil
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vdb'
         end
       end
 
@@ -579,14 +567,14 @@ describe VagrantPlugins::Openstack::ConfigResolver do
             [Item.new('img-001', 'image-01'),
              Item.new('img-002', 'image-02')]
           end
-          expect(@action.resolve_volume_boot(env)).to eq id: '001', image: nil, device: 'vdb', size: nil, delete_on_destroy: nil
+          expect(@action.resolve_volume_boot(env)).to eq id: '001', device: 'vdb'
         end
       end
 
       context 'with empty hash' do
         it 'raises an error' do
           config.stub(:volume_boot) { {} }
-          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictVolumeNameId)
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictBootVolume)
         end
       end
 
@@ -628,14 +616,42 @@ describe VagrantPlugins::Openstack::ConfigResolver do
       context 'with hash containing a name and an image_name' do
         it 'raises an error' do
           config.stub(:volume_boot) { { name: 'vol-01', image: 'img_001' } }
-          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictVolumeNameId)
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictBootVolume)
+        end
+      end
+
+      context 'with hash containing a name and a size' do
+        it 'raises an error' do
+          config.stub(:volume_boot) { { name: 'vol-01', size: '10' } }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictBootVolume)
+        end
+      end
+
+      context 'with hash containing a name and a delete_on_destroy indication' do
+        it 'raises an error' do
+          config.stub(:volume_boot) { { name: 'vol-01', delete_on_destroy: 'true' } }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictBootVolume)
         end
       end
 
       context 'with hash containing a volume_id and an image_name' do
         it 'raises an error' do
           config.stub(:volume_boot) { { id: 'id', image: 'img_001' } }
-          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictVolumeNameId)
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictBootVolume)
+        end
+      end
+
+      context 'with hash containing a volume_id and a size' do
+        it 'raises an error' do
+          config.stub(:volume_boot) { { id: 'id', size: '10' } }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictBootVolume)
+        end
+      end
+
+      context 'with hash containing a volume_id and a delete_on_destroy indication' do
+        it 'raises an error' do
+          config.stub(:volume_boot) { { id: 'id', delete_on_destroy: 'true' } }
+          expect { @action.resolve_volume_boot(env) }.to raise_error(Errors::ConflictBootVolume)
         end
       end
 
@@ -653,7 +669,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
             [Item.new('img-001', 'image-01'),
              Item.new('img-002', 'image-02')]
           end
-          expect(@action.resolve_volume_boot(env)).to eq id: nil, image: 'img-001', device: 'vda', size: '10', delete_on_destroy: 'true'
+          expect(@action.resolve_volume_boot(env)).to eq image: 'img-001', device: 'vda', size: '10', delete_on_destroy: 'true'
         end
       end
 
@@ -664,7 +680,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
             [Item.new('img-001', 'image-01'),
              Item.new('img-002', 'image-02')]
           end
-          expect(@action.resolve_volume_boot(env)).to eq id: nil, image: 'img-001', device: 'vdb', size: '10', delete_on_destroy: 'false'
+          expect(@action.resolve_volume_boot(env)).to eq image: 'img-001', device: 'vdb', size: '10', delete_on_destroy: 'false'
         end
       end
     end
@@ -781,7 +797,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
       context 'with empty hash' do
         it 'raises an error' do
           config.stub(:volumes) { [{}] }
-          expect { @action.resolve_volumes(env) }.to raise_error(Errors::ConflictVolumeNameId)
+          expect { @action.resolve_volumes(env) }.to raise_error(Errors::ConflictBootVolume)
         end
       end
 

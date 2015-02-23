@@ -51,8 +51,8 @@ module VagrantPlugins
         error_key(:no_matching_image)
       end
 
-      class ConflictImageName < VagrantOpenstackError
-        error_key(:conflict_image_name)
+      class ConflictBootVolume < VagrantOpenstackError
+        error_key(:conflict_boot_volume)
       end
 
       class SyncMethodError < VagrantOpenstackError
