@@ -87,15 +87,22 @@ module VagrantPlugins
             # --cvs-exclude
             command = [
               'rsync', '--verbose', '--archive', '-z',
-              '--cvs-exclude',
-              '--exclude', '.hg/',
-              '--exclude', '.git/',
               '--chmod', 'ugo=rwX',
               *includes,
               '-e', "ssh -p #{ssh_info[:port]} -o StrictHostKeyChecking=no #{ssh_key_options(ssh_info)}",
               hostpath,
               "#{ssh_info[:username]}@#{ssh_info[:host]}:#{guestpath}"]
             command.compact!
+
+            if env[:machine].provider_config.rsync_cvs_exclude
+              command += ['--cvs-exclude']
+            end
+
+            exclude_paths = []
+            exclude_paths = env[:machine].provider_config.rsync_exclude_paths unless env[:machine].provider_config.rsync_exclude_paths.nil?
+            exclude_paths.each do |exclude_path|
+              command += ['--exclude', exclude_path]
+            end
 
             # during rsync, ignore files specified in list of files containing exclude patterns
             # ex: rsync_ignore_files = ['.hgignore', '.gitignore']
