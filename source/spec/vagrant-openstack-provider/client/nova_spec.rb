@@ -212,21 +212,51 @@ describe VagrantPlugins::Openstack::NovaClient do
         end
       end
 
-      context 'with volume_boot' do
+      context 'with volume_boot creating volume' do
+        it 'create bootable volume and returns new instance id' do
+          stub_request(:post, 'http://nova/a1b2c3/servers')
+            .with(
+              body: '{"server":{"name":"inst","block_device_mapping_v2":[{"boot_index":"0","volume_size":"10","uuid":"image_id",'\
+              '"device_name":"vda","source_type":"image","destination_type":"volume","delete_on_termination":"false"}],'\
+              '"flavorRef":"flav","key_name":"key"}}',
+              headers:
+              {
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'X-Auth-Token' => '123456'
+              })
+            .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
+
+          instance_id = @nova_client.create_server(env,
+                                                   name: 'inst',
+                                                   image_ref: nil,
+                                                   volume_boot: { image: 'image_id', device: 'vda', size: '10',
+                                                                  delete_on_destroy: 'false' },
+                                                   flavor_ref: 'flav',
+                                                   keypair: 'key')
+          expect(instance_id).to eq('o1o2o3')
+        end
+      end
+
+      context 'with volume_boot id' do
         it 'returns new instance id' do
           stub_request(:post, 'http://nova/a1b2c3/servers')
             .with(
-              body: '{"server":{"name":"inst","block_device_mapping":[{"volume_id":"vol","device_name":"vda"}],"flavorRef":"flav","key_name":"key"}}',
+              body: '{"server":{"name":"inst","block_device_mapping":[{"volume_id":"vol","device_name":"vda"}],'\
+              '"flavorRef":"flav","key_name":"key"}}',
               headers:
-                  {
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                    'X-Auth-Token' => '123456'
-                  })
+              {
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'X-Auth-Token' => '123456'
+              })
             .to_return(status: 202, body: '{ "server": { "id": "o1o2o3" } }')
 
-          instance_id = @nova_client.create_server(env, name: 'inst', volume_boot: { id: 'vol', device: 'vda' }, flavor_ref: 'flav', keypair: 'key')
-
+          instance_id = @nova_client.create_server(env,
+                                                   name: 'inst',
+                                                   volume_boot: { id: 'vol', device: 'vda' },
+                                                   flavor_ref: 'flav',
+                                                   keypair: 'key')
           expect(instance_id).to eq('o1o2o3')
         end
       end

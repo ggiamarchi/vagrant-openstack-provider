@@ -167,6 +167,9 @@ en:
       no_matching_image: |-
         No matching image was found! Please check your image setting to
         make sure you have a valid image chosen.
+      conflict_boot_volume: |-
+        When booting from an existing volume it is not authorized to specify in your Vagrantfile either 'image' or 'size' or 'delete_on_destroy'.
+        When booting from a newly creating volume it is not authorized to specify in your Vagrantfile either 'id' or 'name'.
       sync_method_error: |-
         Value '%{sync_method_value}' is not allowed for 'sync_method' configuration parameter. Valid values are 'rsync' and 'none'
       rsync_error: |-
