@@ -1,7 +1,7 @@
 en:
   vagrant_openstack:
     global_error: |-
-      An unknow error happened in Vagrant OpenStack provider
+      An unknown error happened in Vagrant OpenStack provider
 
       To easily debug what happened, we recommend to set the environment
       variable VAGRANT_OPENSTACK_LOG to debug
