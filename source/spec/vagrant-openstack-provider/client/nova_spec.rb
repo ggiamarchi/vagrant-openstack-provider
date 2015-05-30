@@ -148,7 +148,7 @@ describe VagrantPlugins::Openstack::NovaClient do
             .with(
               body: '{"server":{"name":"inst","imageRef":"img","flavorRef":"flav","key_name":"key",'\
               '"security_groups":[{"name":"default"}],"user_data":"dXNlcl9kYXRhX3Rlc3Q=\n","metadata":"metadata_test"},'\
-              '"scheduler_hints":"sched_hints_test"}',
+              '"os:scheduler_hints":"sched_hints_test"}',
               headers:
               {
                 'Accept' => 'application/json',
