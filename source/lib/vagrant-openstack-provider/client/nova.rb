@@ -73,7 +73,7 @@ module VagrantPlugins
           s['networks'] = options[:networks] unless options[:networks].nil? || options[:networks].empty?
         end
         object = { server: server }
-        object[:scheduler_hints] = options[:scheduler_hints] unless options[:scheduler_hints].nil?
+        object['os:scheduler_hints'] = options[:scheduler_hints] unless options[:scheduler_hints].nil?
         server = post(env, "#{@session.endpoints[:compute]}/servers", object.to_json)
         JSON.parse(server)['server']['id']
       end
