@@ -1,0 +1,25 @@
+language: ruby
+
+ruby:
+  - 2.0
+  - 2.1
+
+before_install:
+  - gem install bundler -v ${BUNDLER_VERSION}
+  - cd source
+  - sed -i -e "s/\(gem 'vagrant'.*tag. \)'[^']*'\(.*\)/\1'${VAGRANT_VERSION}'\2/" Gemfile
+
+install:
+  - cd source # https://github.com/bazooka-ci/bazooka/issues/251
+  - bundle _${BUNDLER_VERSION}_ install --without debug --retry=3
+
+script:
+  - cd source # https://github.com/bazooka-ci/bazooka/issues/251
+  - bundle _${BUNDLER_VERSION}_ exec rake
+
+env:
+  - VAGRANT_VERSION=v1.4.3
+  # - VAGRANT_VERSION=v1.5.4 See https://github.com/bazooka-ci/bazooka/issues/27#issuecomment-111121272
+  - VAGRANT_VERSION=v1.6.5
+  - VAGRANT_VERSION=v1.7.2
+  - BUNDLER_VERSION=1.6.6
