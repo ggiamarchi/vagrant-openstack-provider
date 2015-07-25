@@ -146,7 +146,9 @@ module VagrantPlugins
       def delete_keypair_if_vagrant(env, server_id)
         instance_exists do
           keyname = get_server_details(env, server_id)['key_name']
-          delete(env, "#{@session.endpoints[:compute]}/os-keypairs/#{keyname}") if keyname.start_with?('vagrant-generated-')
+          if keyname
+            delete(env, "#{@session.endpoints[:compute]}/os-keypairs/#{keyname}") if keyname.start_with?('vagrant-generated-')
+          end
         end
       end
 
