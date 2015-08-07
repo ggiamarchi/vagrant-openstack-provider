@@ -7,6 +7,7 @@ group :development do
   gem 'appraisal', '1.0.0'
   gem 'rubocop', '0.29.0', require: false
   gem 'coveralls', require: false
+  gem 'rspec-its'
 end
 
 group :debug do
