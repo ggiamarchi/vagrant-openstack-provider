@@ -1,3 +1,21 @@
+# 0.7.0 (August, 10, 2015)
+  
+FEATURES:
+
+  - Access to obtained floating IP from provisioner phase [#205](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/205) 
+
+IMPROVEMENTS:
+
+  - Autodetect new version of the provider and provide info message to update [#132](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/132)
+  - Documentation for the `ssh_timeout` option [#230](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/230) 
+
+BUG FIXES:
+
+  - scheduler_hints ignored due to incorrect json tag in create request [#231](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/231) 
+  - delete_keypair_if_vagrant throws exception if key_name is missing [#238](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/238) 
+  - Fix Vagrant 1.4 bug, extra_data attr not found [#211](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/211) 
+  - Add suffix /tokens in auth url if missing [#208](https://github.com/ggiamarchi/vagrant-openstack-provider/pull/208) 
+
 # 0.6.1 (January 30, 2015)
 
 IMPROVEMENTS:
