@@ -63,6 +63,10 @@ module VagrantPlugins
           @ssh_info = {}
         end
       end
+
+      def self.get_ssh_info(env)
+        SSHInfoHolder.instance.ssh_info[env[:machine].id.to_sym]
+      end
     end
   end
 end
