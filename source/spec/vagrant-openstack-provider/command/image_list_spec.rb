@@ -54,7 +54,7 @@ describe VagrantPlugins::Openstack::Command::ImageList do
 
         expect(env[:ui]).to receive(:info).with('
 +------+--------+
-| Id   | Name   |
+| ID   | Name   |
 +------+--------+
 | 0001 | ubuntu |
 | 0002 | centos |
@@ -82,7 +82,7 @@ describe VagrantPlugins::Openstack::Command::ImageList do
 
         expect(env[:ui]).to receive(:info).with('
 +------+--------+------------+-----------+--------------+---------------+
-| Id   | Name   | Visibility | Size (Mo) | Min RAM (Go) | Min Disk (Go) |
+| ID   | Name   | Visibility | Size (Mo) | Min RAM (Go) | Min Disk (Go) |
 +------+--------+------------+-----------+--------------+---------------+
 | 0001 | ubuntu | public     | 700       | 1            | 10            |
 | 0002 | centos | private    | 800       | 2            | 20            |

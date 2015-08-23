@@ -326,7 +326,7 @@ For instance `vagrant openstack image-list` lists images available in Glance.
 $ vagrant openstack image-list
 
 +--------------------------------------+---------------------+
-| Id                                   | Name                |
+| ID                                   | Name                |
 +--------------------------------------+---------------------+
 | 594f1287-9de3-4f3e-b82a-6ad223943ab2 | ubuntu-12.04_x86_64 |
 | 3e5aca4a-bf12-4721-87df-7bc8fd1fc36c | debian7_x86_64      |

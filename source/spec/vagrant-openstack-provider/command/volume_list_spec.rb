@@ -28,7 +28,7 @@ describe VagrantPlugins::Openstack::Command::VolumeList do
       cinder.should_receive(:get_all_volumes).with(env)
       expect(env[:ui]).to receive(:info).with('
 +-----+--------+-----------+-----------+-------------------------------------+
-| Id  | Name   | Size (Go) | Status    | Attachment (instance id and device) |
+| ID  | Name   | Size (Go) | Status    | Attachment (instance ID and device) |
 +-----+--------+-----------+-----------+-------------------------------------+
 | 987 | vol-01 | 2         | available |                                     |
 | 654 | vol-02 | 4         | in-use    | inst-01 (/dev/vdc)                  |

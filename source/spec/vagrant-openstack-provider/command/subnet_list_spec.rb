@@ -32,7 +32,7 @@ describe VagrantPlugins::Openstack::Command::SubnetList do
 
       expect(env[:ui]).to receive(:info).with('
 +-----------+----------+------------------+-------+------------+
-| Id        | Name     | CIDR             | DHCP  | Network Id |
+| ID        | Name     | CIDR             | DHCP  | Network ID |
 +-----------+----------+------------------+-------+------------+
 | subnet-01 | Subnet 1 | 192.168.1.0/24   | true  | net-01     |
 | subnet-02 | Subnet 2 | 192.168.2.0/24   | false | net-01     |

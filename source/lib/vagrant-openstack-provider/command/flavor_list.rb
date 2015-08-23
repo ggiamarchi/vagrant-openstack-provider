@@ -16,7 +16,7 @@ module VagrantPlugins
           flavors.each do |f|
             rows << [f.id, f.name, f.vcpus, f.ram, f.disk]
           end
-          display_table(env, ['Id', 'Name', 'vCPU', 'RAM (Mo)', 'Disk size (Go)'], rows)
+          display_table(env, ['ID', 'Name', 'vCPU', 'RAM (Mo)', 'Disk size (Go)'], rows)
         end
       end
     end

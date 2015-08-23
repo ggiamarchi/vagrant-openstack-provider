@@ -62,7 +62,7 @@ describe VagrantPlugins::Openstack::Command::FloatingIpList do
 
       expect(env[:ui]).to receive(:info).with('
 +----+------------+-------+-------------+
-| Id | IP         | Pool  | Instance id |
+| ID | IP         | Pool  | Instance ID |
 +----+------------+-------+-------------+
 | 1  | 10.10.10.1 | pool1 |             |
 | 2  | 10.10.10.2 | pool2 | inst001     |

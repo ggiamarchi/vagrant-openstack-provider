@@ -26,7 +26,7 @@ module VagrantPlugins
           list_stack_files(env).each do |stack|
             env[:ui].info(I18n.t('vagrant_openstack.delete_stack'))
             env[:ui].info(" -- Stack Name : #{stack[:name]}")
-            env[:ui].info(" -- Stack Id   : #{stack[:id]}")
+            env[:ui].info(" -- Stack ID   : #{stack[:id]}")
 
             heat.delete_stack(env, stack[:name], stack[:id])
 

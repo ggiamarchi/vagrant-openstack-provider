@@ -31,7 +31,7 @@ describe VagrantPlugins::Openstack::Command::FlavorList do
 
       expect(env[:ui]).to receive(:info).with('
 +-----+-------+------+----------+----------------+
-| Id  | Name  | vCPU | RAM (Mo) | Disk size (Go) |
+| ID  | Name  | vCPU | RAM (Mo) | Disk size (Go) |
 +-----+-------+------+----------+----------------+
 | 001 | small | 1    | 1024     | 10             |
 | 002 | large | 4    | 4096     | 100            |

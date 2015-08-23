@@ -14,7 +14,7 @@ module VagrantPlugins
           env[:openstack_client].neutron.get_subnets(env).each do |subnet|
             rows << [subnet.id, subnet.name, subnet.cidr, subnet.enable_dhcp, subnet.network_id]
           end
-          display_table(env, ['Id', 'Name', 'CIDR', 'DHCP', 'Network Id'], rows)
+          display_table(env, ['ID', 'Name', 'CIDR', 'DHCP', 'Network ID'], rows)
         end
       end
     end
