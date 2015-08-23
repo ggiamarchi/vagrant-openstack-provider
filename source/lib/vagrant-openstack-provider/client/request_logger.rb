@@ -5,7 +5,7 @@ module VagrantPlugins
   module Openstack
     module HttpUtils
       module RequestLogger
-        def log_request(method, url, body = nil, headers)
+        def log_request(method, url, headers, body = nil)
           @logger.debug "request  => method  : #{method}"
           @logger.debug "request  => url     : #{url}"
           @logger.debug "request  => headers : #{headers}"

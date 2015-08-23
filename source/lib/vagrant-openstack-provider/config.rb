@@ -335,7 +335,7 @@ module VagrantPlugins
         errors << I18n.t('vagrant_openstack.config.password_required') if @password.nil? || @password.empty?
         errors << I18n.t('vagrant_openstack.config.username_required') if @username.nil? || @username.empty?
         errors << I18n.t('vagrant_openstack.config.tenant_name_required') if @tenant_name.nil? || @tenant_name.empty?
-        errors << I18n.t('vagrant_openstack.config.invalid_endpoint_type') unless  %w(publicURL adminURL internalURL).include?(@endpoint_type)
+        errors << I18n.t('vagrant_openstack.config.invalid_endpoint_type') unless %w(publicURL adminURL internalURL).include?(@endpoint_type)
 
         validate_ssh_username(machine, errors)
         validate_stack_config(errors)

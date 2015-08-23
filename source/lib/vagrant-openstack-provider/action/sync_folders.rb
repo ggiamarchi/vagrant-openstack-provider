@@ -63,7 +63,7 @@ module VagrantPlugins
 
             # Make sure there is a trailing slash on the host path to
             # avoid creating an additional directory with rsync
-            hostpath = "#{hostpath}/" if hostpath !~ /\/$/
+            hostpath = "#{hostpath}/" if hostpath !~ %r{/$}
 
             # If on Windows, modify the path to work with cygwin rsync
             if @host_os =~ /mswin|mingw|cygwin/
@@ -119,7 +119,7 @@ module VagrantPlugins
         end
 
         def add_cygdrive_prefix_to_path(hostpath)
-          hostpath.downcase.sub(/^([a-z]):\//) do
+          hostpath.downcase.sub(%r{^([a-z]):/}) do
             "/cygdrive/#{Regexp.last_match[1]}/"
           end
         end
