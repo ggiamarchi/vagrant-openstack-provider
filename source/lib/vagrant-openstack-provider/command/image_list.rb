@@ -11,7 +11,7 @@ module VagrantPlugins
         def cmd(name, argv, env)
           fail Errors::NoArgRequiredForCommand, cmd: name unless argv.size == 0
           rows = []
-          headers = %w(Id Name)
+          headers = %w(ID Name)
           if env[:openstack_client].session.endpoints.key? :image
             images = env[:openstack_client].glance.get_all_images(env)
             images.each { |i| rows << [i.id, i.name, i.visibility, i.size.to_i / 1024 / 1024, i.min_ram, i.min_disk] }

@@ -17,7 +17,7 @@ module VagrantPlugins
             attachment = "#{v.instance_id} (#{v.device})" unless v.instance_id.nil?
             rows << [v.id, v.name, v.size, v.status, attachment]
           end
-          display_table(env, ['Id', 'Name', 'Size (Go)', 'Status', 'Attachment (instance id and device)'], rows)
+          display_table(env, ['ID', 'Name', 'Size (Go)', 'Status', 'Attachment (instance ID and device)'], rows)
         end
       end
     end

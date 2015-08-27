@@ -38,7 +38,7 @@ describe VagrantPlugins::Openstack::Command::NetworkList do
 
       expect(env[:ui]).to receive(:info).with('
 +--------+----------+
-| Id     | Name     |
+| ID     | Name     |
 +--------+----------+
 | net-01 | internal |
 | net-02 | external |
@@ -52,7 +52,7 @@ describe VagrantPlugins::Openstack::Command::NetworkList do
 
       expect(env[:ui]).to receive(:info).with('
 +--------+----------+
-| Id     | Name     |
+| ID     | Name     |
 +--------+----------+
 | pub-01 | public   |
 | net-01 | internal |

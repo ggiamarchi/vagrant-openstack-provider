@@ -24,7 +24,7 @@ module VagrantPlugins
           floating_ips.each do |floating_ip|
             rows << [floating_ip['id'], floating_ip['ip'], floating_ip['pool'], floating_ip['instance_id']]
           end
-          display_table(env, ['Id', 'IP', 'Pool', 'Instance id'], rows)
+          display_table(env, ['ID', 'IP', 'Pool', 'Instance ID'], rows)
         end
       end
     end

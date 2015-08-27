@@ -9,7 +9,7 @@ module VagrantPlugins
           items.each do |item|
             rows << [item.id, item.name]
           end
-          display_table(env, %w(Id Name), rows)
+          display_table(env, %w(ID Name), rows)
         end
 
         def display_table(env, headers, rows)
