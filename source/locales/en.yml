@@ -23,7 +23,7 @@ en:
           $ vagrant plugin update vagrant-openstack-provider
     version_unstable: |-
       You're not running a stable version of the 'vagrant-openstack-provider' plugin.
-      Unless you are either developing on vagrant or have deliberatly installed a not
+      Unless you are either developing on vagrant or have deliberately installed a not
       stable version, you should uninstall it an install the latest stable version
       running commands :
 
@@ -173,14 +173,14 @@ en:
       sync_method_error: |-
         Value '%{sync_method_value}' is not allowed for 'sync_method' configuration parameter. Valid values are 'rsync' and 'none'
       rsync_error: |-
-        There was an error when attemping to rsync a share folder.
+        There was an error when attempting to rsync a share folder.
         Please inspect the error message below for more info.
 
         Host path: %{hostpath}
         Guest path: %{guestpath}
         Error: %{stderr}
       ssh_unavailble: |-
-        SSH server anavailable on instance %{host}. You should maybe increase the timeout value which currently is %{timeout} second(s).
+        SSH server unavailable on instance %{host}. You should maybe increase the timeout value which currently is %{timeout} second(s).
       no_arg_required_for_command: |-
         Command '%{cmd}' does not required any argument.
       unrecognized_arg_for_command: |-
