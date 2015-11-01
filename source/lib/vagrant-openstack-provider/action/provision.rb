@@ -31,7 +31,7 @@ module VagrantPlugins
         end
 
         def run_provisioner(env)
-          if env[:provisioner].class == VagrantPlugins::Shell::Provisioner
+          if env[:provisioner].is_a?(Vagrant.plugin('2').manager.provisioners[:shell])
             handle_shell_meta_args(env)
           end
           env[:provisioner].provision
