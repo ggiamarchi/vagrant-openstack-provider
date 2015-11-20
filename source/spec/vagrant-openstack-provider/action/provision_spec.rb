@@ -17,17 +17,6 @@ class FakeShellProvisioner < FakeProvisioner
   end
 end
 
-#
-# Monkeypatch the VagrantPlugins::Shell module
-# to enabled using an FakeShellProvisioner in
-# place of a the real shell provisioner class
-#
-module VagrantPlugins
-  module Shell
-    Provisioner = FakeShellProvisioner
-  end
-end
-
 describe VagrantPlugins::Openstack::Action::ProvisionWrapper do
   let(:app) do
     double
@@ -38,6 +27,8 @@ describe VagrantPlugins::Openstack::Action::ProvisionWrapper do
   end
 
   before :each do
+    # Stub lookup for provisioners and return a hash containing the test mock.
+    allow(Vagrant.plugin('2').manager).to receive(:provisioners).and_return(shell: FakeShellProvisioner)
     @action = ProvisionWrapper.new(app, nil)
   end
 
@@ -57,6 +48,8 @@ describe VagrantPlugins::Openstack::Action::InternalProvisionWrapper do
   end
 
   before :each do
+    # Stub lookup for provisioners and return a hash containing the test mock.
+    allow(Vagrant.plugin('2').manager).to receive(:provisioners).and_return(shell: FakeShellProvisioner)
     @action = InternalProvisionWrapper.new(nil, env)
   end
 
