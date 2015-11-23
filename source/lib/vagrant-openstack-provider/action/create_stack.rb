@@ -13,12 +13,19 @@ module VagrantPlugins
   module Openstack
     module Action
       class CreateStack < AbstractAction
+        @@is_created = false
+
         def initialize(app, _env)
           @app = app
           @logger = Log4r::Logger.new('vagrant_openstack::action::create_stack')
         end
 
         def execute(env)
+          if @@is_created
+            @app.call(env)
+            return
+          end
+
           @logger.info 'Start create stacks action'
 
           config = env[:machine].provider_config
@@ -43,6 +50,7 @@ module VagrantPlugins
             waiting_for_stack_to_be_created(env, stack[:name], stack_id)
           end unless config.stacks.nil?
 
+          @@is_created = true
           @app.call(env)
         end
 
