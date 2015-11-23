@@ -13,6 +13,9 @@ Style/Encoding:
 Style/Documentation:
   Enabled: false
 
+Style/ClassVars:
+  Enabled: false
+
 Metrics/ClassLength:
   Max: 300
 
