@@ -9,7 +9,7 @@ module VagrantPlugins
         addresses = env[:openstack_client].nova.get_server_details(env, env[:machine].id)['addresses']
         addresses.each do |_, network|
           network.each do |network_detail|
-            return network_detail['addr'] if network_detail['OS-EXT-IPS:type'] == 'floating'
+            return network_detail['addr'] if network_detail['OS-EXT-IPS:type']  =~ /(^floating$|^fixed$)/
           end
         end
         fail Errors::UnableToResolveIP if addresses.size == 0
