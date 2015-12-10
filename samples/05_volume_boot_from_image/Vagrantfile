@@ -1,0 +1,22 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure('2') do |config|
+
+  config.ssh.username = ENV['OS_SSH_USERNAME']
+
+  config.vm.provider :openstack do |os|
+    os.server_name           = 'boot-volume-from-image'
+    os.openstack_auth_url    = ENV['OS_AUTH_URL']
+    os.tenant_name           = ENV['OS_TENANT_NAME']
+    os.username              = ENV['OS_USERNAME']
+    os.password              = ENV['OS_PASSWORD']
+    os.region                = ENV['OS_REGION_NAME']
+    os.floating_ip_pool      = ENV['OS_FLOATING_IP_POOL']
+    os.flavor                = ENV['OS_FLAVOR']
+    os.networks             << ENV['OS_NETWORK']
+    os.volume_boot           = { image: ENV['OS_IMAGE'],
+                                 size:  15,
+                                 delete_on_destroy: true }
+  end
+end
