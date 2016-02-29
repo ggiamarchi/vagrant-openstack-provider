@@ -82,6 +82,15 @@ module VagrantPlugins
               incls << incl
             end
 
+            # Create ssh params for rsync
+            # we need them as one string because rsync -e expects one string
+            ssh_params = [
+              "ssh -p #{ssh_info[:port]}",
+              '-o StrictHostKeyChecking=no',
+              '-o UserKnownHostsFile=/dev/null',
+              '-o IdentitiesOnly=yes',
+              "#{ssh_key_options(ssh_info)}"].join(' ')
+
             # Rsync over to the guest path using the SSH info. add
             # .hg/ and .git/ to exclude list as that isn't covered in
             # --cvs-exclude
@@ -92,7 +101,7 @@ module VagrantPlugins
               '--exclude', '.git/',
               '--chmod', 'ugo=rwX',
               *includes,
-              '-e', "ssh -p #{ssh_info[:port]} -o StrictHostKeyChecking=no #{ssh_key_options(ssh_info)}",
+              '-e', ssh_params,
               hostpath,
               "#{ssh_info[:username]}@#{ssh_info[:host]}:#{guestpath}"]
             command.compact!

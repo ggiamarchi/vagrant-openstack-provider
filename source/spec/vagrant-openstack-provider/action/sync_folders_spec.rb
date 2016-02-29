@@ -111,7 +111,7 @@ describe VagrantPlugins::Openstack::Action::SyncFolders do
                             '--chmod',
                             'ugo=rwX',
                             '-e',
-                            "ssh -p 23 -o StrictHostKeyChecking=no -i '/tmp/key.pem' ",
+                            "ssh -p 23 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes -i '/tmp/key.pem' ",
                             '/home/john/vagrant/',
                             'user@1.2.3.4:/vagrant',
                             '--exclude-from',
