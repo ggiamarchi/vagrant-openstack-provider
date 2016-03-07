@@ -1,9 +1,5 @@
 language: ruby
 
-rvm:
-  - 2.0.0
-  - 2.1.0
-
 before_install:
   - gem install bundler -v ${BUNDLER_VERSION}
   - cd source
@@ -15,10 +11,14 @@ install:
 script:
   - bundle _${BUNDLER_VERSION}_ exec rake
 
-env:
-  matrix:
-    - VAGRANT_VERSION=v1.6.5 BUNDLER_VERSION=1.6.6
-    - VAGRANT_VERSION=v1.7.2 BUNDLER_VERSION=1.6.6
-    - VAGRANT_VERSION=v1.8.1 BUNDLER_VERSION=1.6.6
+matrix:
+  include:
+    - rvm: 2.0.0
+      env: VAGRANT_VERSION=v1.6.5 BUNDLER_VERSION=1.6.6
+    - rvm: 2.0.0
+      env: VAGRANT_VERSION=v1.7.4 BUNDLER_VERSION=1.10.5
+
+    - rvm: 2.2.3
+      env: VAGRANT_VERSION=v1.8.1 BUNDLER_VERSION=1.10.6
 
 sudo: false
