@@ -247,7 +247,6 @@ If neither `keypair_name` nor `public_key_path` are set, vagrant will generate a
    We recommend to use this option only to create private VMs that won't be accessed directly from vagrant. By contrast,
    others commands like `vagrant ssh` or `vagrant provision` is run normally but it is likely to fail. Default value is
    `false`.
-* `ssh_timeout` - Time to wait in seconds for the server to be accessible once its status is `ACTIVE`. Default is 180.
 
 ### Synced folders
 

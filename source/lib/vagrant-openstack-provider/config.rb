@@ -73,8 +73,9 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :ssh_username
 
-      # The SSH timeout use after server creation. If server startup is too long
-      # the timeout value can be increase with this variable. Default is 60 seconds
+      # The SSH timeout use after server creation.
+      #
+      # Deprecated. Use config.vm.boot_timeout instead.
       #
       # @return [Integer]
       attr_accessor :ssh_timeout
@@ -309,9 +310,10 @@ module VagrantPlugins
         @ssh_disabled = false if @ssh_disabled == UNSET_VALUE
 
         # The SSH values by default are nil, and the top-level config
-        # `config.ssh` values are used.
+        # `config.ssh` and `config.vm.boot_timeout` values are used.
         @ssh_username = nil if @ssh_username == UNSET_VALUE
-        @ssh_timeout = 180 if @ssh_timeout == UNSET_VALUE
+        @ssh_timeout = nil if @ssh_timeout == UNSET_VALUE
+
         @server_create_timeout = 200 if @server_create_timeout == UNSET_VALUE
         @server_active_timeout = 200 if @server_active_timeout == UNSET_VALUE
         @server_stop_timeout = 200 if @server_stop_timeout == UNSET_VALUE
