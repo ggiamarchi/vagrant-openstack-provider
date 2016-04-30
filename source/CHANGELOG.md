@@ -1,4 +1,27 @@
-# 0.7.0 (August, 10, 2015)
+# 0.7.2 (May 1, 2016)
+
+IMPROVEMENTS:
+
+  - Allow status and ssh to run without a lock #282
+  - Switch to standard WaitForCommunicator middleware #281
+
+BUG FIXES:
+
+  - Run provisioner cleanup when destroying VMs #272
+  - Windows host provisioning using Winrm #264
+  - Use only provided ssh key and don't touch the known_hosts #259
+  - Fix hooks for provisioners #248, #249, #28
+  - Support standard option config.vm.boot_timeout #227
+
+# 0.7.1 (February 19, 2016)
+
+BUG FIXES:
+
+  - Fix dependency to make it work with Vagrant 1.8 #265, #266 , #268
+  - Fix heat stack create when multiple machines are declared #260
+  - Fix regression, vagrant provision was broken #240
+
+# 0.7.0 (August 10, 2015)
   
 FEATURES:
 
