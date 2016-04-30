@@ -132,6 +132,10 @@ en:
         standard vagrant configuration option `config.ssh.username` instead
       ssh_username_required: |-
         vagrant standard configuration option `ssh.username` is required
+      ssh_timeout_deprecated: |-
+        ssh_timeout provider config is deprecated for vagrant-openstack provider.
+        If you are using it, it will continue to work but we recommend switching
+        to the standard vagrant configuration option `config.vm.boot_timeout`.
       invalid_value_for_parameter: |-
         Invalid value '%{value}' for parameter '%{parameter}'
 

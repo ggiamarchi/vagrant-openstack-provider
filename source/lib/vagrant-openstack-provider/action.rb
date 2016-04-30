@@ -105,7 +105,16 @@ module VagrantPlugins
               b2.use CreateStack
               b2.use CreateServer
               b2.use Message, I18n.t('vagrant_openstack.ssh_disabled_provisioning') if ssh_disabled
-              b2.use WaitForServerToBeAccessible unless ssh_disabled
+              unless ssh_disabled
+                # Handle legacy ssh_timeout option
+                timeout = env[:machine].provider_config.ssh_timeout
+                unless timeout.nil?
+                  env[:machine].ui.warn I18n.t('vagrant_openstack.config.ssh_timeout_deprecated')
+                  env[:machine].config.vm.boot_timeout = timeout
+                end
+
+                b2.use WaitForCommunicator
+              end
             when :shutoff
               b2.use StartServer
             when :suspended
@@ -216,7 +225,6 @@ module VagrantPlugins
       autoload :ProvisionWrapper, action_root.join('provision')
       autoload :WaitForServerToStop, action_root.join('wait_stop')
       autoload :WaitForServerToBeActive, action_root.join('wait_active')
-      autoload :WaitForServerToBeAccessible, action_root.join('wait_accessible')
 
       private
 

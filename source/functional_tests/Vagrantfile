@@ -4,6 +4,7 @@ Vagrant.configure('2') do |config|
 
   config.vm.box = 'openstack'
   config.vm.box_url = 'https://github.com/ggiamarchi/vagrant-openstack/raw/master/source/dummy.box'
+  config.vm.boot_timeout = ENV['OS_SSH_TIMEOUT'].to_i
 
   config.ssh.private_key_path = ENV['OS_KEYPAIR_PRIVATE_KEY']
   config.ssh.pty = true
@@ -16,7 +17,6 @@ Vagrant.configure('2') do |config|
     os.openstack_compute_url  = ENV['OS_COMPUTE_URL']
     os.openstack_network_url  = ENV['OS_NETWORK_URL']
     os.tenant_name            = ENV['OS_TENANT_NAME']
-    os.ssh_timeout            = ENV['OS_SSH_TIMEOUT'].to_i
     os.sync_method            = ENV['OS_SYNC_METHOD']
     os.flavor                 = ENV['OS_FLAVOR']
     os.image                  = ENV['OS_IMAGE']
