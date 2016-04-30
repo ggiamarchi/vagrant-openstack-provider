@@ -195,6 +195,10 @@ module VagrantPlugins
       # @return [HttpConfig]
       attr_accessor :http
 
+      #
+      # @return [Boolean]
+      attr_accessor :meta_args_support
+
       def initialize
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
@@ -236,6 +240,7 @@ module VagrantPlugins
         @server_delete_timeout = UNSET_VALUE
         @stack_create_timeout = UNSET_VALUE
         @stack_delete_timeout = UNSET_VALUE
+        @meta_args_support = UNSET_VALUE
         @http = HttpConfig.new
       end
 
@@ -320,6 +325,7 @@ module VagrantPlugins
         @server_delete_timeout = 200 if @server_delete_timeout == UNSET_VALUE
         @stack_create_timeout = 200 if @stack_create_timeout == UNSET_VALUE
         @stack_delete_timeout = 200 if @stack_delete_timeout == UNSET_VALUE
+        @meta_args_support = false if @meta_args_support == UNSET_VALUE
         @networks = nil if @networks.empty?
         @volumes = nil if @volumes.empty?
         @stacks = nil if @stacks.empty?

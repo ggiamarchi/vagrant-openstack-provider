@@ -275,6 +275,30 @@ chef, and puppet) to work!
 * `http.open_timeout` - Open timeout for any HTTP request. Default is `60`
 * `http.read_timeout` - Read timeout for any HTTP request. Default is `30`
 
+### Provisioners meta-args
+
+We call meta-args, dynamic arguments automatically injected by the vagrant OpenStack provider as
+a provisioner argument. The notation for a meta-arg is its name surrounded by double `@` character.
+
+The current implementation supports only shell provisioner.
+
+* `meta_args_support` - Whether meta-args injection is activated or not. Default is `false`
+
+__Available meta-args__
+
+* `@@ssh_ip@@` - The IP used by Vagrant to SSH into the machine
+
+__Usage example__
+
+```ruby
+config.vm.provision "shell", inline: 'echo "$1 : $2" > ~/provision', args: ['IP', '@@ssh_ip@@']
+```
+
+__N.B.__
+> Activate meta-args support causes Vagrant to wrap the built-in provisioning middleware into a custom
+  one provided by the OpenStack provider. As a consequence, hooks declared on the built-in provisioning
+  middleware will not be applied (see [#248](https://github.com/ggiamarchi/vagrant-openstack-provider/issues/248))
+
 
 ## Vagrant standard configuration
 
