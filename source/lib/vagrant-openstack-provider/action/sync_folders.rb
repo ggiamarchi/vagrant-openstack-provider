@@ -91,14 +91,9 @@ module VagrantPlugins
               '-o IdentitiesOnly=yes',
               "#{ssh_key_options(ssh_info)}"].join(' ')
 
-            # Rsync over to the guest path using the SSH info. add
-            # .hg/ and .git/ to exclude list as that isn't covered in
-            # --cvs-exclude
+            # Rsync over to the guest path using the SSH info.
             command = [
               'rsync', '--verbose', '--archive', '-z',
-              '--cvs-exclude',
-              '--exclude', '.hg/',
-              '--exclude', '.git/',
               '--chmod', 'ugo=rwX',
               *includes,
               '-e', ssh_params,
