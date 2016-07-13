@@ -112,6 +112,12 @@ module VagrantPlugins
       # @return [Array]
       attr_accessor :rsync_ignore_files
 
+      # Sync folder boolean flag.  If set, rsync will be invoked with the --cvs-exclude.
+      #
+      # @return [Boolean]
+      attr_accessor :rsync_cvs_exclude
+
+      attr_accessor :rsync_ignore_files
       # Network list the VM will be connected to
       #
       # @return [Array]
@@ -217,6 +223,7 @@ module VagrantPlugins
         @username = UNSET_VALUE
         @rsync_includes = []
         @rsync_ignore_files = []
+        @rsync_cvs_exclude = nil
         @keypair_name = UNSET_VALUE
         @ssh_username = UNSET_VALUE
         @ssh_timeout = UNSET_VALUE

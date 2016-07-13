@@ -318,6 +318,8 @@ If `config.vm.synced_folder` is not specified, the provider will use rsync by de
 
 To reduce load time or reduce data transfer, you can specify rsync exclusion patterns, e.g.:
   `config.vm.synced_folder '.', '/vagrant', type: 'rsync', rsync__excludes: ['.git','.hg','/*/tags']`
+  or
+  `config.vm.provider.rsync_cvs_exclude = true`
 
 See `man rsync` for more information on rsync exclusion patterns.
 

@@ -101,6 +101,8 @@ module VagrantPlugins
               "#{ssh_info[:username]}@#{ssh_info[:host]}:#{guestpath}"]
             command.compact!
 
+            command << '--cvs-exclude' if env[:machine].provider_config.rsync_cvs_exclude
+
             # during rsync, ignore files specified in list of files containing exclude patterns
             # ex: rsync_ignore_files = ['.hgignore', '.gitignore']
             ignore_files = []
