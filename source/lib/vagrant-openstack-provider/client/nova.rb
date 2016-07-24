@@ -47,6 +47,17 @@ module VagrantPlugins
         JSON.parse(images_json)['images'].map { |fl| Image.new(fl['id'], fl['name'], 'unknown') }
       end
 
+      # Get detailed information about an image
+      #
+      # @param env [Hash] Vagrant action environment
+      # @param image_id [String] Image UUID
+      #
+      # @return [Hash]
+      def get_image_details(env, image_id)
+        image_json = get(env, "#{@session.endpoints[:compute]}/images/#{image_id}")
+        JSON.parse(image_json)['image']
+      end
+
       def create_server(env, options)
         server = {}.tap do |s|
           s['name'] = options[:name]
@@ -183,6 +194,22 @@ module VagrantPlugins
       # @return [Array<VagrantPlugins::Openstack::Domain::Image>]
       def list_snapshots(env, server_id)
         get_all_images(env, params: { server: server_id })
+      end
+
+      # Create a named snapsot for a given VM
+      #
+      # @param env [Hash] Vagrant action environment
+      # @param server_id [String] Server UUID
+      # @param snapshot_name [String]
+      #
+      # @return [void]
+      def create_snapshot(env, server_id, snapshot_name)
+        instance_exists do
+          post(
+            env,
+            "#{@session.endpoints[:compute]}/servers/#{server_id}/action",
+            { createImage: { name: snapshot_name } }.to_json)
+        end
       end
 
       private
