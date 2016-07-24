@@ -212,6 +212,18 @@ module VagrantPlugins
         end
       end
 
+      # Delete an identified snapshot
+      #
+      # @param env [Hash] Vagrant action environment
+      # @param snapshot_id [String] Snapshot UUID
+      #
+      # @return [void]
+      def delete_snapshot(env, snapshot_id)
+        delete(
+          env,
+          "#{@session.endpoints[:compute]}/images/#{snapshot_id}")
+      end
+
       private
 
       VM_STATES =
