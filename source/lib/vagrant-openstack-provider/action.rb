@@ -264,6 +264,30 @@ module VagrantPlugins
         end
       end
 
+      def self.action_snapshot_restore
+        new_builder.tap do |b|
+          b.use ConfigValidate
+          b.use ConnectOpenstack
+          b.use Call, IsState, :not_created do |env, b2|
+            if env[:result]
+              b2.use Message, I18n.t('vagrant_openstack.not_created')
+              next
+            end
+
+            b2.use SnapshotRestore
+            b2.use WaitForServerToBeActive
+            b2.use WaitForCommunicator
+
+            b2.use Call, IsEnvSet, :snapshot_delete do |env2, b3|
+              # Used by vagrant push/pop
+              b3.use action_snapshot_delete if env2[:result]
+            end
+
+            b2.use action_provision
+          end
+        end
+      end
+
       def self.action_snapshot_save
         new_builder.tap do |b|
           b.use ConfigValidate
@@ -303,6 +327,7 @@ module VagrantPlugins
       if Gem::Version.new(Vagrant::VERSION) >= Gem::Version.new('1.8.0')
       autoload :SnapshotDelete, action_root.join('snapshot_delete')
       autoload :SnapshotList, action_root.join('snapshot_list')
+      autoload :SnapshotRestore, action_root.join('snapshot_restore')
       autoload :SnapshotSave, action_root.join('snapshot_save')
       end
       # rubocop:enable IndentationWidth

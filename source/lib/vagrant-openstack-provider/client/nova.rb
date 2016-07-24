@@ -224,6 +224,22 @@ module VagrantPlugins
           "#{@session.endpoints[:compute]}/images/#{snapshot_id}")
       end
 
+      # Restore a VM to an identified snapshot
+      #
+      # @param env [Hash] Vagrant action environment
+      # @param server_id [String] Server UUID
+      # @param snapshot_id [String] Snapshot UUID
+      #
+      # @return [void]
+      def restore_snapshot(env, server_id, snapshot_id)
+        instance_exists do
+          post(
+            env,
+            "#{@session.endpoints[:compute]}/servers/#{server_id}/action",
+            { rebuild: { imageRef: snapshot_id } }.to_json)
+        end
+      end
+
       private
 
       VM_STATES =
