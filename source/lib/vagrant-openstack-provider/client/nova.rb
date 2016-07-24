@@ -42,8 +42,8 @@ module VagrantPlugins
         FloatingIP.new(floating_ip['ip'], floating_ip['pool'], floating_ip['instance_id'])
       end
 
-      def get_all_images(env)
-        images_json = get(env, "#{@session.endpoints[:compute]}/images")
+      def get_all_images(env, headers = {})
+        images_json = get(env, "#{@session.endpoints[:compute]}/images", headers)
         JSON.parse(images_json)['images'].map { |fl| Image.new(fl['id'], fl['name'], 'unknown') }
       end
 
@@ -173,6 +173,16 @@ module VagrantPlugins
                             }.to_json)
           JSON.parse(attachment)['volumeAttachment']
         end
+      end
+
+      # List snapshot images associated with a particular server
+      #
+      # @param env [Hash] Vagrant action environment
+      # @param server_id [String] Server UUID
+      #
+      # @return [Array<VagrantPlugins::Openstack::Domain::Image>]
+      def list_snapshots(env, server_id)
+        get_all_images(env, params: { server: server_id })
       end
 
       private
