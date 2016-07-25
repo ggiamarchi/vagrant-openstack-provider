@@ -4,6 +4,9 @@ gemspec
 
 group :development do
   gem 'vagrant', git: 'https://github.com/mitchellh/vagrant.git', tag: 'v1.8.5'
+  # FIXME: Hack to allow Vagrant v1.6.5 to install for tests. Remove when
+  # support for 1.6.5 is dropped.
+  gem 'rack', '< 2'
   gem 'appraisal', '1.0.0'
   gem 'rubocop', '0.29.0', require: false
   gem 'coveralls', require: false
