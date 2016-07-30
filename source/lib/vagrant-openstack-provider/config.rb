@@ -82,6 +82,8 @@ module VagrantPlugins
 
       # Opt files/directories in to the rsync operation performed by this provider
       #
+      # @deprecated Use standard Vagrant synced folders instead.
+      #
       # @return [Array]
       attr_accessor :rsync_includes
 
@@ -103,11 +105,15 @@ module VagrantPlugins
 
       # Sync folder method. Can be either "rsync" or "none"
       #
+      # @deprecated Use standard Vagrant synced folders instead.
+      #
       # @return [String]
       attr_accessor :sync_method
 
       # Sync folder ignore files. A list of files containing exclude patterns to ignore in the rsync operation
       #  performed by this provider
+      #
+      # @deprecated Use standard Vagrant synced folders instead.
       #
       # @return [Array]
       attr_accessor :rsync_ignore_files
@@ -199,6 +205,20 @@ module VagrantPlugins
       # @return [Boolean]
       attr_accessor :meta_args_support
 
+      # A switch for enabling the legacy synced folders implementation.
+      #
+      # This defaults to false, but is automatically set to true if any of the
+      # legacy synced folder options are used:
+      #
+      #   - {#rsync_includes}
+      #   - {#rsync_ignore_files}
+      #   - {#sync_method}
+      #
+      # @deprecated Use standard Vagrant synced folders instead.
+      #
+      # @return [Boolean]
+      attr_accessor :use_legacy_synced_folders
+
       def initialize
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
@@ -242,6 +262,7 @@ module VagrantPlugins
         @stack_delete_timeout = UNSET_VALUE
         @meta_args_support = UNSET_VALUE
         @http = HttpConfig.new
+        @use_legacy_synced_folders = UNSET_VALUE
       end
 
       def merge(other)
@@ -282,7 +303,7 @@ module VagrantPlugins
         result
       end
 
-      # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
       def finalize!
         @password = nil if @password == UNSET_VALUE
         @openstack_compute_url = nil if @openstack_compute_url == UNSET_VALUE
@@ -299,12 +320,9 @@ module VagrantPlugins
         @tenant_name = nil if @tenant_name == UNSET_VALUE
         @server_name = nil if @server_name == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
-        @rsync_includes = nil if @rsync_includes.empty?
-        @rsync_ignore_files = nil if @rsync_ignore_files.empty?
         @floating_ip = nil if @floating_ip == UNSET_VALUE
         @floating_ip_pool = nil if @floating_ip_pool == UNSET_VALUE
         @floating_ip_pool_always_allocate = false if floating_ip_pool_always_allocate == UNSET_VALUE
-        @sync_method = 'rsync' if @sync_method == UNSET_VALUE
         @keypair_name = nil if @keypair_name == UNSET_VALUE
         @public_key_path = nil if @public_key_path == UNSET_VALUE
         @availability_zone = nil if @availability_zone == UNSET_VALUE
@@ -313,6 +331,27 @@ module VagrantPlugins
         @user_data = nil if @user_data == UNSET_VALUE
         @metadata = nil if @metadata == UNSET_VALUE
         @ssh_disabled = false if @ssh_disabled == UNSET_VALUE
+
+        # The value of use_legacy_synced_folders is used by action chains
+        # to determine which synced folder implementation to run.
+        if @use_legacy_synced_folders == UNSET_VALUE
+          @use_legacy_synced_folders = !(
+            (@rsync_includes.nil? || @rsync_includes.empty?) &&
+            (@rsync_ignore_files.nil? || @rsync_ignore_files.empty?) &&
+            (@sync_method.nil? || @sync_method == UNSET_VALUE))
+        end
+
+        if @use_legacy_synced_folders
+          # Original defaults.
+          @rsync_includes = nil if @rsync_includes.empty?
+          @rsync_ignore_files = nil if @rsync_ignore_files.empty?
+          @sync_method = 'rsync' if @sync_method == UNSET_VALUE
+        else
+          # Disable all sync settings.
+          @rsync_includes = nil
+          @rsync_ignore_files = nil
+          @sync_method = nil
+        end
 
         # The SSH values by default are nil, and the top-level config
         # `config.ssh` and `config.vm.boot_timeout` values are used.
@@ -331,8 +370,10 @@ module VagrantPlugins
         @stacks = nil if @stacks.empty?
         @http.finalize!
       end
-      # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
 
+      #
+      # @deprecated Use standard Vagrant synced folders instead.
       def rsync_include(inc)
         @rsync_includes << inc
       end

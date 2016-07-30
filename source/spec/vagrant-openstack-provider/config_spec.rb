@@ -16,7 +16,10 @@ describe VagrantPlugins::Openstack::Config do
     its(:image)    { should be_nil }
     its(:server_name) { should be_nil }
     its(:username) { should be_nil }
+    its(:use_legacy_synced_folders) { should eq(false) }
     its(:rsync_includes) { should be_nil }
+    its(:rsync_ignore_files) { should be_nil }
+    its(:sync_method) { should be_nil }
     its(:keypair_name) { should be_nil }
     its(:public_key_path) { should be_nil }
     its(:availability_zone) { should be_nil }
@@ -55,11 +58,36 @@ describe VagrantPlugins::Openstack::Config do
       end
     end
 
+    describe 'use_legacy_synced_folders' do
+      it 'should default to true if sync_method is set' do
+        subject.sync_method = 'rsync'
+        subject.finalize!
+
+        expect(subject.use_legacy_synced_folders).to eq(true)
+      end
+
+      it 'should default to true if rsync_includes is non-empty' do
+        subject.rsync_includes = ['some/file']
+        subject.finalize!
+
+        expect(subject.use_legacy_synced_folders).to eq(true)
+      end
+
+      it 'should default to true if rsync_ignore_files is non-empty' do
+        subject.rsync_ignore_files = ['some/file']
+        subject.finalize!
+
+        expect(subject.use_legacy_synced_folders).to eq(true)
+      end
+    end
+
     it 'should not default rsync_includes if overridden' do
       inc = 'core'
       subject.send(:rsync_include, inc)
       subject.finalize!
-      subject.send(:rsync_includes).should include(inc)
+
+      expect(subject.rsync_includes).to include(inc)
+      expect(subject.use_legacy_synced_folders).to eq(true)
     end
   end
 

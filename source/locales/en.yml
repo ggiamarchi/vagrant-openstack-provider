@@ -138,6 +138,12 @@ en:
         to the standard vagrant configuration option `config.vm.boot_timeout`.
       invalid_value_for_parameter: |-
         Invalid value '%{value}' for parameter '%{parameter}'
+      sync_folders_deprecated: |-
+        The following configuration settings are deprecated and should be
+        removed: rsync_includes, rsync_ignore_files, sync_method. Using these
+        settings causes the OpenStack provider to fall back to an old synced
+        folder implementation instead of using standard Vagrant synced folders.
+
 
     errors:
       default: |-
