@@ -18,6 +18,7 @@ module VagrantPlugins
               b2.use Message, I18n.t('vagrant_openstack.not_created')
             else
               b2.use(ProvisionerCleanup, :before)
+              b2.use SnapshotCleanup if Gem::Version.new(Vagrant::VERSION) >= Gem::Version.new('1.8.0')
               b2.use DeleteServer
               b2.use DeleteStack
             end
@@ -325,6 +326,7 @@ module VagrantPlugins
       # TODO: Remove the if guard when Vagrant 1.8.0 is the minimum version.
       # rubocop:disable IndentationWidth
       if Gem::Version.new(Vagrant::VERSION) >= Gem::Version.new('1.8.0')
+      autoload :SnapshotCleanup, action_root.join('snapshot_cleanup')
       autoload :SnapshotDelete, action_root.join('snapshot_delete')
       autoload :SnapshotList, action_root.join('snapshot_list')
       autoload :SnapshotRestore, action_root.join('snapshot_restore')

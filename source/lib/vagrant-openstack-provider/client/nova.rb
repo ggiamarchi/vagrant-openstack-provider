@@ -43,8 +43,18 @@ module VagrantPlugins
       end
 
       def get_all_images(env, headers = {})
-        images_json = get(env, "#{@session.endpoints[:compute]}/images", headers)
-        JSON.parse(images_json)['images'].map { |fl| Image.new(fl['id'], fl['name'], 'unknown') }
+        images_json = get(env, "#{@session.endpoints[:compute]}/images/detail", headers)
+        JSON.parse(images_json)['images'].map do |fl|
+          Image.new(
+            fl['id'],
+            fl['name'],
+            'unknown',
+            nil,
+            fl['minRam'],
+            fl['minDisk'],
+            fl['metadata']
+          )
+        end
       end
 
       # Get detailed information about an image
@@ -208,7 +218,10 @@ module VagrantPlugins
           post(
             env,
             "#{@session.endpoints[:compute]}/servers/#{server_id}/action",
-            { createImage: { name: snapshot_name } }.to_json)
+            { createImage: {
+              name: snapshot_name,
+              metadata: { vagrant_snapshot: 'true' }
+            } }.to_json)
         end
       end
 

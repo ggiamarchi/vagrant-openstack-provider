@@ -101,7 +101,7 @@ describe VagrantPlugins::Openstack::NovaClient do
   describe 'get_all_images' do
     context 'with token and project_id acquainted' do
       it 'returns all images' do
-        stub_request(:get, 'http://nova/a1b2c3/images')
+        stub_request(:get, 'http://nova/a1b2c3/images/detail')
           .with(
             headers:
             {
@@ -110,13 +110,14 @@ describe VagrantPlugins::Openstack::NovaClient do
             })
           .to_return(
             status: 200,
-            body: '{ "images": [ { "id": "i1", "name": "image1"}, { "id": "i2", "name": "image2"} ] }')
+            body: '{ "images": [ { "id": "i1", "name": "image1", "metadata": {"customVal1": 1}}, { "id": "i2", "name": "image2"} ] }')
 
         images = @nova_client.get_all_images(env)
 
         expect(images.length).to eq(2)
         expect(images[0].id).to eq('i1')
         expect(images[0].name).to eq('image1')
+        expect(images[0].metadata['customVal1']).to eq(1)
         expect(images[1].id).to eq('i2')
         expect(images[1].name).to eq('image2')
       end
