@@ -99,7 +99,7 @@ module VagrantPlugins
             end
           end
 
-          log = "Lauching server '#{server_name}' in project '#{config.tenant_name}' "
+          log = "Launching server '#{server_name}' in project '#{config.tenant_name}' "
           log << "with flavor '#{options[:flavor].name}' (#{options[:flavor].id}), "
           unless options[:image].nil?
             log << "image '#{options[:image].name}' (#{options[:image].id}) "
