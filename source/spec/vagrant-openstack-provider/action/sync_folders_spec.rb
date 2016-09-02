@@ -46,7 +46,8 @@ describe VagrantPlugins::Openstack::Action::SyncFolders do
           username: 'user',
           port: '23',
           host: '1.2.3.4',
-          private_key_path: '/tmp/key.pem'
+          private_key_path: '/tmp/key.pem',
+          proxy_command: 'myproxycommand myproxy.example.com 80 %h %p'
         }
         m.provider_config = provider_config
         m.config = double('config').tap do |c|
@@ -111,7 +112,8 @@ describe VagrantPlugins::Openstack::Action::SyncFolders do
                             '--chmod',
                             'ugo=rwX',
                             '-e',
-                            "ssh -p 23 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes -i '/tmp/key.pem' ",
+                            'ssh -p 23 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes ' \
+                            "-o ProxyCommand='myproxycommand myproxy.example.com 80 %h %p' -i '/tmp/key.pem' ",
                             '/home/john/vagrant/',
                             'user@1.2.3.4:/vagrant',
                             '--exclude-from',

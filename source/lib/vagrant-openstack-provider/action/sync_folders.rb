@@ -89,7 +89,8 @@ module VagrantPlugins
               '-o StrictHostKeyChecking=no',
               '-o UserKnownHostsFile=/dev/null',
               '-o IdentitiesOnly=yes',
-              "#{ssh_key_options(ssh_info)}"].join(' ')
+              "#{ssh_proxy_options(ssh_info)}",
+              "#{ssh_key_options(ssh_info)}"].reject(&:empty?).join(' ')
 
             # Rsync over to the guest path using the SSH info. add
             # .hg/ and .git/ to exclude list as that isn't covered in
@@ -125,6 +126,10 @@ module VagrantPlugins
         def ssh_key_options(ssh_info)
           # Ensure that `private_key_path` is an Array (for Vagrant < 1.4)
           Array(ssh_info[:private_key_path]).map { |path| "-i '#{path}' " }.join
+        end
+
+        def ssh_proxy_options(ssh_info)
+          ("-o ProxyCommand='#{ssh_info[:proxy_command]}'" unless ssh_info[:proxy_command].nil?).to_s
         end
 
         def add_cygdrive_prefix_to_path(hostpath)
