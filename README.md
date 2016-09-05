@@ -255,8 +255,11 @@ If neither `keypair_name` nor `public_key_path` are set, vagrant will generate a
   include rsync, you must set this parameter to "none".
 * `rsync_includes` - If `sync_method` is set to "rsync", this parameter give the list of local folders to sync
   on the remote VM.
-* `rsync_ignore_files` - Is used for the rsync prameter "--exclude-from".  Set `rsync_ignore_files` to a list of files
-  that contain patterns to exclude from the rsync to /vagrant on a provisioned instance.  ".gitignore  or ".hgignore" for example.
+* `rsync_ignore_files` - Is used for the rsync parameter "--exclude-from".  Set `rsync_ignore_files` to a list of files
+  that contain patterns to exclude from the rsync to /vagrant on a provisioned instance.  ".gitignore"  or ".hgignore" for example.
+* `rsync_exclude_paths` - Is used for the rsync parameter "--exclude".  Set `rsync_exclude_paths` to a list of paths
+  to exclude from the rsync to /vagrant on a provisioned instance.  Default is []
+* `rsync_cvs_exclude - Is used for the rsync parameter "--cvs-exclude". Set false to sync normally excluded CVS paths.
 
 There is minimal support for synced folders. Upon `vagrant up`,
 `vagrant reload`, and `vagrant provision`, the OpenStack provider will use

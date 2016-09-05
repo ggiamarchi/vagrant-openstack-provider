@@ -112,6 +112,16 @@ module VagrantPlugins
       # @return [Array]
       attr_accessor :rsync_ignore_files
 
+      # Sync folder ignore paths. A list of paths to ignore in the rsync operation performed by this provider
+      #
+      # @return [Array]
+      attr_accessor :rsync_exclude_paths
+
+      # Sync folder ignore CVS excludes. A boolean flag to control the --cvs-exclude option for rsync. Default: true.
+      #
+      # @return [Boolean]
+      attr_accessor :rsync_cvs_exclude
+
       # Network list the VM will be connected to
       #
       # @return [Array]
@@ -217,6 +227,8 @@ module VagrantPlugins
         @username = UNSET_VALUE
         @rsync_includes = []
         @rsync_ignore_files = []
+        @rsync_exclude_paths = []
+        @rsync_cvs_exclude = UNSET_VALUE
         @keypair_name = UNSET_VALUE
         @ssh_username = UNSET_VALUE
         @ssh_timeout = UNSET_VALUE
@@ -264,7 +276,7 @@ module VagrantPlugins
             # Don't set the value if it is the unset value, either.
             value = obj.instance_variable_get(key)
 
-            if [:@networks, :@volumes, :@rsync_includes, :@rsync_ignore_files, :@floating_ip_pool, :@stacks].include? key
+            if [:@networks, :@volumes, :@rsync_includes, :@rsync_ignore_files, :@rsync_exclude_paths, :@floating_ip_pool, :@stacks].include? key
               result.instance_variable_set(key, value) unless value.empty?
             elsif [:@http].include? key
               result.instance_variable_set(key, instance_variable_get(key).merge(other.instance_variable_get(key))) if value != UNSET_VALUE
@@ -301,6 +313,8 @@ module VagrantPlugins
         @username = nil if @username == UNSET_VALUE
         @rsync_includes = nil if @rsync_includes.empty?
         @rsync_ignore_files = nil if @rsync_ignore_files.empty?
+        @rsync_exclude_paths = nil if @rsync_exclude_paths == UNSET_VALUE
+        @rsync_cvs_exclude = true if @rsync_exclude_paths == UNSET_VALUE
         @floating_ip = nil if @floating_ip == UNSET_VALUE
         @floating_ip_pool = nil if @floating_ip_pool == UNSET_VALUE
         @floating_ip_pool_always_allocate = false if floating_ip_pool_always_allocate == UNSET_VALUE
