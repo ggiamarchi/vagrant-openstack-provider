@@ -94,6 +94,13 @@ module VagrantPlugins
             # Rsync over to the guest path using the SSH info. add
             # .hg/ and .git/ to exclude list as that isn't covered in
             # --cvs-exclude
+
+            # Enclose ipv6 host address in [] so ssh will correctly handle it
+            ssh_command_host = ssh_info[:host]
+            if (ssh_command_host.include? ':') && ! (ssh_command_host.include? '[')
+              ssh_command_host = '[' + ssh_command_host + ']'
+            end
+
             command = [
               'rsync', '--verbose', '--archive', '-z',
               '--cvs-exclude',
@@ -103,7 +110,7 @@ module VagrantPlugins
               *includes,
               '-e', ssh_params,
               hostpath,
-              "#{ssh_info[:username]}@#{ssh_info[:host]}:#{guestpath}"]
+              "#{ssh_info[:username]}@#{ssh_command_host}:#{guestpath}"]
             command.compact!
 
             # during rsync, ignore files specified in list of files containing exclude patterns
