@@ -10,24 +10,16 @@ module VagrantPlugins
           config = env[:machine].provider_config
           client = env[:openstack_client]
           endpoints = client.session.endpoints
-          endpoint_type = config.endpoint_type
           @logger.info(I18n.t('vagrant_openstack.client.looking_for_available_endpoints'))
           @logger.info("Selecting endpoints matching region '#{config.region}'") unless config.region.nil?
 
           catalog.each do |service|
             se = service['endpoints']
-            if config.region.nil?
-              if se.size > 1
-                env[:ui].warn I18n.t('vagrant_openstack.client.multiple_endpoint', size: se.size, type: service['type'])
-                env[:ui].warn "  => #{service['endpoints'][0][endpoint_type]}"
-              end
-              url = se[0][endpoint_type].strip
-            else
-              se.each do |endpoint|
-                url = endpoint[endpoint_type].strip if endpoint['region'].eql? config.region
-              end
+            if config.identity_api_version == '2'
+              get_endpoints_2(env, se, service, config, endpoints)
+            elsif config.identity_api_version == '3'
+              get_interfaces_3(se, service, config, endpoints)
             end
-            endpoints[service['type'].to_sym] = url unless url.nil? || url.empty?
           end
 
           endpoints[:network] = choose_api_version('Neutron', 'openstack_network_url', 'v2') do
@@ -40,6 +32,37 @@ module VagrantPlugins
         end
 
         private
+
+        def get_endpoints_2(env, se, service, config, endpoints)
+          endpoint_type = config.endpoint_type
+          if config.region.nil?
+            if se.size > 1
+              env[:ui].warn I18n.t('vagrant_openstack.client.multiple_endpoint', size: se.size, type: service['type'])
+              env[:ui].warn "  => #{service['endpoints'][0][endpoint_type]}"
+            end
+            url = se[0][endpoint_type].strip
+          else
+            se.each do |endpoint|
+              url = endpoint[endpoint_type].strip if endpoint['region'].eql? config.region
+            end
+          end
+          endpoints[service['type'].to_sym] = url unless url.nil? || url.empty?
+        end
+
+        def get_interfaces_3(se, service, config, endpoints)
+          url = nil
+          se.each do |endpoint|
+            next if endpoint['interface'] != config.interface_type
+            if config.region.nil?
+              url = endpoint['url']
+              break
+            elsif endpoint['region'] == config.region
+              url = endpoint['url']
+              break
+            end
+          end
+          endpoints[service['type'].to_sym] = url unless url.nil? || url.empty?
+        end
 
         def choose_api_version(service_name, url_property, version_prefix = nil, fail_if_not_found = true)
           versions = yield

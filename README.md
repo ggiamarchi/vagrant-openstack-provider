@@ -88,7 +88,10 @@ This provider exposes quite a few provider-specific configuration options:
 
 * `username` - The username with which to access OpenStack.
 * `password` - The API key for accessing OpenStack.
+* `domain_name` - The domain name when using identity API version 3 of keystone
 * `tenant_name` - The OpenStack project name to work on
+* `project_name` - The OpenStack project name used in identity v3
+* `identity_api_version` - The identity version to use : 2 or 3. If not provided, vagrant will use 2 by default.
 * `region` - The OpenStack region to work on
 * `openstack_auth_url` - The endpoint to authenticate against.
 * `openstack_compute_url` - The compute service URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
@@ -96,6 +99,7 @@ This provider exposes quite a few provider-specific configuration options:
 * `openstack_volume_url` - The block storage URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 * `openstack_image_url` - The image URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 * `endpoint_type` - The endpoint type to use : publicURL, adminURL, internalURL. If not provided, vagrant will use publicURL by default.
+* `interface_type` - The endpoint type to use for identity v3: public, admin, internal. If not provided, vagrant will use public by default.
 
 ### VM Configuration
 
