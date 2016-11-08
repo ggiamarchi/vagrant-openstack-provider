@@ -131,7 +131,7 @@ module VagrantPlugins
           @logger.info "Waiting for the server with id #{server_id} to be built..."
           env[:ui].info(I18n.t('vagrant_openstack.waiting_for_build'))
           config = env[:machine].provider_config
-          timeout(config.server_create_timeout, Errors::Timeout) do
+          Timeout.timeout(config.server_create_timeout, Errors::Timeout) do
             server_status = 'WAITING'
             until server_status == 'ACTIVE'
               @logger.debug('Waiting for server to be ACTIVE')

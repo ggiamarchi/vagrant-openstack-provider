@@ -65,7 +65,7 @@ module VagrantPlugins
 
     # rubocop:disable Lint/HandleExceptions
     def self.check_version
-      timeout(3, Errors::Timeout) do
+      Timeout.timeout(3, Errors::Timeout) do
         VersionChecker.instance.check
       end
     rescue
