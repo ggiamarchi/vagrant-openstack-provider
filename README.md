@@ -25,7 +25,6 @@ cloud.
 * Attach Cinder volumes to the instances
 * Create and delete Heat Orchestration stacks
 * Support OpenStack regions
-* Minimal synced folder support via `rsync`
 * Custom sub-commands within Vagrant CLI to query OpenStack objects
 
 ## Usage
@@ -249,6 +248,22 @@ If neither `keypair_name` nor `public_key_path` are set, vagrant will generate a
    `false`.
 
 ### Synced folders
+
+**NOTE:** The settings in this section are deprecated. By default, the OpenStack provider will use standard [Vagrant Synced Folders](https://www.vagrantup.com/docs/synced-folders/basic_usage.html). Vagrant's [rsync options](https://www.vagrantup.com/docs/synced-folders/rsync.html) can be configured thusly:
+
+```ruby
+Vagrant.configure("2") do |config|
+  config.vm.provider :openstack do |provider, override|
+    override.vm.synced_folder '.', '/vagrant', type: 'rsync',
+      rsync__exclude: ['some/folder/to/exclude']
+  end
+end
+```
+
+Use of the settings described below will cause the OpenStack provider to fall
+back to a legacy Rsync implementation that has fewer features. A deprecation
+warning will also be printed.
+
 
 * `sync_method` - Specify the synchronization method for shared folder between the host and the remote VM.
   Currently, it can be "rsync" or "none". The default value is "rsync". If your OpenStack image does not
