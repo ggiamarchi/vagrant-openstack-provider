@@ -60,7 +60,7 @@ module VagrantPlugins
           @logger.info "Waiting for the stack with id #{stack_id} to be built..."
           env[:ui].info(I18n.t('vagrant_openstack.waiting_for_stack'))
           config = env[:machine].provider_config
-          timeout(config.stack_create_timeout, Errors::Timeout) do
+          Timeout.timeout(config.stack_create_timeout, Errors::Timeout) do
             stack_status = 'CREATE_IN_PROGRESS'
             until stack_status == 'CREATE_COMPLETE'
               @logger.debug('Waiting for stack to be CREATED')
