@@ -8,12 +8,12 @@ describe VagrantPlugins::Openstack::Config do
       super().tap(&:finalize!)
     end
 
-    its(:password)  { should be_nil }
+    its(:password) { should be_nil }
     its(:openstack_compute_url) { should be_nil }
     its(:openstack_auth_url) { should be_nil }
     its(:openstack_orchestration_url) { should be_nil }
-    its(:flavor)   { should be_nil }
-    its(:image)    { should be_nil }
+    its(:flavor) { should be_nil }
+    its(:image) { should be_nil }
     its(:server_name) { should be_nil }
     its(:username) { should be_nil }
     its(:use_legacy_synced_folders) { should eq(false) }

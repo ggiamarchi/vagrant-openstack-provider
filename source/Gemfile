@@ -12,7 +12,7 @@ group :development do
   # next Vagrant version after 1.8.5 is released.
   gem 'ruby_dep', '~> 1.3.1'
   gem 'appraisal', '1.0.0'
-  gem 'rubocop', '0.29.0', require: false
+  gem 'rubocop', '0.33.0', require: false
   gem 'coveralls', require: false
   gem 'rspec-its'
 end

@@ -31,7 +31,7 @@ module VagrantPlugins
 
         headers.merge!('X-Auth-Token' => @session.token, :accept => :json, :content_type => :json)
 
-        log_request(:POST, url, body, headers)
+        log_request(:POST, url, headers, body)
 
         authenticated(env) do
           RestUtils.post(env, url, body, headers) { |res| handle_response(res) }.tap do

@@ -37,3 +37,6 @@ Metrics/AbcSize:
 
 Metrics/PerceivedComplexity:
   Max: 45
+
+Metrics/ModuleLength:
+  Max: 200

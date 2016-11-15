@@ -30,7 +30,7 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
 
   let(:flavor) do
     double('flavor').tap do |flavor|
-      flavor.stub(:name) { 'flavor_name'  }
+      flavor.stub(:name) { 'flavor_name' }
       flavor.stub(:id) { 'flavor123' }
     end
   end
