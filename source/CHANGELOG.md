@@ -1,3 +1,17 @@
+# 0.8.0 (November 19, 2016)
+
+IMPROVEMENTS:
+
+  - Move to standard Vagrant synced folders middleware #295
+
+FEATURES:
+
+  - Support Keystone v3 API #4
+
+BUG FIXES:
+
+  - Bugfix on IP address resolution #285
+
 # 0.7.2 (May 1, 2016)
 
 IMPROVEMENTS:
