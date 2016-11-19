@@ -17,6 +17,9 @@ describe VagrantPlugins::Openstack::KeystoneClient do
       config.stub(:username) { 'username' }
       config.stub(:password) { 'password' }
       config.stub(:http) { http }
+      config.stub(:interface_type) { 'public' }
+      config.stub(:identity_api_version) { '2' }
+      config.stub(:project_name) { 'testTenant' }
     end
   end
 
@@ -49,6 +52,29 @@ describe VagrantPlugins::Openstack::KeystoneClient do
       '{"access":{"token":{"id":"0123456789","tenant":{"id":"testTenantId"}},"serviceCatalog":[
          {"endpoints":[{"id":"eid1","publicURL":"http://nova"}],"type":"compute"},
          {"endpoints":[{"id":"eid2","publicURL":"http://neutron"}],"type":"network"}
+       ]}}'
+    end
+
+    let(:keystone_response_headers_v3) do
+      {
+        'Accept' => 'application/json',
+        'Content-Type' => 'application/json',
+        'x_subject_token' => '0123456789'
+      }
+    end
+
+    let(:keystone_request_body_v3) do
+      '{"auth":{"identity":{"methods":["password"],"password":{"user":{"name":"username","domain":'\
+      '{"name":"dummy"},"password":"password"}}},"scope":{"project":{"name":"testTenant","domain":'\
+      '{"name":"dummy"}}}}}'
+    end
+
+    let(:keystone_response_body_v3) do
+      '{"token":{"is_domain":false,"methods":["password"],"roles":[{"id":"1234","name":"_member_"}],
+        "is_admin_project":false,"project":{"domain":{"id":"1234","name":"dummy"},"id":"012345678910",
+        "name":"testTenantId"},"catalog":[
+         {"endpoints":[{"id":"eid1","interface":"public","url":"http://nova"}],"type":"compute"},
+         {"endpoints":[{"id":"eid2","interface":"public","url":"http://neutron"}],"type":"network"}
        ]}}'
     end
 
@@ -144,6 +170,54 @@ describe VagrantPlugins::Openstack::KeystoneClient do
         rescue Errors::VagrantOpenstackError => e
           e.message.should eq('Internal server error')
         end
+      end
+    end
+
+    # V3
+    context 'with good credentials v3' do
+      it 'store token and tenant id' do
+        config.stub(:domain_name) { 'dummy' }
+        config.stub(:identity_api_version) { '3' }
+        config.stub(:openstack_auth_url) { 'http://keystoneAuthV3' }
+
+        stub_request(:post, 'http://keystoneAuthV3/auth/tokens')
+          .with(
+            body: keystone_request_body_v3,
+            headers: keystone_request_headers)
+          .to_return(
+            status: 200,
+            body: keystone_response_body_v3,
+            headers: keystone_response_headers_v3)
+
+        @keystone_client.authenticate(env)
+
+        session.token.should eq('0123456789')
+        session.project_id.should eq('012345678910')
+      end
+    end
+
+    context 'with wrong credentials v3' do
+      it 'raise an unauthorized error ' do
+        config.stub(:domain_name) { 'dummy' }
+        config.stub(:identity_api_version) { '3' }
+        config.stub(:openstack_auth_url) { 'http://keystoneAuthV3' }
+
+        stub_request(:post, 'http://keystoneAuthV3/auth/tokens')
+          .with(
+            body: keystone_request_body_v3,
+            headers: keystone_request_headers)
+          .to_return(
+            status: 401,
+            body: '{
+                "error": {
+                  "message": "The request you have made requires authentication.",
+                  "code": 401,
+                  "title": "Unauthorized"
+               }
+              }',
+            headers: keystone_response_headers_v3)
+
+        expect { @keystone_client.authenticate(env) }.to raise_error(Errors::AuthenticationFailed)
       end
     end
   end

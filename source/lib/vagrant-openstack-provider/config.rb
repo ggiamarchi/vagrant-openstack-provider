@@ -52,6 +52,11 @@ module VagrantPlugins
       #
       attr_accessor :tenant_name
 
+      #
+      # The name of the openstack project on witch the vm will be created, changed name in v3 identity API.
+      #
+      attr_accessor :project_name
+
       # The name of the server. This defaults to the name of the machine
       # defined by Vagrant (via `config.vm.define`), but can be overriden
       # here.
@@ -61,6 +66,11 @@ module VagrantPlugins
       #
       # @return [String]
       attr_accessor :username
+
+      # The domain name to access Openstack, this defaults to Default.
+      #
+      # @return [String]
+      attr_accessor :domain_name
 
       # The name of the keypair to use.
       #
@@ -173,6 +183,16 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :endpoint_type
 
+      # Specify the endpoint_type to use : publicL, admin, or internal (default is public)
+      #
+      # @return [String]
+      attr_accessor :interface_type
+
+      # Specify the authentication version to use : 2 or 3 (ddefault is 2()
+      #
+      # @return [String]
+      attr_accessor :identity_api_version
+
       #
       # @return [Integer]
       attr_accessor :server_create_timeout
@@ -228,6 +248,8 @@ module VagrantPlugins
         @openstack_image_url = UNSET_VALUE
         @openstack_auth_url = UNSET_VALUE
         @endpoint_type = UNSET_VALUE
+        @interface_type = UNSET_VALUE
+        @identity_api_version = UNSET_VALUE
         @region = UNSET_VALUE
         @flavor = UNSET_VALUE
         @image = UNSET_VALUE
@@ -313,13 +335,17 @@ module VagrantPlugins
         @openstack_image_url = nil if @openstack_image_url == UNSET_VALUE
         @openstack_auth_url = nil if @openstack_auth_url == UNSET_VALUE
         @endpoint_type = 'publicURL' if @endpoint_type == UNSET_VALUE
+        @interface_type = 'public' if @interface_type == UNSET_VALUE
+        @identity_api_version = '2' if @identity_api_version == UNSET_VALUE
         @region = nil if @region == UNSET_VALUE
         @flavor = nil if @flavor == UNSET_VALUE
         @image = nil if @image == UNSET_VALUE
         @volume_boot = nil if @volume_boot == UNSET_VALUE
         @tenant_name = nil if @tenant_name == UNSET_VALUE
+        @project_name = nil if @project_name == UNSET_VALUE
         @server_name = nil if @server_name == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
+        @domain_name = 'Default' if @domain_name == UNSET_VALUE
         @floating_ip = nil if @floating_ip == UNSET_VALUE
         @floating_ip_pool = nil if @floating_ip_pool == UNSET_VALUE
         @floating_ip_pool_always_allocate = false if floating_ip_pool_always_allocate == UNSET_VALUE
@@ -383,9 +409,9 @@ module VagrantPlugins
 
         errors << I18n.t('vagrant_openstack.config.password_required') if @password.nil? || @password.empty?
         errors << I18n.t('vagrant_openstack.config.username_required') if @username.nil? || @username.empty?
-        errors << I18n.t('vagrant_openstack.config.tenant_name_required') if @tenant_name.nil? || @tenant_name.empty?
-        errors << I18n.t('vagrant_openstack.config.invalid_endpoint_type') unless  %w(publicURL adminURL internalURL).include?(@endpoint_type)
+        errors << I18n.t('vagrant_openstack.config.invalid_api_version') unless  %w(2 3).include?(@identity_api_version)
 
+        validate_api_version(errors)
         validate_ssh_username(machine, errors)
         validate_stack_config(errors)
         validate_ssh_timeout(errors)
@@ -411,6 +437,17 @@ module VagrantPlugins
       end
 
       private
+
+      def validate_api_version(errors)
+        if @identity_api_version == '2'
+          errors << I18n.t('vagrant_openstack.config.tenant_name_required') if @tenant_name.nil? || @tenant_name.empty?
+          errors << I18n.t('vagrant_openstack.config.invalid_endpoint_type') unless  %w(publicURL adminURL internalURL).include?(@endpoint_type)
+        elsif @identity_api_version == '3'
+          errors << I18n.t('vagrant_openstack.config.domain_required') if @domain_name.nil? || @domain_name.empty?
+          errors << I18n.t('vagrant_openstack.config.project_name_required') if @project_name.nil? || @project_name.empty?
+          errors << I18n.t('vagrant_openstack.config.invalid_interface_type') unless  %w(public admin internal).include?(@interface_type)
+        end
+      end
 
       def validate_stack_config(errors)
         @stacks.each do |stack|

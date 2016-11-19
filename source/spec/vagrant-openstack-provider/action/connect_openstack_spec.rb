@@ -18,10 +18,13 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
       config.stub(:openstack_volume_url) { nil }
       config.stub(:openstack_image_url) { nil }
       config.stub(:tenant_name) { 'testTenant' }
+      config.stub(:project_name) { 'testTenant' }
       config.stub(:username) { 'username' }
       config.stub(:password) { 'password' }
       config.stub(:region) { nil }
       config.stub(:endpoint_type) { 'publicURL' }
+      config.stub(:interface_type) { 'public' }
+      config.stub(:identity_api_version) { '2' }
     end
   end
 
@@ -232,6 +235,78 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
         end
         env[:openstack_client].stub(:neutron)  { neutron }
         env[:openstack_client].stub(:glance)   { glance }
+
+        @action.call(env)
+
+        expect(env[:openstack_client].session.endpoints)
+          .to eq(compute: 'http://nova/v2/projectId',
+                 network: 'http://neutron/v2.0',
+                 volume:  'http://cinder/v2/projectId',
+                 image:   'http://glance/v2.0')
+      end
+    end
+
+    context 'with one endpoint by service v3' do
+      it 'read service catalog and stores endpoints URL in session v3' do
+        catalog = [
+          {
+            'endpoints' => [
+              {
+                'url' => 'http://nova/v2/projectId',
+                'interface' => 'public',
+                'region' => 'RegionOne',
+                'id' => '1'
+              }
+            ],
+            'type' => 'compute',
+            'name' => 'nova'
+          },
+          {
+            'endpoints' => [
+              {
+                'url' => 'http://neutron',
+                'interface' => 'public',
+                'region' => 'RegionOne',
+                'id' => '2'
+              }
+            ],
+            'type' => 'network',
+            'name' => 'neutron'
+          },
+          {
+            'endpoints' => [
+              {
+                'url' => 'http://cinder/v2/projectId',
+                'interface' => 'public',
+                'region' => 'RegionOne',
+                'id' => '2'
+              }
+            ],
+            'type' => 'volume',
+            'name' => 'cinder'
+          },
+          {
+            'endpoints' => [
+              {
+                'url' => 'http://glance',
+                'interface' => 'public',
+                'region' => 'RegionOne',
+                'id' => '2'
+              }
+            ],
+            'type' => 'image',
+            'name' => 'glance'
+          }
+        ]
+
+        double.tap do |keystone|
+          keystone.stub(:authenticate).with(anything) { catalog }
+          env[:openstack_client].stub(:keystone) { keystone }
+        end
+        env[:openstack_client].stub(:neutron)  { neutron }
+        env[:openstack_client].stub(:glance)   { glance }
+        config.stub(:domain_name) { 'dummy' }
+        config.stub(:identity_api_version) { '3' }
 
         @action.call(env)
 
