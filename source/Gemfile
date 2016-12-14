@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gemspec
 
 group :development do
-  gem 'vagrant', git: 'https://github.com/mitchellh/vagrant.git', tag: 'v1.8.5'
+  gem 'vagrant', git: 'https://github.com/mitchellh/vagrant.git', tag: 'v1.9.1'
   # FIXME: Hack to allow Vagrant v1.6.5 to install for tests. Remove when
   # support for 1.6.5 is dropped.
   gem 'rack', '< 2'
