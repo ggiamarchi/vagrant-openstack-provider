@@ -459,7 +459,7 @@ describe VagrantPlugins::Openstack::NovaClient do
           {
             'Accept' => 'application/json',
             'Accept-Encoding' => 'gzip, deflate',
-            'User-Agent' => 'Ruby',
+            'User-Agent' => /.*/,
             'X-Auth-Token' => '123456'
           })
           .to_return(status: 200, body: '
