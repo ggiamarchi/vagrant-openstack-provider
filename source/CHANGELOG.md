@@ -1,3 +1,9 @@
+# 0.9.0 (January 30, 2016)
+
+BUG FIXES:
+
+  - Make it work with Vagrant 1.9 #311
+
 # 0.8.0 (November 19, 2016)
 
 IMPROVEMENTS:
