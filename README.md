@@ -433,13 +433,3 @@ later, and enable:
 ```ruby
 config.ssh.pty = true
 ```
-
-## Sponsoring
-
-[![Numergy](https://www.numergy.com/images/general/numergy-logo.png)](http://www.numergy.com)
-
-
-We thanks [Numergy](http://www.numergy.com) for giving us access to free compute resources on their OpenStack cloud that enabled us to test our provider on a real OpenStack installation.
-
-If you are also powering an OpenStack cloud, we'd like to hear from you. Test
-the plugin and report us issues or features you'd like to see.
