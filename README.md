@@ -40,8 +40,7 @@ $ vagrant up --provider=openstack
 ...
 ```
 
-Of course prior to doing this, you'll need to obtain an OpenStack-compatible
-box file for Vagrant.
+Make sure you have a recent version of vagrant (>1.7.1).
 
 ## Quick Start
 
@@ -59,7 +58,6 @@ require 'vagrant-openstack-provider'
 
 Vagrant.configure('2') do |config|
 
-  config.vm.box       = 'openstack'
   config.ssh.username = 'stack'
 
   config.vm.provider :openstack do |os|
