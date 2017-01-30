@@ -3,14 +3,10 @@ source 'https://rubygems.org'
 gemspec
 
 group :development do
-  gem 'vagrant', git: 'https://github.com/mitchellh/vagrant.git', tag: 'v1.8.5'
+  gem 'vagrant', git: 'https://github.com/mitchellh/vagrant.git', tag: 'v1.9.1'
   # FIXME: Hack to allow Vagrant v1.6.5 to install for tests. Remove when
   # support for 1.6.5 is dropped.
   gem 'rack', '< 2'
-  # FIXME: Version 1.4.0 of the ruby_dep gem added a constraint on the Ruby
-  # version being >=2.2.5. This pin to ruby_dep 1.3.1 can be removed when the
-  # next Vagrant version after 1.8.5 is released.
-  gem 'ruby_dep', '~> 1.3.1'
   gem 'appraisal', '1.0.0'
   gem 'rubocop', '0.29.0', require: false
   gem 'coveralls', require: false

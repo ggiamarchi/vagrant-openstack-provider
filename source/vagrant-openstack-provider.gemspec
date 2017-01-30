@@ -12,13 +12,15 @@ Gem::Specification.new do |gem|
   gem.homepage      = 'https://github.com/ggiamarchi/vagrant-openstack-provider'
   gem.license       = 'MIT'
 
-  gem.add_dependency 'json', '1.8.3'
-  gem.add_dependency 'rest-client', '~> 1.6.0'
+  gem.add_dependency 'json', '>= 1.8.1', '< 3.0'
+  gem.add_dependency 'rest-client', '>= 1.6.0', '< 3.0'
   gem.add_dependency 'terminal-table', '1.4.5'
   gem.add_dependency 'sshkey', '1.6.1'
   gem.add_dependency 'colorize', '0.7.3'
 
-  gem.add_development_dependency 'rake'
+  # Constraint rake to properly handle deprecated method usage
+  # from within rspec 3.1.z
+  gem.add_development_dependency 'rake', '~> 11.3.0'
   gem.add_development_dependency 'rspec', '~> 3.1.0'
   gem.add_development_dependency 'rspec-its', '~> 1.0.1'
   gem.add_development_dependency 'rspec-expectations', '~> 3.1.2'
