@@ -18,6 +18,7 @@ cloud.
 * Halt and reboot instances
 * Suspend and resume instances
 * SSH into the instances
+* Login into Windows instances using WinRM (even with dynamic passwords) 
 * Automatic SSH key generation and Nova public key provisioning
 * Automatic floating IP allocation and association
 * Provision the instances with any built-in Vagrant provisioner
@@ -328,6 +329,7 @@ creating and connecting to OpenStack machines
 * `ssh.username` - Username used by vagrant for SSH login
 * `ssh.port` - Default SSH port is 22. If set, this option will override the default for SSH login
 * `ssh.private_key_path` - If set, vagrant will use this private key path to SSH on the machine. If you set this option, the `public_key_path` option of the provider should be set.
+* `winrm.password` - Password used by vagrant for WinRM login on a Windows box (i.e. when config.vm.communicator=:winrm). If set to the special value :dynamic, the password will be automatically retrieved from Open Stack. This is useful for images that dynamically create passwords on provisioning.
 
 ## Box Format
 

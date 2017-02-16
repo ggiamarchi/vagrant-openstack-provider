@@ -34,6 +34,12 @@ module VagrantPlugins
         require_relative 'provider'
         Provider
       end
+      
+      # add a capability to get proper winrm_info (password) from openstack
+      provider_capability(:openstack, :winrm_info) do
+        require_relative "cap"
+        Cap
+      end
 
       command('openstack') do
         Openstack.init_i18n

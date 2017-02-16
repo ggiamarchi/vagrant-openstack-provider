@@ -61,6 +61,18 @@ module VagrantPlugins
           b.use ReadSSHInfo
         end
       end
+      
+      # This action is called to read the server password of the machine. The
+      # resulting state is expected to be put into the `config.winrm.password`
+      # key.
+      def self.action_read_server_password
+        new_builder.tap do |b|
+          b.use ConfigValidate
+          b.use ConnectOpenstack
+          b.use ReadSSHInfo
+          b.use ReadServerPassword
+        end
+      end
 
       # This action is called to read the state of the machine. The
       # resulting state is expected to be put into the `:machine_state_id`
@@ -244,6 +256,7 @@ module VagrantPlugins
       autoload :StopServer, action_root.join('stop_server')
       autoload :StartServer, action_root.join('start_server')
       autoload :ReadSSHInfo, action_root.join('read_ssh_info')
+      autoload :ReadServerPassword, action_root.join('read_server_password')
       autoload :ReadState, action_root.join('read_state')
       autoload :SyncFolders, action_root.join('sync_folders')
       autoload :Suspend, action_root.join('suspend')
