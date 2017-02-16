@@ -1,7 +1,4 @@
 require 'log4r'
-
-require 'vagrant-openstack-provider/config_resolver'
-require 'vagrant-openstack-provider/utils'
 require 'vagrant-openstack-provider/action/abstract_action'
 
 module VagrantPlugins
