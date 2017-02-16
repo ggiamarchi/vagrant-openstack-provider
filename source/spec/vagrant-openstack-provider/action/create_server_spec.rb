@@ -109,10 +109,12 @@ describe VagrantPlugins::Openstack::Action::CreateServer do
         allow(@action).to receive(:waiting_for_server_to_be_built)
         allow(@action).to receive(:attach_volumes)
         allow(@action).to receive(:waiting_for_server_to_be_reachable)
+        allow(@action).to receive(:waiting_for_floating_ip_to_be_assigned)
 
         expect(@action).to receive(:waiting_for_server_to_be_built).with(env, '45678')
         expect(@action).to receive(:assign_floating_ip).with(env, '45678').and_return('1.2.3.4')
         expect(@action).to receive(:attach_volumes).with(env, '45678', [{ id: 'vol-01', device: nil }])
+        expect(@action).to receive(:waiting_for_floating_ip_to_be_assigned).with(env, '45678')
 
         @action.call(env)
       end
