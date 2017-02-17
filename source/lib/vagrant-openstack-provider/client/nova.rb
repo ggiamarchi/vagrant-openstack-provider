@@ -115,6 +115,13 @@ module VagrantPlugins
         end
       end
 
+      def get_server_password(env, server_id)
+        instance_exists do
+          server_password = get(env, "#{@session.endpoints[:compute]}/servers/#{server_id}/os-server-password")
+          JSON.parse(server_password)['password']
+        end
+      end
+
       def add_floating_ip(env, server_id, floating_ip)
         instance_exists do
           check_floating_ip(env, floating_ip)
