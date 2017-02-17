@@ -61,7 +61,7 @@ module VagrantPlugins
           b.use ReadSSHInfo
         end
       end
-      
+
       # This action is called to read the server password of the machine. The
       # resulting state is expected to be put into the `config.winrm.password`
       # key.
