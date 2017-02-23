@@ -433,3 +433,26 @@ later, and enable:
 ```ruby
 config.ssh.pty = true
 ```
+
+You must also modify the `/etc/sudoers` file, which on CentOS requires a tty for 
+running sudo.
+This can be achieved by running a `user_data` script that modifies the file 
+before folders are synced:
+
+```ruby
+config.vm.provider :openstack do |os|
+  ...
+  os.user_data          = "#!/bin/bash\n\nsed -i -e 's/^\\(Defaults\\s\\+requiretty\\)/# \\1/' /etc/sudoers\n" # To enable synced folders in CentOS
+  ...
+end
+```
+
+Another option is, of course, to disable folder syncing:
+
+```ruby
+Vagrant.configure('2') do |config|
+  ...
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  ...
+end
+```
