@@ -35,6 +35,16 @@ module VagrantPlugins
         Provider
       end
 
+      # TODO: Remove the if guard when Vagrant 1.8.0 is the minimum version.
+      # rubocop:disable IndentationWidth
+      if Gem::Version.new(Vagrant::VERSION) >= Gem::Version.new('1.8.0')
+      provider_capability('openstack', 'snapshot_list') do
+        require_relative 'cap/snapshot_list'
+        Cap::SnapshotList
+      end
+      end
+      # rubocop:enable IndentationWidth
+
       command('openstack') do
         Openstack.init_i18n
         Openstack.init_logging

@@ -25,19 +25,23 @@ module VagrantPlugins
         attr_accessor :size
         attr_accessor :min_ram
         attr_accessor :min_disk
+        attr_accessor :metadata
 
-        def initialize(id, name, visibility = nil, size = nil, min_ram = nil, min_disk = nil)
+        # rubocop:disable Metrics/ParameterLists
+        def initialize(id, name, visibility = nil, size = nil, min_ram = nil, min_disk = nil, metadata = {})
           @visibility = visibility
           @size = size
           @min_ram = min_ram
           @min_disk = min_disk
+          @metadata = metadata
           super(id, name)
         end
+        # rubocop:enable Metrics/ParameterLists
 
         protected
 
         def state
-          [@id, @name, @visibility, @size, @min_ram, @min_disk]
+          [@id, @name, @visibility, @size, @min_ram, @min_disk, @metadata]
         end
       end
 

@@ -3,6 +3,7 @@ AllCops:
     - '.bundle/**/*'
     - 'out/**/*'
     - '**/Vagrantfile'
+  DisplayCopNames: true
 
 Style/FileName:
   Enabled: false
