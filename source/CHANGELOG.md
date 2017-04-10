@@ -1,3 +1,9 @@
+# 0.10.0 ( April 11, 2017)
+
+IMPROVEMENTS:
+
+  - Add snapshot support #296
+
 # 0.9.0 (January 30, 2016)
 
 BUG FIXES:
