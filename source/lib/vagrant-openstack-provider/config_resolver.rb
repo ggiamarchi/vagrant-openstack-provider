@@ -48,7 +48,9 @@ module VagrantPlugins
 
       def resolve_keypair(env)
         config = env[:machine].provider_config
+        machine_config = env[:machine].config
         nova = env[:openstack_client].nova
+        return nil unless machine_config.ssh.insert_key
         return config.keypair_name if config.keypair_name
         return nova.import_keypair_from_file(env, config.public_key_path) if config.public_key_path
         generate_keypair(env)

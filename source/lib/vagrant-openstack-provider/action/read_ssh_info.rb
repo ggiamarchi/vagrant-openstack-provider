@@ -40,7 +40,9 @@ module VagrantPlugins
             port: @resolver.resolve_ssh_port(env),
             username: @resolver.resolve_ssh_username(env)
           }
-          hash[:private_key_path] = "#{env[:machine].data_dir}/#{get_keypair_name(env)}" unless config.keypair_name || config.public_key_path
+          if env[:machine].config.ssh.insert_key
+            hash[:private_key_path] = "#{env[:machine].data_dir}/#{get_keypair_name(env)}" unless config.keypair_name || config.public_key_path
+          end
           # Should work silently when https://github.com/mitchellh/vagrant/issues/4637 is fixed
           hash[:log_level] = 'ERROR'
           hash
