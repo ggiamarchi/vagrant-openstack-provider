@@ -240,10 +240,10 @@ end
 ### SSH authentication
 
 * `keypair_name` - The name of the key pair register in nova to associate with the VM. The public key should
-  be the matching pair for the private key configured with `config.ssh.private_key_path` on Vagrant.
-* `public_key_path` - if `keypair_name` is not provided, the path to the public key will be used by vagrant to generate a keypair on the OpenStack cloud. The keypair will be destroyed when the VM is destroyed.
+  be the matching pair for the private key configured with `config.ssh.private_key_path` on Vagrant. When `config.ssh.insert_key` is `false`, this is ignored.
+* `public_key_path` - if `keypair_name` is not provided, the path to the public key will be used by vagrant to generate a keypair on the OpenStack cloud. The keypair will be destroyed when the VM is destroyed. When `config.ssh.insert_key` is `false`, this is ignored.
 
-If neither `keypair_name` nor `public_key_path` are set, vagrant will generate a new ssh key and automatically import it in OpenStack.
+If neither `keypair_name` nor `public_key_path` are set, vagrant will generate a new ssh key and automatically import it in OpenStack, unless `config.ssh.insert_key` is `false`.
 
 * `ssh_disabled` - if set to `true`, all ssh actions managed by the provider will be disabled during the `vagrant up`.
    We recommend to use this option only to create private VMs that won't be accessed directly from vagrant. By contrast,
