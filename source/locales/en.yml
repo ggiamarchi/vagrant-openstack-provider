@@ -69,6 +69,8 @@ en:
       Rsyncing folder: %{hostpath} => %{guestpath}
     using_floating_ip: |-
       Using floating IP %{floating_ip}
+    waiting_for_floating_ip: |-
+      Waiting for floating IP %{floating_ip} to be assigned...
     waiting_for_build: |-
       Waiting for the server to be built...
     waiting_for_ssh: |-

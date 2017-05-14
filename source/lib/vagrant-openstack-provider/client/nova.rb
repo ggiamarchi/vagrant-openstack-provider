@@ -145,6 +145,19 @@ module VagrantPlugins
         end
       end
 
+      def check_assigned_floating_ip(env, server_id, floating_ip)
+        instance_exists do
+          addresses = get_server_details(env, server_id)['addresses']
+          addresses.each do |_, network|
+            network.each do |network_detail|
+              return true if network_detail['addr'] == floating_ip
+            end
+          end
+
+          return false
+        end
+      end
+
       def import_keypair(env, public_key)
         keyname = "vagrant-generated-#{Kernel.rand(36**8).to_s(36)}"
 

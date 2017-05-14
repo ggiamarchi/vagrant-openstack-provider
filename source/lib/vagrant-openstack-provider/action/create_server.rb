@@ -50,6 +50,7 @@ module VagrantPlugins
 
           waiting_for_server_to_be_built(env, server_id)
           assign_floating_ip(env, server_id)
+          waiting_for_floating_ip_to_be_assigned(env, server_id)
           attach_volumes(env, server_id, options[:volumes]) unless options[:volumes].empty?
 
           @app.call(env)
@@ -150,6 +151,22 @@ module VagrantPlugins
           env[:openstack_client].nova.add_floating_ip(env, server_id, floating_ip)
         rescue Errors::UnableToResolveFloatingIP
           @logger.info 'Vagrant was unable to resolve FloatingIP, continue assuming it is not necessary'
+        end
+
+        def waiting_for_floating_ip_to_be_assigned(env, server_id, retry_interval = 3)
+          floating_ip = @resolver.resolve_floating_ip(env)
+          return if !floating_ip || floating_ip.empty?
+          @logger.info "Waiting for floating IP #{floating_ip} to be assigned"
+          env[:ui].info(I18n.t('vagrant_openstack.waiting_for_floating_ip', floating_ip: floating_ip))
+          config = env[:machine].provider_config
+          Timeout.timeout(config.floating_ip_assign_timeout, Errors::Timeout) do
+            until env[:openstack_client].nova.check_assigned_floating_ip(env, server_id, floating_ip)
+              sleep retry_interval
+            end
+            return
+          end
+        rescue Errors::UnableToResolveFloatingIP
+          @logger.info 'Vagrant was unable to resolve FloatingIP, not waiting for assignment'
         end
 
         def attach_volumes(env, server_id, volumes)

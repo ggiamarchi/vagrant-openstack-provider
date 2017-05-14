@@ -218,6 +218,10 @@ module VagrantPlugins
       attr_accessor :stack_delete_timeout
 
       #
+      # @return [Integer]
+      attr_accessor :floating_ip_assign_timeout
+
+      #
       # @return [HttpConfig]
       attr_accessor :http
 
@@ -287,6 +291,7 @@ module VagrantPlugins
         @server_delete_timeout = UNSET_VALUE
         @stack_create_timeout = UNSET_VALUE
         @stack_delete_timeout = UNSET_VALUE
+        @floating_ip_assign_timeout = UNSET_VALUE
         @meta_args_support = UNSET_VALUE
         @http = HttpConfig.new
         @use_legacy_synced_folders = UNSET_VALUE
@@ -396,6 +401,7 @@ module VagrantPlugins
         @server_delete_timeout = 200 if @server_delete_timeout == UNSET_VALUE
         @stack_create_timeout = 200 if @stack_create_timeout == UNSET_VALUE
         @stack_delete_timeout = 200 if @stack_delete_timeout == UNSET_VALUE
+        @floating_ip_assign_timeout = 200 if @floating_ip_assign_timeout == UNSET_VALUE
         @meta_args_support = false if @meta_args_support == UNSET_VALUE
         @networks = nil if @networks.empty?
         @volumes = nil if @volumes.empty?
