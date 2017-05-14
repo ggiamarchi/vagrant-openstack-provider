@@ -21,6 +21,7 @@ describe VagrantPlugins::Openstack::NovaClient do
       config.stub(:username) { 'username' }
       config.stub(:password) { 'password' }
       config.stub(:http) { http }
+      config.stub(:ssl_verify_peer) { true }
     end
   end
 
