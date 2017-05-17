@@ -20,6 +20,7 @@ describe VagrantPlugins::Openstack::KeystoneClient do
       config.stub(:interface_type) { 'public' }
       config.stub(:identity_api_version) { '2' }
       config.stub(:project_name) { 'testTenant' }
+      config.stub(:ssl_ca_file) { nil }
       config.stub(:ssl_verify_peer) { true }
     end
   end

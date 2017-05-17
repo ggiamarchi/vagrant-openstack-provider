@@ -243,6 +243,11 @@ module VagrantPlugins
       # @return [Boolean]
       attr_accessor :use_legacy_synced_folders
 
+      # Specify the certificate to use.
+      #
+      # @return [String]
+      attr_accessor :ssl_ca_file
+
       # Verify ssl peer certificate when connecting. Set to false (! unsecure) to disable
       #
       # @return [Boolean]
@@ -295,6 +300,7 @@ module VagrantPlugins
         @meta_args_support = UNSET_VALUE
         @http = HttpConfig.new
         @use_legacy_synced_folders = UNSET_VALUE
+        @ssl_ca_file = UNSET_VALUE
         @ssl_verify_peer = UNSET_VALUE
       end
 
@@ -407,6 +413,7 @@ module VagrantPlugins
         @volumes = nil if @volumes.empty?
         @stacks = nil if @stacks.empty?
         @http.finalize!
+        @ssl_ca_file = nil if @ssl_ca_file == UNSET_VALUE
         @ssl_verify_peer = true if @ssl_verify_peer == UNSET_VALUE
       end
       # rubocop:enable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity

@@ -98,6 +98,7 @@ This provider exposes quite a few provider-specific configuration options:
 * `openstack_image_url` - The image URL to hit. This is good for custom endpoints. If not provided, vagrant will try to get it from catalog endpoint.
 * `endpoint_type` - The endpoint type to use : publicURL, adminURL, internalURL. If not provided, vagrant will use publicURL by default.
 * `interface_type` - The endpoint type to use for identity v3: public, admin, internal. If not provided, vagrant will use public by default.
+* `ssl_ca_file` - The location of CA certificate file.
 * `ssl_verify_peer` - Verify peer certificate when connecting to endpoint. Defaults to true. Set to false to disable check (beware this is not secure!)
 
 ### VM Configuration
