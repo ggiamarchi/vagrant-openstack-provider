@@ -20,7 +20,7 @@ Vagrant.configure('2') do |config|
   (1..3).each do |i|
     config.vm.define "server-#{i}" do |s|
       s.vm.provider :openstack do |os, override|
-        os.server_name = "server-#{i}"
+        os.server_name = "03_multimachine_loop-#{i}"
         override.ssh.username = ENV['OS_SSH_USERNAME']
       end
     end

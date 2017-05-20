@@ -9,7 +9,7 @@ parameters:
     type: string
     label: External network id
     description: External network to connect the router
-    default: 3251e134-4045-44a0-9578-f6eb5ea21a87
+    default: 5cccfde8-ddae-4feb-9a97-ca6532d1577f
 
 resources:
 
@@ -27,7 +27,7 @@ resources:
   network:
     type: OS::Neutron::Net
     properties:
-      name: net
+      name: heat-net
   subnet:
     type: OS::Neutron::Subnet
     properties:
