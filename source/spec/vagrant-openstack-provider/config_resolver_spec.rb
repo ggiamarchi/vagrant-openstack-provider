@@ -249,6 +249,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
               FloatingIP.new('80.81.82.85', 'pool-1', nil)
             end
             config.stub(:floating_ip_pool) { ['pool-1'] }
+            config.stub(:floating_ip=) { nil }
             @action.resolve_floating_ip(env).should eq('80.81.82.85')
           end
         end
@@ -261,6 +262,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
                FloatingIP.new('80.81.82.83', 'pool-1', nil)]
             end
             config.stub(:floating_ip_pool) { ['pool-1'] }
+            config.stub(:floating_ip=) { nil }
             @action.resolve_floating_ip(env).should eq('80.81.82.83')
           end
         end
@@ -275,6 +277,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
             FloatingIP.new('80.81.82.84', 'pool-1', nil)
           end
           config.stub(:floating_ip_pool) { ['pool-1'] }
+          config.stub(:floating_ip=) { nil }
           @action.resolve_floating_ip(env).should eq('80.81.82.84')
         end
       end
@@ -294,6 +297,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
               FloatingIP.new('80.81.82.85', 'pool-1', nil)
             end
             config.stub(:floating_ip_pool) { %w(pool-1 pool-2) }
+            config.stub(:floating_ip=) { nil }
             @action.resolve_floating_ip(env).should eq('80.81.82.85')
           end
         end
@@ -306,6 +310,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
                FloatingIP.new('80.81.82.83', 'pool-2', nil)]
             end
             config.stub(:floating_ip_pool) { %w(pool-1 pool-2) }
+            config.stub(:floating_ip=) { nil }
             @action.resolve_floating_ip(env).should eq('80.81.82.83')
           end
         end
@@ -322,6 +327,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
               FloatingIP.new('80.81.82.84', 'pool-1', nil)
             end
             config.stub(:floating_ip_pool) { %w(pool-1 pool-2) }
+            config.stub(:floating_ip=) { nil }
             @action.resolve_floating_ip(env).should eq('80.81.82.84')
           end
         end
@@ -337,6 +343,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
               FloatingIP.new('80.81.82.84', 'pool-2', nil)
             end
             config.stub(:floating_ip_pool) { %w(pool-1 pool-2) }
+            config.stub(:floating_ip=) { nil }
             @action.resolve_floating_ip(env).should eq('80.81.82.84')
           end
         end
@@ -350,6 +357,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
             nova.stub(:allocate_floating_ip).with(env, 'pool-1').and_raise Errors::VagrantOpenstackError, message: 'error', code: 404
             nova.stub(:allocate_floating_ip).with(env, 'pool-2').and_raise Errors::VagrantOpenstackError, message: 'error', code: 404
             config.stub(:floating_ip_pool) { %w(pool-1 pool-2) }
+            config.stub(:floating_ip=) { nil }
             expect { @action.resolve_floating_ip(env) }.to raise_error(Errors::VagrantOpenstackError)
           end
         end
