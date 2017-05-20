@@ -37,12 +37,17 @@ module VagrantPlugins
         config = env[:machine].provider_config
         nova = env[:openstack_client].nova
         return config.floating_ip if config.floating_ip
+
         fail Errors::UnableToResolveFloatingIP if config.floating_ip_pool.nil? || config.floating_ip_pool.empty?
+
         @logger.debug 'Searching for available ips'
         free_ip = search_free_ip(config, nova, env)
+        config.floating_ip = free_ip
         return free_ip unless free_ip.nil?
+
         @logger.debug 'Allocate new ip anyway'
         allocated_ip = allocate_ip(config, nova, env)
+        config.floating_ip = allocated_ip
         return allocated_ip unless allocated_ip.nil?
       end
 
