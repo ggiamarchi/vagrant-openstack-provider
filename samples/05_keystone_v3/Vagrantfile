@@ -3,22 +3,19 @@
 
 #
 # This is quite the minimal configuration necessary
-# to start an OpenStack instance using Vagrant.
-#
-# This example assumes a floating IP is needed to
-# reach the machine, although you might remove the
-# floating_ip_pool parameter if you are able to join
-# the instance using its private IP address (e.g.
-# through a VPN).
+# to start an OpenStack instance using Vagrant on
+# an OpenStack with Keystone v3 API
 #
 Vagrant.configure('2') do |config|
 
   config.ssh.username = ENV['OS_SSH_USERNAME']
 
   config.vm.provider :openstack do |os|
-    os.server_name                      = '01_simple'
+    os.server_name                      = '05_keystone_v3'
+    os.identity_api_version             = '3'
     os.openstack_auth_url               = ENV['OS_AUTH_URL']
-    os.tenant_name                      = ENV['OS_TENANT_NAME']
+    os.project_name                     = ENV['OS_PROJECT_NAME']
+    os.domain_name                      = ENV['OS_PROJECT_DOMAIN_ID']
     os.username                         = ENV['OS_USERNAME']
     os.password                         = ENV['OS_PASSWORD']
     os.region                           = ENV['OS_REGION_NAME']
