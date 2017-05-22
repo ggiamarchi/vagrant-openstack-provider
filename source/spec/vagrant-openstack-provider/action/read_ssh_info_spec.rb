@@ -43,6 +43,7 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
     double('ssh_config').tap do |config|
       config.stub(:username) { 'sshuser' }
       config.stub(:port) { nil }
+      config.stub(:insert_key) { true }
     end
   end
 
@@ -164,6 +165,16 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
             username: 'sshuser',
             private_key_path: '/data/dir/my_keypair_name',
             log_level: 'ERROR')
+        end
+      end
+
+      context 'with neither keypair_name nor public_key_path specified and ssh.insert_key is false' do
+        it 'does not return private_key_path' do
+          ssh_config.stub(:insert_key) { false }
+          config.stub(:floating_ip) { '80.80.80.80' }
+          config.stub(:keypair_name) { nil }
+          config.stub(:public_key_path) { nil }
+          @action.read_ssh_info(env).should eq(host: '80.80.80.80', port: 22, username: 'sshuser', log_level: 'ERROR')
         end
       end
     end

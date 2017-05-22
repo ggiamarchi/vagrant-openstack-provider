@@ -73,7 +73,7 @@ module VagrantPlugins
             env[:ui].info(" -- ImageRef        : #{options[:image].id}")
           end
           env[:ui].info(" -- Boot volume     : #{options[:volume_boot][:id]} (#{options[:volume_boot][:device]})") unless options[:volume_boot].nil?
-          env[:ui].info(" -- KeyPair         : #{options[:keypair_name]}")
+          env[:ui].info(" -- KeyPair         : #{options[:keypair_name]}") unless options[:keypair_name].nil?
 
           unless options[:networks].empty?
             formated_networks = ' -- '
@@ -105,7 +105,9 @@ module VagrantPlugins
           unless options[:image].nil?
             log << "image '#{options[:image].name}' (#{options[:image].id}) "
           end
-          log << "and keypair '#{options[:keypair_name]}'"
+          unless options[:keypair_name].nil?
+            log << "and keypair '#{options[:keypair_name]}'"
+          end
 
           @logger.info(log)
 

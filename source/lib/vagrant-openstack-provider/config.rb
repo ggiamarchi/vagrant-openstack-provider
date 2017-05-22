@@ -429,10 +429,12 @@ module VagrantPlugins
         validate_stack_config(errors)
         validate_ssh_timeout(errors)
 
-        if machine.config.ssh.private_key_path
-          puts I18n.t('vagrant_openstack.config.keypair_name_required').yellow unless @keypair_name || @public_key_path
-        else
-          errors << I18n.t('vagrant_openstack.config.private_key_missing') if @keypair_name || @public_key_path
+        if machine.config.ssh.insert_key
+          if machine.config.ssh.private_key_path
+            puts I18n.t('vagrant_openstack.config.keypair_name_required').yellow unless @keypair_name || @public_key_path
+          else
+            errors << I18n.t('vagrant_openstack.config.private_key_missing') if @keypair_name || @public_key_path
+          end
         end
 
         {

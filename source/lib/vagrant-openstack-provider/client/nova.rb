@@ -86,7 +86,7 @@ module VagrantPlugins
             s['imageRef'] = options[:image_ref]
           end
           s['flavorRef'] = options[:flavor_ref]
-          s['key_name'] = options[:keypair]
+          s['key_name'] = options[:keypair] unless options[:keypair].nil?
           s['availability_zone'] = options[:availability_zone] unless options[:availability_zone].nil?
           s['security_groups'] = options[:security_groups] unless options[:security_groups].nil?
           s['user_data'] = Base64.encode64(options[:user_data]) unless options[:user_data].nil?

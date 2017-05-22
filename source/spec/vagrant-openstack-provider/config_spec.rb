@@ -270,6 +270,7 @@ describe VagrantPlugins::Openstack::Config do
       machine.stub_chain(:env, :root_path).and_return '/'
       ssh.stub(:private_key_path) { 'private key path' }
       ssh.stub(:username) { 'ssh username' }
+      ssh.stub(:insert_key) { true }
       config.stub(:ssh) { ssh }
       machine.stub(:config) { config }
       subject.username = 'foo'
@@ -346,6 +347,16 @@ describe VagrantPlugins::Openstack::Config do
           subject.public_key_path = 'public_key'
           I18n.should_receive(:t).with('vagrant_openstack.config.private_key_missing').and_return error_message
           validation_errors.first.should == error_message
+        end
+      end
+
+      context 'keypair_name or public_key_path is set and ssh.insert_key is false' do
+        it 'should not error' do
+          ssh.stub(:private_key_path) { nil }
+          ssh.stub(:insert_key) { false }
+          subject.public_key_path = 'public_key'
+          I18n.should_not_receive(:t)
+          validation_errors.should be_empty
         end
       end
     end

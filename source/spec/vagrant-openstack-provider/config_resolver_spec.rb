@@ -93,6 +93,7 @@ describe VagrantPlugins::Openstack::ConfigResolver do
     double('ssh_config').tap do |config|
       config.stub(:username) { nil }
       config.stub(:port) { nil }
+      config.stub(:insert_key) { true }
     end
   end
 
@@ -403,6 +404,16 @@ describe VagrantPlugins::Openstack::ConfigResolver do
         config.stub(:public_key_path) { nil }
         @action.stub(:generate_keypair) { 'my-keypair-imported' }
         @action.resolve_keypair(env).should eq('my-keypair-imported')
+      end
+    end
+
+    context 'with insert_key false' do
+      it 'does nothing and return nil' do
+        config.stub(:keypair_name) { 'my-keypair' }
+        ssh_config.stub(:insert_key) { false }
+        nova.should_not_receive(:import_keypair_from_file)
+        @action.should_not_receive(:generate_keypair)
+        @action.resolve_keypair(env).should be_nil
       end
     end
   end
