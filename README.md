@@ -36,7 +36,7 @@ shown below.
 ```console
 $ vagrant plugin install vagrant-openstack-provider
 ...
-$ vagrant up --provider=openstack
+$ vagrant up
 ...
 ```
 
@@ -72,13 +72,13 @@ Vagrant.configure('2') do |config|
 end
 ```
 
-And then run `vagrant up --provider=openstack`.
+And then run `vagrant up`.
 
-Note that normally a lot of this boilerplate is encoded within the box
-file, but the box file used for the quick start, the "dummy" box, has
-no preconfigured defaults.
+__NB.__
+> See more examples in the [samples](https://github.com/ggiamarchi/vagrant-openstack-provider/tree/master/samples) directory.
 
-## Configuration
+
+## Configuration reference
 
 This provider exposes quite a few provider-specific configuration options:
 
@@ -410,7 +410,7 @@ creating a `Vagrantfile` in the top level of this directory (it is gitignored)
 that uses it, and uses bundler to execute Vagrant:
 
 ```console
-$ bundle exec vagrant up --provider=openstack
+$ bundle exec vagrant up
 ```
 
 ## Troubleshooting
