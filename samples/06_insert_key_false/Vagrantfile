@@ -1,0 +1,30 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure('2') do |config|
+
+  config.ssh.username = ENV['OS_SSH_USERNAME']
+  config.ssh.insert_key = false
+  config.ssh.private_key_path = './ssh_key'
+
+  config.vm.provider :openstack do |os|
+    os.server_name                      = '06_insert_key_false'
+    os.openstack_auth_url               = ENV['OS_AUTH_URL']
+    os.tenant_name                      = ENV['OS_TENANT_NAME']
+    os.username                         = ENV['OS_USERNAME']
+    os.password                         = ENV['OS_PASSWORD']
+    os.region                           = ENV['OS_REGION_NAME']
+    os.floating_ip_pool                 = ENV['OS_FLOATING_IP_POOL']
+    os.floating_ip_pool_always_allocate = true
+    os.flavor                           = ENV['OS_FLAVOR']
+    os.image                            = ENV['OS_IMAGE']
+    os.networks                        << ENV['OS_NETWORK']
+    os.user_data                        = """#!/bin/bash
+
+      set -x
+      mkdir -p /home/ubuntu/.ssh
+      echo '' >> /home/ubuntu/.ssh/authorized_keys
+      echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDENu9FoAOxYgz2aUc7zF4ODbdLKsSS864AMrSlOnbIrcMuHgsgz23fMIIEoiaw22ztH2CcO5pwCqfEPpQGXhaenv51i6/m8/rGy9sb201eIPDpOd/5BOjK0Da/w3hbfeMcq9VJhhq3C7J04Ds9BVrHBlYDeWN1bZQBt+ut8jWxgnR5hUBJopKgl/ypDP6vLZ2lyCU7MZVbPKwZJKei2UdLGtPrkkBcdSsfj9I+4cBVC7bYA8eEXTtvV44iYPrqQ9Oa1GIFD3clCUBUccI3SGG4RQ8E+Rzmbp1LnKM4tIV3iOMkwumtyaehJjzsYYdzl3H3g85sjliEhMvLKMZyZknv vagrant' >> /home/ubuntu/.ssh/authorized_keys
+    """
+  end
+end
