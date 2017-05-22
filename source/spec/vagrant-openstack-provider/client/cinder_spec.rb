@@ -11,6 +11,7 @@ describe VagrantPlugins::Openstack::CinderClient do
   let(:config) do
     double('config').tap do |config|
       config.stub(:http) { http }
+      config.stub(:ssl_ca_file) { nil }
       config.stub(:ssl_verify_peer) { true }
     end
   end
