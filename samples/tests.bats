@@ -254,3 +254,21 @@ teardown() {
   flush_out
   [ "$status" -eq 0 ]
 }
+
+@test "06 - With config.ssh.insert_key = false" {
+  title "$BATS_TEST_DESCRIPTION"
+
+  export VAGRANT_CWD=$BATS_TEST_DIRNAME/06_insert_key_false
+
+  run bundle exec vagrant up
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant ssh -c "true"
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant destroy
+  flush_out
+  [ "$status" -eq 0 ]
+}
