@@ -74,11 +74,11 @@ end
 
 And then run `vagrant up`.
 
-Note that normally a lot of this boilerplate is encoded within the box
-file, but the box file used for the quick start, the "dummy" box, has
-no preconfigured defaults.
+__NB.__
+> See more examples in the [samples](https://github.com/ggiamarchi/vagrant-openstack-provider/tree/master/samples) directory.
 
-## Configuration
+
+## Configuration reference
 
 This provider exposes quite a few provider-specific configuration options:
 
