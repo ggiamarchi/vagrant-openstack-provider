@@ -23,6 +23,7 @@ describe VagrantPlugins::Openstack::Action::SyncFolders do
       c.stub(:rsync_includes) { nil }
       c.stub(:ssh_disabled) { false }
       c.stub(:rsync_ignore_files) { ['.gitignore'] }
+      c.stub(:rsync_cvs_exclude) { true }
     end
   end
 
@@ -103,17 +104,13 @@ describe VagrantPlugins::Openstack::Action::SyncFolders do
                             '--verbose',
                             '--archive',
                             '-z',
-                            '--cvs-exclude',
-                            '--exclude',
-                            '.hg/',
-                            '--exclude',
-                            '.git/',
                             '--chmod',
                             'ugo=rwX',
                             '-e',
                             "ssh -p 23 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes -i '/tmp/key.pem' ",
                             '/home/john/vagrant/',
                             'user@1.2.3.4:/vagrant',
+                            '--cvs-exclude',
                             '--exclude-from',
                             './.gitignore']
         expect(communicate).to receive(:sudo).with "mkdir -p '/vagrant'"

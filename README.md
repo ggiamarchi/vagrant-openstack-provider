@@ -331,6 +331,19 @@ creating and connecting to OpenStack machines
 * `ssh.port` - Default SSH port is 22. If set, this option will override the default for SSH login
 * `ssh.private_key_path` - If set, vagrant will use this private key path to SSH on the machine. If you set this option, the `public_key_path` option of the provider should be set.
 
+## Shared Folders
+
+If `config.vm.synced_folder` is not specified, the provider will use rsync by default.
+
+To reduce load time or reduce data transfer, you can specify rsync exclusion patterns, e.g.:
+  `config.vm.synced_folder '.', '/vagrant', type: 'rsync', rsync__excludes: ['.git','.hg','/*/tags']`
+  or
+  `config.vm.provider.rsync_cvs_exclude = true`
+
+See `man rsync` for more information on rsync exclusion patterns.
+
+
+
 ## Box Format
 
 Every provider in Vagrant must introduce a custom box format. This
