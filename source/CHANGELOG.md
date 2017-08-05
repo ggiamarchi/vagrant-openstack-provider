@@ -1,4 +1,23 @@
-# 0.10.0 ( April 11, 2017)
+# 0.11.0 (August 5, 2017)
+
+IMPROVEMENTS:
+
+  - Implement a test suite running all samples #331
+  - Add test for config.ssh.insert_key = false #332
+
+FEATURES:
+
+  - Add "ssl_verify_peer" in config for self-signed certs #85 #320
+  - Add "ssl_ca_file" in config for self-signed certs #329
+
+BUG FIXES:
+
+  - Handling of asynchronous floating IP assignment #324
+  - Fix floating IP assignement #330
+  - Respect config.ssh.insert_key #328
+
+
+# 0.10.0 (April 11, 2017)
 
 IMPROVEMENTS:
 
