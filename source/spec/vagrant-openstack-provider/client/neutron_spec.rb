@@ -37,6 +37,24 @@ describe VagrantPlugins::Openstack::NeutronClient do
   describe 'get_private_networks' do
     context 'with token' do
       it 'returns only private networks for project in session' do
+        stub_request(:get, 'http://neutron')
+          .with(
+            headers:
+            {
+              'Accept' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(
+            status: 200,
+            body: '
+              {
+                "resources": [
+                  { "name": "subnet", "collections": "subnets", "links": [{"href": "http://neutron/subnets", "rel": "self"}]},
+                  { "name": "network", "collections": "networks", "links": [{"href": "http://neutron/networks", "rel": "self"}]},
+                  { "name": "port", "collections": "ports", "links": [{"href": "http://neutron/ports", "rel": "self"}]}
+                ]
+              }
+            ')
         stub_request(:get, 'http://neutron/networks')
           .with(
             headers:
@@ -70,6 +88,24 @@ describe VagrantPlugins::Openstack::NeutronClient do
   describe 'get_all_networks' do
     context 'with token' do
       it 'returns all networks for project in session' do
+        stub_request(:get, 'http://neutron')
+          .with(
+            headers:
+            {
+              'Accept' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(
+            status: 200,
+            body: '
+              {
+                "resources": [
+                  { "name": "subnet", "collections": "subnets", "links": [{"href": "http://neutron/subnets", "rel": "self"}]},
+                  { "name": "network", "collections": "networks", "links": [{"href": "http://neutron/networks", "rel": "self"}]},
+                  { "name": "port", "collections": "ports", "links": [{"href": "http://neutron/ports", "rel": "self"}]}
+                ]
+              }
+            ')
         stub_request(:get, 'http://neutron/networks')
           .with(
             headers:
@@ -105,6 +141,24 @@ describe VagrantPlugins::Openstack::NeutronClient do
   describe 'get_subnets' do
     context 'with token' do
       it 'returns all available subnets' do
+        stub_request(:get, 'http://neutron')
+          .with(
+            headers:
+            {
+              'Accept' => 'application/json',
+              'X-Auth-Token' => '123456'
+            })
+          .to_return(
+            status: 200,
+            body: '
+              {
+                "resources": [
+                  { "name": "subnet", "collections": "subnets", "links": [{"href": "http://neutron/subnets", "rel": "self"}]},
+                  { "name": "network", "collections": "networks", "links": [{"href": "http://neutron/networks", "rel": "self"}]},
+                  { "name": "port", "collections": "ports", "links": [{"href": "http://neutron/ports", "rel": "self"}]}
+                ]
+              }
+            ')
         stub_request(:get, 'http://neutron/subnets')
           .with(
             headers:

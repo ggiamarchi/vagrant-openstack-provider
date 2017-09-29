@@ -25,7 +25,11 @@ module VagrantPlugins
       end
 
       def get_subnets(env)
-        subnets_json = get(env, "#{@session.endpoints[:network]}/subnets")
+        network_response = get(env, "#{@session.endpoints[:network]}")
+        network_resources = JSON.parse(network_response)['resources']
+        subnets_resource = network_resources.find { |x| x['name'] == 'subnet' }
+        subnets_url = subnets_resource['links'].find { |x| x['rel'] == 'self' }['href']
+        subnets_json = get(env, subnets_url)
         subnets = []
         JSON.parse(subnets_json)['subnets'].each do |n|
           subnets << Subnet.new(n['id'], n['name'], n['cidr'], n['enable_dhcp'], n['network_id'])
@@ -36,7 +40,11 @@ module VagrantPlugins
       private
 
       def get_networks(env, all)
-        networks_json = get(env, "#{@session.endpoints[:network]}/networks")
+        network_response = get(env, "#{@session.endpoints[:network]}")
+        network_resources = JSON.parse(network_response)['resources']
+        networks_resource = network_resources.find { |x| x['name'] == 'network' }
+        networks_url = networks_resource['links'].find { |x| x['rel'] == 'self' }['href']
+        networks_json = get(env, networks_url)
         networks = []
         JSON.parse(networks_json)['networks'].each do |n|
           networks << Item.new(n['id'], n['name']) if all || n['tenant_id'].eql?(@session.project_id)
