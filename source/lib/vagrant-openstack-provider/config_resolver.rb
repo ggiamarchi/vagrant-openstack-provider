@@ -3,6 +3,7 @@ module VagrantPlugins
     class ConfigResolver
       def initialize
         @logger = Log4r::Logger.new('vagrant_openstack::action::config_resolver')
+        @mutex = Mutex.new
       end
 
       def resolve_ssh_port(env)
@@ -159,14 +160,16 @@ module VagrantPlugins
       end
 
       def search_free_ip(config, nova, env)
-        @logger.debug 'Retrieving all allocated floating ips on tenant'
-        all_floating_ips = nova.get_all_floating_ips(env)
-        all_floating_ips.each do |floating_ip|
-          log_attach = floating_ip.instance_id ? "attached to #{floating_ip.instance_id}" : 'not attached'
-          @logger.debug "#{floating_ip.ip} #{log_attach}" if config.floating_ip_pool.include? floating_ip.pool
-          return floating_ip.ip if (config.floating_ip_pool.include? floating_ip.pool) && floating_ip.instance_id.nil?
-        end unless config.floating_ip_pool_always_allocate
-        @logger.debug 'No free ip found'
+        @mutex.synchronize do
+          @logger.debug 'Retrieving all allocated floating ips on tenant'
+          all_floating_ips = nova.get_all_floating_ips(env)
+          all_floating_ips.each do |floating_ip|
+            log_attach = floating_ip.instance_id ? "attached to #{floating_ip.instance_id}" : 'not attached'
+            @logger.debug "#{floating_ip.ip} #{log_attach}" if config.floating_ip_pool.include? floating_ip.pool
+            return floating_ip.ip if (config.floating_ip_pool.include? floating_ip.pool) && floating_ip.instance_id.nil?
+          end unless config.floating_ip_pool_always_allocate
+          @logger.debug 'No free ip found'
+        end
         nil
       end
 

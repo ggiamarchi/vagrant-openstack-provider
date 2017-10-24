@@ -25,7 +25,7 @@ module VagrantPlugins
         Config
       end
 
-      provider(:openstack, box_optional: true) do
+      provider(:openstack, box_optional: true, parallel: true) do
         Openstack.init_i18n
         Openstack.init_logging
         VagrantPlugins::Openstack.check_version
