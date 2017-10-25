@@ -35,11 +35,11 @@ teardown() {
   flush_out
   [ "$status" -eq 0 ]
   [ $(openstack floating ip list -f value | wc -l) -eq 1 ] # Check one IP is allocated
-  
+
   run bundle exec vagrant ssh -c "true"
   flush_out
   [ "$status" -eq 0 ]
-  
+
   run bundle exec vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
@@ -205,6 +205,83 @@ teardown() {
   [ "$status" -eq 0 ]
 
   run bundle exec vagrant ssh -c "true" server-3
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant destroy
+  flush_out
+  [ "$status" -eq 0 ]
+}
+
+@test "03 - Multimachine loop / in parallel" {
+  title "$BATS_TEST_DESCRIPTION"
+
+  export VAGRANT_CWD=$BATS_TEST_DIRNAME/03_multimachine_loop
+
+  run bundle exec vagrant up --parallel
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant ssh -c "true" server-1
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant ssh -c "true" server-2
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant ssh -c "true" server-3
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant ssh -c "true" server-4
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant ssh -c "true" server-5
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant ssh -c "true" server-6
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant destroy
+  flush_out
+  [ "$status" -eq 0 ]
+}
+
+@test "03 - Multimachine loop / in parallel / with pre allocated floating IP" {
+  title "$BATS_TEST_DESCRIPTION"
+
+  allocate_4_floating_ip
+  export VAGRANT_CWD=$BATS_TEST_DIRNAME/03_multimachine_loop
+
+  run bundle exec vagrant up --parallel
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant ssh -c "true" server-1
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant ssh -c "true" server-2
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant ssh -c "true" server-3
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant ssh -c "true" server-4
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant ssh -c "true" server-5
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run bundle exec vagrant ssh -c "true" server-6
   flush_out
   [ "$status" -eq 0 ]
 

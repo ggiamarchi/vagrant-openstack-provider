@@ -19,6 +19,7 @@ module VagrantPlugins
           @logger = Log4r::Logger.new('vagrant_openstack::action::create_server')
           @resolver = resolver
           @utils = utils
+          @@mutex = Mutex.new
         end
 
         def execute(env)
@@ -49,8 +50,10 @@ module VagrantPlugins
           env[:machine].id = server_id
 
           waiting_for_server_to_be_built(env, server_id)
-          assign_floating_ip(env, server_id)
-          waiting_for_floating_ip_to_be_assigned(env, server_id)
+          @@mutex.synchronize do
+            assign_floating_ip(env, server_id)
+            waiting_for_floating_ip_to_be_assigned(env, server_id)
+          end
           attach_volumes(env, server_id, options[:volumes]) unless options[:volumes].empty?
 
           @app.call(env)
