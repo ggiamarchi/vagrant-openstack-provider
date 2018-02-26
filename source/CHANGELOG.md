@@ -1,3 +1,9 @@
+# 0.12.0 (February 26, 2018)
+
+FEATURES:
+
+  - Support parallel actions (#130)
+
 # 0.11.0 (August 5, 2017)
 
 IMPROVEMENTS:

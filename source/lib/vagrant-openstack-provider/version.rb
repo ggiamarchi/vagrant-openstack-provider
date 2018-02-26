@@ -4,7 +4,7 @@ module VagrantPlugins
     # Stable versions must respect the pattern given
     # by VagrantPlugins::Openstack::VERSION_PATTERN
     #
-    VERSION = '0.11.0'
+    VERSION = '0.12.0'
 
     #
     # Stable version must respect the naming convention 'x.y.z'
