@@ -16,7 +16,3 @@ end
 group :debug do
   gem 'byebug'
 end
-
-group :plugins do
-  gem 'vagrant-openstack-provider', path: '.'
-end
