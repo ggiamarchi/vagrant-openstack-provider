@@ -152,7 +152,7 @@ en:
       invalid_interface_type: |-
         Interface type must be public, admin or internal (if not provided, default is public)
       invalid_api_version: |-
-        identity API verison must be 2 or 3 (if nto provided, default is 2)
+        identity API verison must be 2 or 3 (if not provided, default is 2)
 
     errors:
       default: |-
