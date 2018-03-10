@@ -19,6 +19,7 @@ describe VagrantPlugins::Openstack::Action::ReadSSHInfo do
       config.stub(:keypair_name) { nil }
       config.stub(:public_key_path) { nil }
       config.stub(:ssh_disabled) { false }
+      config.stub(:ip_version) { nil }
     end
   end
 
