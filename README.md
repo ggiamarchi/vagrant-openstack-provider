@@ -145,6 +145,7 @@ __N.B.__
 
 #### Networks
 
+* `ip_version` - What IP version, 4 or 6, should be used to establish the SSH connection to the instance
 * `networks` - Network list the server must be connected on. Can be omitted if only one private network exists
   in the OpenStack project
 
