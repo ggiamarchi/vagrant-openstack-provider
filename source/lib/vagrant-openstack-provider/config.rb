@@ -265,7 +265,7 @@ module VagrantPlugins
 
       # Specify the version of ip that should be used to connect to the machine
       #
-      # @reeturn [Integer]
+      # @return [Integer]
       attr_accessor :ip_version
 
       def initialize
