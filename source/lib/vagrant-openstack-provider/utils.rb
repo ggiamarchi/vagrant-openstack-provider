@@ -15,7 +15,7 @@ module VagrantPlugins
             next unless network_detail['OS-EXT-IPS:type'] == 'floating'
             if env[:machine].provider_config.ip_version.nil?
               return network_detail['addr']
-            elsif get_ip_version(network_detail['addr']) == env[:machine].provider_config.ip_version
+            elsif network_detail['version'] == env[:machine].provider_config.ip_version
               return network_detail['addr']
             end
             fallback ||= network_detail['addr']
@@ -67,15 +67,9 @@ module VagrantPlugins
 
       private
 
-      def get_ip_version(ip)
-        (ip.include? '.') ? 4 : 6
-      end
-
       def filter_by_version(net_addresses, wanted_ip_version)
         net_addresses.each do |address|
-          if get_ip_version(address['addr']) == wanted_ip_version
-            return address['addr']
-          end
+          return address['addr'] if address['version'] == wanted_ip_version
         end
         nil
       end

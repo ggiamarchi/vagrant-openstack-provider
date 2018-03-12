@@ -43,10 +43,12 @@ describe VagrantPlugins::Openstack::Utils do
               'addresses' => {
                 'net' => [
                   {
-                    'addr' => '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+                    'addr' => '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
+                    'version' => 6
                   },
                   {
-                    'addr' => '13.13.13.13'
+                    'addr' => '13.13.13.13',
+                    'version' => 4
                   }
                 ]
               }
@@ -64,10 +66,12 @@ describe VagrantPlugins::Openstack::Utils do
               'addresses' => {
                 'net' => [
                   {
-                    'addr' => '13.13.13.13'
+                    'addr' => '13.13.13.13',
+                    'version' => 4
                   },
                   {
-                    'addr' => '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+                    'addr' => '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
+                    'version' => 6
                   }
                 ]
               }
@@ -85,10 +89,12 @@ describe VagrantPlugins::Openstack::Utils do
             {
               'addresses' => {
                 'net-1' => [{
-                  'addr' => '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
+                  'addr' => '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
+                  'version' => 6
                 }],
                 'net-2' => [{
-                  'addr' => '13.13.13.13'
+                  'addr' => '13.13.13.13',
+                  'version' => 4
                 }]
               }
             }
