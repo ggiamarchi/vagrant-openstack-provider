@@ -96,7 +96,7 @@ module VagrantPlugins
                 user: {
                   name: config.username,
                   domain: {
-                    name: config.domain_name
+                    name: config.user_domain_name
                   },
                   password: '****'
                 }
@@ -105,7 +105,7 @@ module VagrantPlugins
             scope: {
               project: {
                 name: config.project_name,
-                domain: { name: config.domain_name }
+                domain: { name: config.project_domain_name }
               }
             }
           }

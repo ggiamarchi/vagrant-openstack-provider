@@ -305,7 +305,8 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
         end
         env[:openstack_client].stub(:neutron)  { neutron }
         env[:openstack_client].stub(:glance)   { glance }
-        config.stub(:domain_name) { 'dummy' }
+        config.stub(:user_domain_name) { 'dummy' }
+        config.stub(:project_domain_name) { 'dummy' }
         config.stub(:identity_api_version) { '3' }
 
         @action.call(env)

@@ -146,7 +146,11 @@ en:
         settings causes the OpenStack provider to fall back to an old synced
         folder implementation instead of using standard Vagrant synced folders.
       domain_required: |-
-        A domain is required when using identity API version 3
+        A domain is required when using identity API version 3. You need to specify domain_name or (project_domain_name and user_domain_name)
+      user_domain_required: |-
+        A user domain is required when specifying a project domain using identity API version 3.
+      project_domain_required: |-
+        A project domain is required when specifying a user domain using identity API version 3.
       project_name_required: |-
         A project name is required when using identity API version 3
       invalid_interface_type: |-

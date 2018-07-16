@@ -178,7 +178,8 @@ describe VagrantPlugins::Openstack::KeystoneClient do
     # V3
     context 'with good credentials v3' do
       it 'store token and tenant id' do
-        config.stub(:domain_name) { 'dummy' }
+        config.stub(:user_domain_name) { 'dummy' }
+        config.stub(:project_domain_name) { 'dummy' }
         config.stub(:identity_api_version) { '3' }
         config.stub(:openstack_auth_url) { 'http://keystoneAuthV3' }
 
@@ -200,7 +201,8 @@ describe VagrantPlugins::Openstack::KeystoneClient do
 
     context 'with wrong credentials v3' do
       it 'raise an unauthorized error ' do
-        config.stub(:domain_name) { 'dummy' }
+        config.stub(:user_domain_name) { 'dummy' }
+        config.stub(:project_domain_name) { 'dummy' }
         config.stub(:identity_api_version) { '3' }
         config.stub(:openstack_auth_url) { 'http://keystoneAuthV3' }
 
