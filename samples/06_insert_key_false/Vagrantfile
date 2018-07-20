@@ -7,7 +7,7 @@ Vagrant.configure('2') do |config|
   config.ssh.insert_key = false
   config.ssh.private_key_path = './ssh_key'
 
-  config.vm.provider :openstack do |os|
+  config.vm.provider :openstack do |os, ov|
     os.server_name                      = '06_insert_key_false'
     os.openstack_auth_url               = ENV['OS_AUTH_URL']
     os.tenant_name                      = ENV['OS_TENANT_NAME']
@@ -26,5 +26,7 @@ Vagrant.configure('2') do |config|
       echo '' >> /home/ubuntu/.ssh/authorized_keys
       echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDENu9FoAOxYgz2aUc7zF4ODbdLKsSS864AMrSlOnbIrcMuHgsgz23fMIIEoiaw22ztH2CcO5pwCqfEPpQGXhaenv51i6/m8/rGy9sb201eIPDpOd/5BOjK0Da/w3hbfeMcq9VJhhq3C7J04Ds9BVrHBlYDeWN1bZQBt+ut8jWxgnR5hUBJopKgl/ypDP6vLZ2lyCU7MZVbPKwZJKei2UdLGtPrkkBcdSsfj9I+4cBVC7bYA8eEXTtvV44iYPrqQ9Oa1GIFD3clCUBUccI3SGG4RQ8E+Rzmbp1LnKM4tIV3iOMkwumtyaehJjzsYYdzl3H3g85sjliEhMvLKMZyZknv vagrant' >> /home/ubuntu/.ssh/authorized_keys
     """
+
+    ov.nfs.functional = false
   end
 end
