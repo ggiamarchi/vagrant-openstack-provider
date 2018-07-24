@@ -20,6 +20,8 @@ teardown() {
   title "Teardown"
 
   bundle exec vagrant destroy >> $BATS_OUT_LOG
+
+  delete_all_floating_ip >> $BATS_OUT_LOG
   cd $BATS_TEST_DIRNAME
 }
 
