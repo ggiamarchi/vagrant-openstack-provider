@@ -305,6 +305,25 @@ teardown() {
   flush_out
   [ "$status" -eq 0 ]
 
+  run exec_vagrant destroy
+  flush_out
+  [ "$status" -eq 0 ]
+}
+
+@test "04 - Heat Stack multimachine" {
+  skip "Does not work currently"
+  title "$BATS_TEST_DESCRIPTION"
+
+  export VAGRANT_CWD=$BATS_TEST_DIRNAME/05_heat_stack_multimachine
+
+  run exec_vagrant up
+  flush_out
+  [ "$status" -eq 0 ]
+
+  run exec_vagrant ssh -c "true" server-1
+  flush_out
+  [ "$status" -eq 0 ]
+
   run exec_vagrant ssh -c "true" server-2
   flush_out
   [ "$status" -eq 0 ]
@@ -320,7 +339,7 @@ teardown() {
   unset_openstack_env
   source $BATS_TEST_DIRNAME/openrc-keystone-v3.sh
 
-  export VAGRANT_CWD=$BATS_TEST_DIRNAME/05_keystone_v3
+  export VAGRANT_CWD=$BATS_TEST_DIRNAME/06_keystone_v3
 
   run exec_vagrant up
   flush_out
