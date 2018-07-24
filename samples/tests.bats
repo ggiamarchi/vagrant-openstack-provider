@@ -31,16 +31,16 @@ teardown() {
 
   [ $(openstack floating ip list -f value | wc -l) -eq 0 ] # Check no IPs is allocated
 
-  run bundle exec vagrant up
+  run exec_vagrant up
   flush_out
   [ "$status" -eq 0 ]
   [ $(openstack floating ip list -f value | wc -l) -eq 1 ] # Check one IP is allocated
 
-  run bundle exec vagrant ssh -c "true"
+  run exec_vagrant ssh -c "true"
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant destroy
+  run exec_vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
 }
@@ -53,16 +53,16 @@ teardown() {
 
   [ $(openstack floating ip list -f value | wc -l) -eq 0 ] # Check no IPs is allocated
 
-  run bundle exec vagrant up
+  run exec_vagrant up
   flush_out
   [ "$status" -eq 0 ]
   [ $(openstack floating ip list -f value | wc -l) -eq 1 ] # Check one IP is allocated
 
-  run bundle exec vagrant ssh -c "true"
+  run exec_vagrant ssh -c "true"
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant destroy
+  run exec_vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
 }
@@ -77,16 +77,16 @@ teardown() {
   export OS_FLOATING_IP_ALWAYS_ALLOCATE=false
   export OS_FLOATING_IP_POOL=${OS_FLOATING_IP_POOL_NAME}
 
-  run bundle exec vagrant up
+  run exec_vagrant up
   flush_out
   [ "$status" -eq 0 ]
   [ $(openstack floating ip list -f value | wc -l) -eq 4 ] # Check again 4 IPs are allocated
 
-  run bundle exec vagrant ssh -c "true"
+  run exec_vagrant ssh -c "true"
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant destroy
+  run exec_vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
 }
@@ -101,16 +101,16 @@ teardown() {
   export OS_FLOATING_IP_ALWAYS_ALLOCATE=true
   export OS_FLOATING_IP_POOL=${OS_FLOATING_IP_POOL_NAME}
 
-  run bundle exec vagrant up
+  run exec_vagrant up
   flush_out
   [ "$status" -eq 0 ]
   [ $(openstack floating ip list -f value | wc -l) -eq 5 ] # Check again 4 IPs are allocated
 
-  run bundle exec vagrant ssh -c "true"
+  run exec_vagrant ssh -c "true"
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant destroy
+  run exec_vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
 }
@@ -127,16 +127,16 @@ teardown() {
   export OS_FLOATING_IP_ALWAYS_ALLOCATE=false
   export OS_FLOATING_IP_POOL=${OS_FLOATING_IP_POOL_ID}
 
-  run bundle exec vagrant up
+  run exec_vagrant up
   flush_out
   [ "$status" -eq 0 ]
   [ $(openstack floating ip list -f value | wc -l) -eq 4 ] # Check again 4 IPs are allocated
 
-  run bundle exec vagrant ssh -c "true"
+  run exec_vagrant ssh -c "true"
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant destroy
+  run exec_vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
 }
@@ -151,16 +151,16 @@ teardown() {
   export OS_FLOATING_IP_ALWAYS_ALLOCATE=true
   export OS_FLOATING_IP_POOL=${OS_FLOATING_IP_POOL_ID}
 
-  run bundle exec vagrant up
+  run exec_vagrant up
   flush_out
   [ "$status" -eq 0 ]
   [ $(openstack floating ip list -f value | wc -l) -eq 5 ] # Check again 4 IPs are allocated
 
-  run bundle exec vagrant ssh -c "true"
+  run exec_vagrant ssh -c "true"
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant destroy
+  run exec_vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
 }
@@ -170,19 +170,19 @@ teardown() {
 
   export VAGRANT_CWD=$BATS_TEST_DIRNAME/02_multimachine
 
-  run bundle exec vagrant up
+  run exec_vagrant up
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-1
+  run exec_vagrant ssh -c "true" server-1
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-2
+  run exec_vagrant ssh -c "true" server-2
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant destroy
+  run exec_vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
 }
@@ -192,23 +192,23 @@ teardown() {
 
   export VAGRANT_CWD=$BATS_TEST_DIRNAME/03_multimachine_loop
 
-  run bundle exec vagrant up
+  run exec_vagrant up
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-1
+  run exec_vagrant ssh -c "true" server-1
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-2
+  run exec_vagrant ssh -c "true" server-2
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-3
+  run exec_vagrant ssh -c "true" server-3
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant destroy
+  run exec_vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
 }
@@ -218,35 +218,35 @@ teardown() {
 
   export VAGRANT_CWD=$BATS_TEST_DIRNAME/03_multimachine_loop
 
-  run bundle exec vagrant up --parallel
+  run exec_vagrant up --parallel
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-1
+  run exec_vagrant ssh -c "true" server-1
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-2
+  run exec_vagrant ssh -c "true" server-2
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-3
+  run exec_vagrant ssh -c "true" server-3
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-4
+  run exec_vagrant ssh -c "true" server-4
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-5
+  run exec_vagrant ssh -c "true" server-5
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-6
+  run exec_vagrant ssh -c "true" server-6
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant destroy
+  run exec_vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
 }
@@ -257,35 +257,35 @@ teardown() {
   allocate_4_floating_ip
   export VAGRANT_CWD=$BATS_TEST_DIRNAME/03_multimachine_loop
 
-  run bundle exec vagrant up --parallel
+  run exec_vagrant up --parallel
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-1
+  run exec_vagrant ssh -c "true" server-1
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-2
+  run exec_vagrant ssh -c "true" server-2
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-3
+  run exec_vagrant ssh -c "true" server-3
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-4
+  run exec_vagrant ssh -c "true" server-4
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-5
+  run exec_vagrant ssh -c "true" server-5
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-6
+  run exec_vagrant ssh -c "true" server-6
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant destroy
+  run exec_vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
 }
@@ -295,19 +295,19 @@ teardown() {
 
   export VAGRANT_CWD=$BATS_TEST_DIRNAME/04_heat_stack
 
-  run bundle exec vagrant up
+  run exec_vagrant up
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-1
+  run exec_vagrant ssh -c "true" server-1
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true" server-2
+  run exec_vagrant ssh -c "true" server-2
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant destroy
+  run exec_vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
 }
@@ -315,19 +315,20 @@ teardown() {
 @test "05 - Keystone v3" {
   title "$BATS_TEST_DESCRIPTION"
 
+  unset_openstack_env
   source $BATS_TEST_DIRNAME/openrc-keystone-v3.sh
 
   export VAGRANT_CWD=$BATS_TEST_DIRNAME/05_keystone_v3
 
-  run bundle exec vagrant up
+  run exec_vagrant up
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true"
+  run exec_vagrant ssh -c "true"
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant destroy
+  run exec_vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
 }
@@ -337,15 +338,15 @@ teardown() {
 
   export VAGRANT_CWD=$BATS_TEST_DIRNAME/06_insert_key_false
 
-  run bundle exec vagrant up
+  run exec_vagrant up
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant ssh -c "true"
+  run exec_vagrant ssh -c "true"
   flush_out
   [ "$status" -eq 0 ]
 
-  run bundle exec vagrant destroy
+  run exec_vagrant destroy
   flush_out
   [ "$status" -eq 0 ]
 }

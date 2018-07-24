@@ -1,3 +1,4 @@
+#!/bin/bash
 
 unset_openstack_env() {
   for v in $(env | grep OS_ | sed -e "s/\(.*\)=.*/\1/g") ; do  unset $v ; done
@@ -30,4 +31,8 @@ flush_out() {
     echo ""
     printf "%s\n" "${lines[@]}"
   } >> $BATS_OUT_LOG
+}
+
+exec_vagrant() {
+  vagrant $*
 }
