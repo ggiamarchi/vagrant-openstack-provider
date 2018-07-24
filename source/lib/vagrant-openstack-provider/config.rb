@@ -72,6 +72,11 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :domain_name
 
+      # The domain name to access Openstack, this defaults to Default.
+      #
+      # @return [String]
+      attr_accessor :scope_domain
+
       # The name of the keypair to use.
       #
       # @return [String]
@@ -289,6 +294,7 @@ module VagrantPlugins
         @security_groups = UNSET_VALUE
         @user_data = UNSET_VALUE
         @metadata = UNSET_VALUE
+        @scope_domain = UNSET_VALUE
         @ssh_disabled = UNSET_VALUE
         @server_create_timeout = UNSET_VALUE
         @server_active_timeout = UNSET_VALUE
@@ -363,6 +369,7 @@ module VagrantPlugins
         @server_name = nil if @server_name == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
         @domain_name = 'Default' if @domain_name == UNSET_VALUE
+        @scope_domain = @domain_name if @scope_domain == UNSET_VALUE
         @floating_ip = nil if @floating_ip == UNSET_VALUE
         @floating_ip_pool = nil if @floating_ip_pool == UNSET_VALUE
         @floating_ip_pool_always_allocate = false if floating_ip_pool_always_allocate == UNSET_VALUE

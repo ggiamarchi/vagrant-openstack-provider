@@ -105,7 +105,7 @@ module VagrantPlugins
             scope: {
               project: {
                 name: config.project_name,
-                domain: { name: config.domain_name }
+                domain: { name: config.scope_domain }
               }
             }
           }

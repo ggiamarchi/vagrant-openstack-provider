@@ -306,6 +306,7 @@ describe VagrantPlugins::Openstack::Action::ConnectOpenstack do
         env[:openstack_client].stub(:neutron)  { neutron }
         env[:openstack_client].stub(:glance)   { glance }
         config.stub(:domain_name) { 'dummy' }
+        config.stub(:scope_domain) { 'dummy' }
         config.stub(:identity_api_version) { '3' }
 
         @action.call(env)
