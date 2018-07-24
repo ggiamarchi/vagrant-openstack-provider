@@ -20,7 +20,7 @@ Values matching your OpenStack information must be set in `openrc-common.sh`, `o
 
 ### OpenStack
 
-You need an OpenStack project. This project should be accessible using keyston v2 credentials.
+You need an OpenStack project. In order to run the whole test suite, this project should be accessible using Keystone v2 and v3 credentials.
 
 In the projet, the following topology is supposed to exists:
 
@@ -30,4 +30,20 @@ In the projet, the following topology is supposed to exists:
 
 ## Run
 
-Basically run the executable script `tests.bats`.
+To run a single test, basically execute the desired script
+
+```bash
+$ ./01_simple.001.bats
+```
+
+To run several test run bats explicitly with tests script in argument
+
+```bash
+$ bats 01_simple.001.bats 01_simple.002.bats
+```
+
+Or to run the whole tests suite
+
+```bash
+$ bats *.bats
+```
