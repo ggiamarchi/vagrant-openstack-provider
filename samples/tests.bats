@@ -118,7 +118,7 @@ teardown() {
 # TODO This test fails because of issue #325
 @test "01 - Simple - with floating IPs pre-allocated / using floating IP pool ID / don't force allocate" {
   title "$BATS_TEST_DESCRIPTION"
-  skip
+  skip "This test fails because of issue #325"
 
   allocate_4_floating_ip
   [ $(openstack floating ip list -f value | wc -l) -eq 4 ] # Check 4 IPs are allocated
