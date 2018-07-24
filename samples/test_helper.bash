@@ -1,5 +1,28 @@
 #!/bin/bash
 
+BATS_OUT_LOG=$BATS_TEST_DIRNAME/test.log
+
+setup() {
+  title "Setup"
+
+  unset_openstack_env
+  export VAGRANT_OPENSTACK_LOG=debug
+
+  source $BATS_TEST_DIRNAME/openrc-keystone-v2.sh
+
+  delete_all_floating_ip >> $BATS_OUT_LOG
+  cd $BATS_TEST_DIRNAME/../source
+}
+
+teardown() {
+  title "Teardown"
+
+  bundle exec vagrant destroy >> $BATS_OUT_LOG
+
+  delete_all_floating_ip >> $BATS_OUT_LOG
+  cd $BATS_TEST_DIRNAME
+}
+
 unset_openstack_env() {
   for v in $(env | grep OS_ | sed -e "s/\(.*\)=.*/\1/g") ; do  unset $v ; done
 }
