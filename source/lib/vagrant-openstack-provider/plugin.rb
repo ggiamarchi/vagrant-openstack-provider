@@ -28,7 +28,6 @@ module VagrantPlugins
       provider(:openstack, box_optional: true, parallel: true) do
         Openstack.init_i18n
         Openstack.init_logging
-        VagrantPlugins::Openstack.check_version
 
         # Load the actual provider
         require_relative 'provider'
@@ -48,7 +47,6 @@ module VagrantPlugins
       command('openstack') do
         Openstack.init_i18n
         Openstack.init_logging
-        VagrantPlugins::Openstack.check_version
 
         require_relative 'command/main'
         Command::Main
