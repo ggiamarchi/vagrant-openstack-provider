@@ -16,21 +16,39 @@ module VagrantPlugins
       #
       attr_accessor :status
 
+      #
+      # boolean attribute to disbale version checker
+      #
+      attr_accessor :check_enabled
+
       def initialize
         @status = nil
+        @check_enabled = true
+
+        check = ENV['VAGRANT_OPENSTACK_VERSION_CKECK']
+        @check_enabled = false if check && check.upcase == 'DISABLED'
       end
 
       #
       # Check the latest version from rubygem and set the status
       #
       def check
+        return :latest unless @check_enabled
         return @status unless @status.nil?
-        latest  = Gem.latest_spec_for('vagrant-openstack-provider').version.version
+
+        begin
+          latest = Gem.latest_spec_for('vagrant-openstack-provider').version.version
+        rescue
+          # If for any reason the version of the latest pulished
+          # version can't be found we don't fail in any way
+          return :latest
+        end
+
         current = VagrantPlugins::Openstack::VERSION
 
         unless current =~ VERSION_PATTERN
           @status = :unstable
-          print I18n.t('vagrant_openstack.version_unstable')
+          print_message I18n.t('vagrant_openstack.version_unstable')
           return
         end
 
@@ -47,19 +65,19 @@ module VagrantPlugins
 
         if i_current > i_latest
           @status = :unstable
-          print I18n.t('vagrant_openstack.version_unstable')
+          print_message I18n.t('vagrant_openstack.version_unstable')
           return
         end
 
         @status = :outdated
-        print I18n.t('vagrant_openstack.version_outdated', latest: latest, current: current)
+        print_message I18n.t('vagrant_openstack.version_outdated', latest: latest, current: current)
       end
 
       private
 
-      def print(message)
-        puts message.yellow
-        puts ''
+      def print_message(message)
+        $stderr.puts message.yellow
+        $stderr.puts ''
       end
     end
 

@@ -31,8 +31,8 @@ describe VagrantPlugins::Openstack::VersionChecker do
   def assert_version_is(expected_status, latest, current)
     stub_const('VagrantPlugins::Openstack::VERSION', current)
     version.stub(:version) { latest }
-    @checker.stub(:print)
-    expect(@checker).to receive(:print) unless expected_status == :latest
+    @checker.stub(:print_message)
+    expect(@checker).to receive(:print_message) unless expected_status == :latest
     @checker.check
     expect(@checker.status).to eq(expected_status)
   end
