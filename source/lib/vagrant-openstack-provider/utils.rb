@@ -13,7 +13,7 @@ module VagrantPlugins
           end
         end
         fail Errors::UnableToResolveIP if addresses.size == 0
-        if addresses.size == 1
+        if addresses.size == 1 || !env[:machine].provider_config.networks
           net_addresses = addresses.first[1]
         else
           first_network = env[:machine].provider_config.networks[0]
