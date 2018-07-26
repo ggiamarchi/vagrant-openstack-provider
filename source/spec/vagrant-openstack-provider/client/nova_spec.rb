@@ -10,6 +10,7 @@ describe VagrantPlugins::Openstack::NovaClient do
     double('http').tap do |http|
       http.stub(:read_timeout) { 42 }
       http.stub(:open_timeout) { 43 }
+      http.stub(:proxy) { nil }
     end
   end
 

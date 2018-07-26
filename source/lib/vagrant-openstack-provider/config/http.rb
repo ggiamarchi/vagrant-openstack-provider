@@ -11,14 +11,20 @@ module VagrantPlugins
       # @return [Integer]
       attr_accessor :read_timeout
 
+      #
+      # @return [Integer]
+      attr_accessor :proxy
+
       def initialize
         @open_timeout = UNSET_VALUE
         @read_timeout = UNSET_VALUE
+        @proxy = UNSET_VALUE
       end
 
       def finalize!
         @open_timeout = 60 if @open_timeout == UNSET_VALUE
         @read_timeout = 30 if @read_timeout == UNSET_VALUE
+        @proxy = nil if @proxy == UNSET_VALUE
       end
 
       def merge(other)

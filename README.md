@@ -101,7 +101,7 @@ This provider exposes quite a few provider-specific configuration options:
 * `ssl_ca_file` - The location of CA certificate file.
 * `ssl_verify_peer` - Verify peer certificate when connecting to endpoint. Defaults to true. Set to false to disable check (beware this is not secure!)
 
-### VM Configuration
+### Machine Configuration
 
 * `server_name` - The name of the server within OpenStack Cloud. This
   defaults to the name of the Vagrant machine (via `config.vm.define`), but
@@ -113,6 +113,10 @@ This provider exposes quite a few provider-specific configuration options:
 * `user_data` - String of User data to be sent to the newly created OpenStack instance. Use this e.g. to inject a script at boot time.
 * `metadata` - A Hash of metadata that will be sent to the instance for configuration e.g. `os.metadata  = { 'key' => 'value' }`
 * `scheduler_hints` - Pass hints to the OpenStack scheduler, e.g. { "cell": "some cell name" }
+* `server_create_timeout` - Time to wait in seconds for the server to be created when `vagrant up`. Default is `200`
+* `server_active_timeout` - Time to wait in seconds for the server to become active when `vagrant up` or `vagrant resume`. Default is `200`
+* `server_stop_timeout` - Time to wait in seconds for the server to stop when `vagrant halt`. Default is `200`
+* `server_delete_timeout` - Time to wait in seconds for the server to be deleted when `vagrant destroy`. Default is `200`
 
 #### Floating IPs
 
@@ -237,7 +241,6 @@ os.stacks = [
 end
 ```
 
-
 ### SSH authentication
 
 * `keypair_name` - The name of the key pair register in nova to associate with the VM. The public key should
@@ -285,14 +288,11 @@ the remote machine over SSH.
 This is good enough for all built-in Vagrant provisioners (shell,
 chef, and puppet) to work!
 
-### Timeouts
+### HTTP options
 
-* `server_create_timeout` - Time to wait in seconds for the server to be created when `vagrant up`. Default is `200`
-* `server_active_timeout` - Time to wait in seconds for the server to become active when `vagrant up` or `vagrant resume`. Default is `200`
-* `server_stop_timeout` - Time to wait in seconds for the server to stop when `vagrant halt`. Default is `200`
-* `server_delete_timeout` - Time to wait in seconds for the server to be deleted when `vagrant destroy`. Default is `200`
 * `http.open_timeout` - Open timeout for any HTTP request. Default is `60`
 * `http.read_timeout` - Read timeout for any HTTP request. Default is `30`
+* `http.proxy` - HTTP Proxy URL to use for all OpenStack API calls
 
 ### Provisioners meta-args
 
