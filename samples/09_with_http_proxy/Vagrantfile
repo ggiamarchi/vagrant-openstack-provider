@@ -1,0 +1,25 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure('2') do |config|
+
+  config.ssh.username = ENV['OS_SSH_USERNAME']
+
+  config.vm.provider :openstack do |os, ov|
+    os.http.proxy = 'http://openstack:3128'
+
+    os.server_name                      = '09_with_http_proxy'
+    os.openstack_auth_url               = ENV['OS_AUTH_URL']
+    os.tenant_name                      = ENV['OS_TENANT_NAME']
+    os.username                         = ENV['OS_USERNAME']
+    os.password                         = ENV['OS_PASSWORD']
+    os.region                           = ENV['OS_REGION_NAME']
+    os.floating_ip_pool                 = ENV['OS_FLOATING_IP_POOL']
+    os.floating_ip_pool_always_allocate = (ENV['OS_FLOATING_IP_ALWAYS_ALLOCATE'] == 'true')
+    os.flavor                           = ENV['OS_FLAVOR']
+    os.image                            = ENV['OS_IMAGE']
+    os.networks                        << ENV['OS_NETWORK']
+
+    ov.nfs.functional = false
+  end
+end
