@@ -1,8 +1,11 @@
+# 0.13.0 (July 30, 2018)
+
+See https://github.com/ggiamarchi/vagrant-openstack-provider/milestone/20?closed=1
+
 # 0.12.0 (February 26, 2018)
 
-FEATURES:
+See https://github.com/ggiamarchi/vagrant-openstack-provider/milestone/19?closed=1
 
-  - Support parallel actions (#130)
 
 # 0.11.0 (August 5, 2017)
 
