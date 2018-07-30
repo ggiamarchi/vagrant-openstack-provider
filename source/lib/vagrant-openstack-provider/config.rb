@@ -72,6 +72,16 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :domain_name
 
+      # The user domain name to access Openstack, this defaults to Default.
+      #
+      # @return [String]
+      attr_accessor :user_domain_name
+
+      # The project domain name to access Openstack, this defaults to Default.
+      #
+      # @return [String]
+      attr_accessor :project_domain_name
+
       # The name of the keypair to use.
       #
       # @return [String]
@@ -302,6 +312,7 @@ module VagrantPlugins
         @use_legacy_synced_folders = UNSET_VALUE
         @ssl_ca_file = UNSET_VALUE
         @ssl_verify_peer = UNSET_VALUE
+        @domain_name = UNSET_VALUE
       end
 
       def merge(other)
@@ -362,7 +373,9 @@ module VagrantPlugins
         @project_name = nil if @project_name == UNSET_VALUE
         @server_name = nil if @server_name == UNSET_VALUE
         @username = nil if @username == UNSET_VALUE
-        @domain_name = 'Default' if @domain_name == UNSET_VALUE
+        # If domain_name is set we use it for user and project
+        @user_domain_name = @domain_name if @domain_name != UNSET_VALUE
+        @project_domain_name = @domain_name if @domain_name != UNSET_VALUE
         @floating_ip = nil if @floating_ip == UNSET_VALUE
         @floating_ip_pool = nil if @floating_ip_pool == UNSET_VALUE
         @floating_ip_pool_always_allocate = false if floating_ip_pool_always_allocate == UNSET_VALUE
@@ -423,7 +436,7 @@ module VagrantPlugins
       def rsync_include(inc)
         @rsync_includes << inc
       end
-
+      # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
       def validate(machine)
         errors = _detected_errors
 
@@ -465,7 +478,15 @@ module VagrantPlugins
           errors << I18n.t('vagrant_openstack.config.tenant_name_required') if @tenant_name.nil? || @tenant_name.empty?
           errors << I18n.t('vagrant_openstack.config.invalid_endpoint_type') unless  %w(publicURL adminURL internalURL).include?(@endpoint_type)
         elsif @identity_api_version == '3'
-          errors << I18n.t('vagrant_openstack.config.domain_required') if @domain_name.nil? || @domain_name.empty?
+          if @domain_name == UNSET_VALUE || @domain_name.nil? || @domain_name.empty?
+            if (@user_domain_name.nil? || @user_domain_name.empty?) && (@project_domain_name_name.nil? || @project_domain_name.empty?)
+              errors << I18n.t('vagrant_openstack.config.domain_required')
+            elsif @user_domain_name.nil? || @user_domain_name.empty?
+              errors << I18n.t('vagrant_openstack.config.user_domain_required')
+            elsif @project_domain_name.nil? || @project_domain_name.empty?
+              errors << I18n.t('vagrant_openstack.config.project_domain_required')
+            end
+          end
           errors << I18n.t('vagrant_openstack.config.project_name_required') if @project_name.nil? || @project_name.empty?
           errors << I18n.t('vagrant_openstack.config.invalid_interface_type') unless  %w(public admin internal).include?(@interface_type)
         end
