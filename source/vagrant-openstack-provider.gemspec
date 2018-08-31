@@ -25,7 +25,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec', '~> 3.1.0'
   gem.add_development_dependency 'rspec-its', '~> 1.0.1'
   gem.add_development_dependency 'rspec-expectations', '~> 3.1.2'
-  gem.add_development_dependency 'webmock', '~> 1.18.0'
+  gem.add_development_dependency 'webmock', '~> 3.4.2'
   gem.add_development_dependency 'fakefs', '~> 0.5.2'
 
   gem.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)

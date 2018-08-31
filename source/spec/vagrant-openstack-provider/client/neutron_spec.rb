@@ -138,7 +138,7 @@ describe VagrantPlugins::Openstack::NeutronClient do
     context 'basic' do
       it 'returns version list' do
         stub_request(:get, 'http://neutron/')
-          .with(header: { 'Accept' => 'application/json' })
+          .with(headers: { 'Accept' => 'application/json' })
           .to_return(
             status: 200,
             body: '{

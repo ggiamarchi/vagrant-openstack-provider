@@ -111,7 +111,7 @@ describe VagrantPlugins::Openstack::GlanceClient do
   describe 'get_api_version_list' do
     it 'returns version list' do
       stub_request(:get, 'http://glance/')
-        .with(header: { 'Accept' => 'application/json' })
+        .with(headers: { 'Accept' => 'application/json' })
         .to_return(
           status: 200,
           body: '{
