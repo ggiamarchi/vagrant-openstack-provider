@@ -337,7 +337,7 @@ module VagrantPlugins
 
             if [:@networks, :@volumes, :@rsync_includes, :@rsync_ignore_files, :@floating_ip_pool, :@stacks].include? key
               result.instance_variable_set(key, value) unless value.empty?
-            elsif [:@http].include? key
+            elsif [:@http, :@volume_boot].include? key
               result.instance_variable_set(key, instance_variable_get(key).merge(other.instance_variable_get(key))) if value != UNSET_VALUE
             else
               result.instance_variable_set(key, value) if value != UNSET_VALUE

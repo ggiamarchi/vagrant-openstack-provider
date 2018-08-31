@@ -257,6 +257,26 @@ describe VagrantPlugins::Openstack::Config do
         end
       end
     end
+
+    it 'should merge volume_boot hashes' do
+      global_config = foo_class.new
+      global_config.volume_boot = { delete_on_destroy: true,
+                                    size: 8 }
+
+      vm_config = foo_class.new
+      vm_config.volume_boot = { image: 'big_windows_vm',
+                                size: 32 }
+
+      result = foo_class.new
+      result.volume_boot = {}
+
+      result = result.merge(global_config)
+      result = result.merge(vm_config)
+
+      expect(result.volume_boot).to eq(delete_on_destroy: true,
+                                       image: 'big_windows_vm',
+                                       size: 32)
+    end
   end
 
   describe 'validation' do
