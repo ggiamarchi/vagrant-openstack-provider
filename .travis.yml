@@ -17,6 +17,6 @@ matrix:
     - rvm: 2.4.4
       env: VAGRANT_VERSION=v2.0.4
     - rvm: 2.4.4
-      env: VAGRANT_VERSION=v2.1.2
+      env: VAGRANT_VERSION=v2.1.4
 
 sudo: false
