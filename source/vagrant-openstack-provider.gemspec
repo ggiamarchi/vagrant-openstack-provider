@@ -16,7 +16,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'rest-client', '>= 1.6.0', '< 3.0'
   gem.add_dependency 'terminal-table', '1.4.5'
   gem.add_dependency 'sshkey', '1.6.1'
-  gem.add_dependency 'colorize', '0.7.3'
+  gem.add_dependency 'colorize', '>=0.7.3', '<0.9.0'
   gem.add_dependency 'public_suffix', '2.0.5'
 
   # Constraint rake to properly handle deprecated method usage
