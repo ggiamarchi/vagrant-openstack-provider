@@ -101,6 +101,8 @@ en:
       Sync folders are disabled in the provider configuration
 
     config:
+      auth_token_required: |-
+        An auth_token is required when auth_type is 'token' (Password and username are ignored).
       password_required: |-
         A password is required.
       username_required: |-
