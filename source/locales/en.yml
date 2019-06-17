@@ -101,6 +101,10 @@ en:
       Sync folders are disabled in the provider configuration
 
     config:
+      app_cred_id_required: |-
+          A application credential id is required.
+      app_cred_secret_required: |-
+          A application credential secret is required.
       password_required: |-
         A password is required.
       username_required: |-
