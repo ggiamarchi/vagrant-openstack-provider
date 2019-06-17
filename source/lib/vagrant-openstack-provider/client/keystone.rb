@@ -122,7 +122,7 @@ module VagrantPlugins
                 methods: ['application_credential'],
                 application_credential: {
                   id: config.app_cred_id,
-                  secret: config.app_cred_secret,
+                  secret: config.app_cred_secret
                 }
               }
             }
