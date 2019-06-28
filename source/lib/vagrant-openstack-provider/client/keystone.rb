@@ -25,7 +25,7 @@ module VagrantPlugins
         elsif config.identity_api_version == '3'
           if config.auth_type == 'token'
             @logger.info('Using token credentials.')
-            post_body = get_body_3_token
+            post_body = get_body_3_token config
           else
             post_body = get_body_3 config
           end
@@ -121,7 +121,7 @@ module VagrantPlugins
         }
       end
 
-      def get_body_3_token
+      def get_body_3_token(_config)
         {
           auth:
           {
