@@ -40,8 +40,8 @@ module VagrantPlugins
 
             create_opts = {
               name: stack[:name],
-              template: YAML.load_file(stack[:template])
-              environment: JSON.load_file(stack[:environment]).
+              template: YAML.load_file(stack[:template]),
+              environment: JSON.load_file(stack[:environment])
             }
 
             stack_id = heat.create_stack(env, create_opts)
