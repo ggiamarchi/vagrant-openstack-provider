@@ -1,0 +1,27 @@
+require 'vagrant-openstack-provider'
+
+Vagrant.configure('2') do |config|
+
+    config.ssh.username = 'ubuntu'
+    config.vm.boot_timeout = 500
+
+    config.vm.provider :openstack do |os, ov|
+      os.server_name                      = 'vagrant'
+
+      os.identity_api_version             = '3'
+      os.domain_name                      = 'default'
+      os.project_name                     = 'demo'
+      os.openstack_auth_url               = 'http://10.0.2.15/identity/v3'
+      os.username                         = 'demo'
+      os.password                         = 'secret'
+      os.region                           = 'RegionOne'
+      os.floating_ip_pool                 = 'public'
+      os.floating_ip_pool_always_allocate = true
+      os.flavor                           = 'ds512M'
+      os.image                            = 'ubuntu-18.04'
+      os.networks                         = ['private']
+      os.security_groups                  = ['default']
+
+      ov.nfs.functional = false
+    end
+end

@@ -385,34 +385,22 @@ $ vagrant openstack image-list
 ### Development
 
 To work on the `vagrant-openstack` plugin, clone this repository out, and use
-[Bundler](http://gembundler.com) to get the dependencies:
+[Bundler](http://gembundler.com) to get the dependencies.
 
-Note: Vagrant 1.6 requires bundler version < 1.7. We recommend using last 1.6
-version.
+This is actually done automatically using the Vagrantfile at the root of this
+repository to setup a Virtualbox machine embbeding a Devstack installation and a Ruby
+development environment.
 
-```console
-$ gem install bundler -v 1.6.6
-```
+From this VM, basically run vagrant as usual to test your local source code changes.
+It is going to run into a bundler context to use sources mounted in `/vagrant`.
 
-Install the plugin dependencies
+A basic Vagrantfile is present in `dev/test` in order to ensure your dev environement is
+operating as expected.
 
-```console
-$ bundle install
-```
-
-Once you have the dependencies, verify the unit tests pass with `rake`:
+Also, run the following command to launch code style checks and unit tests.
 
 ```console
 $ bundle exec rake
-```
-
-If those pass, you're ready to start developing the plugin. You can test
-the plugin without installing it into your Vagrant environment by just
-creating a `Vagrantfile` in the top level of this directory (it is gitignored)
-that uses it, and uses bundler to execute Vagrant:
-
-```console
-$ bundle exec vagrant up
 ```
 
 ## Troubleshooting
