@@ -1,6 +1,6 @@
 # Vagrant OpenStack Cloud Provider
 
-[![Build Status](https://api.travis-ci.org/ggiamarchi/vagrant-openstack-provider.png?branch=master)](https://travis-ci.org/ggiamarchi/vagrant-openstack-provider)
+[![Build Status](https://github.com/ggiamarchi/vagrant-openstack-provider/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/ggiamarchi/vagrant-openstack-provider/actions/workflows/test.yml)
 [![Gem Version](https://badge.fury.io/rb/vagrant-openstack-provider.svg)](http://badge.fury.io/rb/vagrant-openstack-provider)
 [![Code Climate](https://codeclimate.com/github/ggiamarchi/vagrant-openstack-provider.png)](https://codeclimate.com/github/ggiamarchi/vagrant-openstack-provider)
 [![Coverage Status](https://coveralls.io/repos/ggiamarchi/vagrant-openstack-provider/badge.png?branch=master)](https://coveralls.io/r/ggiamarchi/vagrant-openstack-provider?branch=master)
