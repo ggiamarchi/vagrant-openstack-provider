@@ -2,8 +2,6 @@
 
 [![Build Status](https://github.com/ggiamarchi/vagrant-openstack-provider/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/ggiamarchi/vagrant-openstack-provider/actions/workflows/test.yml)
 [![Gem Version](https://badge.fury.io/rb/vagrant-openstack-provider.svg)](http://badge.fury.io/rb/vagrant-openstack-provider)
-[![Code Climate](https://codeclimate.com/github/ggiamarchi/vagrant-openstack-provider.png)](https://codeclimate.com/github/ggiamarchi/vagrant-openstack-provider)
-[![Coverage Status](https://coveralls.io/repos/ggiamarchi/vagrant-openstack-provider/badge.png?branch=master)](https://coveralls.io/r/ggiamarchi/vagrant-openstack-provider?branch=master)
 
 This is a [Vagrant](http://www.vagrantup.com) 1.6+ plugin that adds an
 [OpenStack Cloud](http://www.openstack.org/software/) provider to Vagrant,
