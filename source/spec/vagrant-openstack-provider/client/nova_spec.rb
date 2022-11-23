@@ -462,7 +462,6 @@ describe VagrantPlugins::Openstack::NovaClient do
           .with(headers:
           {
             'Accept' => 'application/json',
-            'Accept-Encoding' => 'gzip, deflate',
             'User-Agent' => /.*/,
             'X-Auth-Token' => '123456'
           })

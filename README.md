@@ -1,9 +1,7 @@
 # Vagrant OpenStack Cloud Provider
 
-[![Build Status](https://api.travis-ci.org/ggiamarchi/vagrant-openstack-provider.png?branch=master)](https://travis-ci.org/ggiamarchi/vagrant-openstack-provider)
+[![Build Status](https://github.com/ggiamarchi/vagrant-openstack-provider/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/ggiamarchi/vagrant-openstack-provider/actions/workflows/test.yml)
 [![Gem Version](https://badge.fury.io/rb/vagrant-openstack-provider.svg)](http://badge.fury.io/rb/vagrant-openstack-provider)
-[![Code Climate](https://codeclimate.com/github/ggiamarchi/vagrant-openstack-provider.png)](https://codeclimate.com/github/ggiamarchi/vagrant-openstack-provider)
-[![Coverage Status](https://coveralls.io/repos/ggiamarchi/vagrant-openstack-provider/badge.png?branch=master)](https://coveralls.io/r/ggiamarchi/vagrant-openstack-provider?branch=master)
 
 This is a [Vagrant](http://www.vagrantup.com) 1.6+ plugin that adds an
 [OpenStack Cloud](http://www.openstack.org/software/) provider to Vagrant,
@@ -385,34 +383,22 @@ $ vagrant openstack image-list
 ### Development
 
 To work on the `vagrant-openstack` plugin, clone this repository out, and use
-[Bundler](http://gembundler.com) to get the dependencies:
+[Bundler](http://gembundler.com) to get the dependencies.
 
-Note: Vagrant 1.6 requires bundler version < 1.7. We recommend using last 1.6
-version.
+This is actually done automatically using the Vagrantfile at the root of this
+repository to setup a Virtualbox machine embbeding a Devstack installation and a Ruby
+development environment.
 
-```console
-$ gem install bundler -v 1.6.6
-```
+From this VM, basically run vagrant as usual to test your local source code changes.
+It is going to run into a bundler context to use sources mounted in `/vagrant`.
 
-Install the plugin dependencies
+A basic Vagrantfile is present in `dev/test` in order to ensure your dev environement is
+operating as expected.
 
-```console
-$ bundle install
-```
-
-Once you have the dependencies, verify the unit tests pass with `rake`:
+Also, run the following command to launch code style checks and unit tests.
 
 ```console
 $ bundle exec rake
-```
-
-If those pass, you're ready to start developing the plugin. You can test
-the plugin without installing it into your Vagrant environment by just
-creating a `Vagrantfile` in the top level of this directory (it is gitignored)
-that uses it, and uses bundler to execute Vagrant:
-
-```console
-$ bundle exec vagrant up
 ```
 
 ## Troubleshooting

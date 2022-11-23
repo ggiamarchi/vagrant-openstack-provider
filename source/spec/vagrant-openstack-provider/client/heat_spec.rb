@@ -1,6 +1,6 @@
 require 'vagrant-openstack-provider/spec_helper'
 
-describe VagrantPlugins::Openstack::NovaClient do
+describe VagrantPlugins::Openstack::HeatClient do
   include FakeFS::SpecHelpers::All
 
   let(:http) do
@@ -52,7 +52,6 @@ describe VagrantPlugins::Openstack::NovaClient do
             headers:
             {
               'Accept' => 'application/json',
-              'Accept-Encoding' => 'gzip, deflate',
               'X-Auth-Token' => '123456'
             })
           .to_return(
