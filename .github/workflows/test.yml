@@ -34,3 +34,13 @@ jobs:
       run: |
         cd source
         bundle exec rake
+    - name: Build gem package
+      run: |
+        cd source
+        gem build *.gemspec
+        mv $(ls -1 | grep -e "\.gem$") vagrant-openstack-provider.gem
+    - name: Archive gem package
+      uses: actions/upload-artifact@v3
+      with:
+        name: vagrant-openstack-provider.gem
+        path: source/vagrant-openstack-provider.gem
