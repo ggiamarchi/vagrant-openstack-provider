@@ -19,9 +19,10 @@ module VagrantPlugins
         log_request(:GET, url, headers)
 
         authenticated(env) do
-          RestUtils.get(env, url, headers) { |res| handle_response(res) }.tap do
-            @logger.debug("#{calling_method} - end")
-          end
+          res = RestUtils.get(env, url, headers)
+          handle_response(res)
+          @logger.debug("#{calling_method} - end")
+          res
         end
       end
 
@@ -34,9 +35,10 @@ module VagrantPlugins
         log_request(:POST, url, body, headers)
 
         authenticated(env) do
-          RestUtils.post(env, url, body, headers) { |res| handle_response(res) }.tap do
-            @logger.debug("#{calling_method} - end")
-          end
+          res = RestUtils.post(env, url, body, headers)
+          handle_response(res)
+          @logger.debug("#{calling_method} - end")
+          res
         end
       end
 
@@ -49,9 +51,10 @@ module VagrantPlugins
         log_request(:DELETE, url, headers)
 
         authenticated(env) do
-          RestUtils.delete(env, url, headers) { |res| handle_response(res) }.tap do
-            @logger.debug("#{calling_method} - end")
-          end
+          res = RestUtils.delete(env, url, headers)
+          handle_response(res)
+          @logger.debug("#{calling_method} - end")
+          res
         end
       end
 
@@ -60,17 +63,17 @@ module VagrantPlugins
         headers = { 'X-Auth-Token' => @session.token, :accept => :json }
         log_request(:GET, url, headers)
 
-        json = RestUtils.get(env, url, headers) do |response|
-          log_response(response)
-          case response.code
-          when 200, 300
-            response
-          when 401
-            fail Errors::AuthenticationFailed
-          else
-            fail Errors::VagrantOpenstackError, message: response.to_s
-          end
+        response = RestUtils.get(env, url, headers)
+        log_response(response)
+        case response.code
+        when 200, 300
+          json = response
+        when 401
+          fail Errors::AuthenticationFailed
+        else
+          fail Errors::VagrantOpenstackError, message: response.to_s
         end
+
         JSON.parse(json)['versions']
       end
 

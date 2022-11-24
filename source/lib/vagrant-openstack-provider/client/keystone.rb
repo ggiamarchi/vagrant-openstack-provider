@@ -40,20 +40,17 @@ module VagrantPlugins
           post_body[:auth][:identity][:password][:user][:password] = config.password
         end
 
-        authentication = RestUtils.post(env, auth_url, post_body.to_json, headers) do |response|
-          log_response(response)
-          case response.code
-          when 200
-            response
-          when 201
-            response
-          when 401
-            fail Errors::AuthenticationFailed
-          when 404
-            fail Errors::BadAuthenticationEndpoint
-          else
-            fail Errors::VagrantOpenstackError, message: response.to_s
-          end
+        response = RestUtils.post(env, auth_url, post_body.to_json, headers)
+        log_response(response)
+        case response.code
+        when 200, 201
+          authentication = response
+        when 401
+          fail Errors::AuthenticationFailed
+        when 404
+          fail Errors::BadAuthenticationEndpoint
+        else
+          fail Errors::VagrantOpenstackError, message: response.to_s
         end
 
         if config.identity_api_version == '2'

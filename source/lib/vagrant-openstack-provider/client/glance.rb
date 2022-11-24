@@ -18,18 +18,15 @@ module VagrantPlugins
       end
 
       def get_api_version_list(env)
-        json = RestUtils.get(env, @session.endpoints[:image],
-                             'X-Auth-Token' => @session.token,
-                             :accept => :json) do |response|
-          log_response(response)
-          case response.code
-          when 200, 300
-            response
-          when 401
-            fail Errors::AuthenticationFailed
-          else
-            fail Errors::VagrantOpenstackError, message: response.to_s
-          end
+        response = RestUtils.get(env, @session.endpoints[:image], 'X-Auth-Token' => @session.token, :accept => :json)
+        log_response(response)
+        case response.code
+        when 200, 300
+          json = response
+        when 401
+          fail Errors::AuthenticationFailed
+        else
+          fail Errors::VagrantOpenstackError, message: response.to_s
         end
         JSON.parse(json)['versions']
       end
