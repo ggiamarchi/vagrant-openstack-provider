@@ -16,16 +16,14 @@ jobs:
   test:
 
     runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        ruby-version: ['2.7']
 
     steps:
     - uses: actions/checkout@v3
     - name: Set up Ruby
-      uses: ruby/setup-ruby@0a29871fe2b0200a17a4497bae54fe5df0d973aa # v1.115.3
-      with:
-        ruby-version: ${{ matrix.ruby-version }}
+      run: |
+        sudo apt update
+        sudo apt install -y ruby2.7 ruby2.7-dev build-essential
+        sudo gem install bundler
     - name: Install dependencies
       run: |
         cd source
