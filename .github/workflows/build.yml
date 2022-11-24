@@ -1,0 +1,40 @@
+name: Build
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install bundler
+        run: |
+          sudo gem install bundler
+
+      - name: Install dependencies
+        run: |
+          cd source
+          bundle install
+
+      - name: Run tests
+        run: |
+          cd source
+          bundle exec rake
+
+      - name: Build gem package
+        run: |
+          cd source
+          gem build *.gemspec
+          mv $(ls -1 | grep -e "\.gem$") vagrant-openstack-provider.gem
+
+      - name: Archive gem package
+        uses: actions/upload-artifact@v3
+        with:
+          name: vagrant-openstack-provider.gem
+          path: source/vagrant-openstack-provider.gem
