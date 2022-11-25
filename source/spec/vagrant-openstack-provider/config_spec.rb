@@ -30,6 +30,7 @@ describe VagrantPlugins::Openstack::Config do
     its(:user_data) { should be_nil }
     its(:metadata) { should be_nil }
     its(:ssl_ca_file) { should eq nil }
+    its(:ip_version) { should be_nil }
   end
 
   describe 'overriding defaults' do
@@ -52,7 +53,8 @@ describe VagrantPlugins::Openstack::Config do
       :metadata,
       :availability_zone,
       :public_key_path,
-      :ssl_ca_file].each do |attribute|
+      :ssl_ca_file,
+      :ip_version].each do |attribute|
       it "should not default #{attribute} if overridden" do
         subject.send("#{attribute}=".to_sym, 'foo')
         subject.finalize!

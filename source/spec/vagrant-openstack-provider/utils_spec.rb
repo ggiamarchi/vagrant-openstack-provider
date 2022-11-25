@@ -6,6 +6,7 @@ describe VagrantPlugins::Openstack::Utils do
       config.stub(:tenant_name) { 'testTenant' }
       config.stub(:server_name) { 'testName' }
       config.stub(:floating_ip) { nil }
+      config.stub(:ip_version) { nil }
     end
   end
 
@@ -34,6 +35,74 @@ describe VagrantPlugins::Openstack::Utils do
 
   describe 'get_ip_address' do
     context 'without config.floating_ip' do
+      context 'with config.ip_version set to 4 and a single network' do
+        it 'returns ipv4 and no ipv6' do
+          config.stub(:ip_version) { 4 }
+          nova.stub(:get_server_details).with(env, '1234id') do
+            {
+              'addresses' => {
+                'net' => [
+                  {
+                    'addr' => '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
+                    'version' => 6
+                  },
+                  {
+                    'addr' => '13.13.13.13',
+                    'version' => 4
+                  }
+                ]
+              }
+            }
+          end
+          expect(@action.get_ip_address(env)).to eq('13.13.13.13')
+        end
+      end
+
+      context 'with config.ip_version set to 6 and a single network' do
+        it 'returns ipv6 and no ipv4' do
+          config.stub(:ip_version) { 6 }
+          nova.stub(:get_server_details).with(env, '1234id') do
+            {
+              'addresses' => {
+                'net' => [
+                  {
+                    'addr' => '13.13.13.13',
+                    'version' => 4
+                  },
+                  {
+                    'addr' => '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
+                    'version' => 6
+                  }
+                ]
+              }
+            }
+          end
+          expect(@action.get_ip_address(env)).to eq('2001:0db8:85a3:0000:0000:8a2e:0370:7334')
+        end
+      end
+
+      context 'with config.ip_version set to 6 and first network in config has only ipv4' do
+        it 'returns ipv6' do
+          config.stub(:ip_version) { 6 }
+          config.stub(:networks) { %w(net-2 net-1) }
+          nova.stub(:get_server_details).with(env, '1234id') do
+            {
+              'addresses' => {
+                'net-1' => [{
+                  'addr' => '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
+                  'version' => 6
+                }],
+                'net-2' => [{
+                  'addr' => '13.13.13.13',
+                  'version' => 4
+                }]
+              }
+            }
+          end
+          expect(@action.get_ip_address(env)).to eq('2001:0db8:85a3:0000:0000:8a2e:0370:7334')
+        end
+      end
+
       context 'with floating ip in nova details' do
         it 'returns floating_ip from nova details' do
           config.stub(:floating_ip) { nil }
