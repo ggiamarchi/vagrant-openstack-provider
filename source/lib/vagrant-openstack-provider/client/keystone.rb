@@ -23,7 +23,12 @@ module VagrantPlugins
           post_body = get_body_2 config
           auth_url = get_auth_url_2 env
         elsif config.identity_api_version == '3'
-          post_body = get_body_3 config
+          if config.auth_type == 'token'
+            @logger.info('Using token credentials.')
+            post_body = get_body_3_token config
+          else
+            post_body = get_body_3 config
+          end
           auth_url = get_auth_url_3 env
         end
 
@@ -37,7 +42,11 @@ module VagrantPlugins
         if config.identity_api_version == '2'
           post_body[:auth][:passwordCredentials][:password] = config.password
         elsif config.identity_api_version == '3'
-          post_body[:auth][:identity][:password][:user][:password] = config.password
+          if config.auth_type == 'token'
+            post_body[:auth][:identity][:token][:id] = config.auth_token
+          else
+            post_body[:auth][:identity][:password][:user][:password] = config.password
+          end
         end
 
         authentication = RestUtils.post(env, auth_url, post_body.to_json, headers) do |response|
@@ -106,6 +115,20 @@ module VagrantPlugins
               project: {
                 name: config.project_name,
                 domain: { name: config.project_domain_name }
+              }
+            }
+          }
+        }
+      end
+
+      def get_body_3_token(_config)
+        {
+          auth:
+          {
+            identity: {
+              methods: ['token'],
+              token: {
+                id: '****'
               }
             }
           }
