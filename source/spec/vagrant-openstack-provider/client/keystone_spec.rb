@@ -23,6 +23,8 @@ describe VagrantPlugins::Openstack::KeystoneClient do
       config.stub(:project_name) { 'testTenant' }
       config.stub(:ssl_ca_file) { nil }
       config.stub(:ssl_verify_peer) { true }
+      config.stub(:app_cred_id) { 'dummy' }
+      config.stub(:app_cred_secret) { 'dummy' }
     end
   end
 
@@ -79,6 +81,10 @@ describe VagrantPlugins::Openstack::KeystoneClient do
          {"endpoints":[{"id":"eid1","interface":"public","url":"http://nova"}],"type":"compute"},
          {"endpoints":[{"id":"eid2","interface":"public","url":"http://neutron"}],"type":"network"}
        ]}}'
+    end
+
+    let(:keystone_request_body_app_cred) do
+      '{"auth":{"identity":{"methods":["application_credential"],"application_credential":{"id":"dummy","secret":"dummy"}}}}'
     end
 
     before :each do
@@ -183,6 +189,7 @@ describe VagrantPlugins::Openstack::KeystoneClient do
         config.stub(:project_domain_name) { 'dummy' }
         config.stub(:identity_api_version) { '3' }
         config.stub(:openstack_auth_url) { 'http://keystoneAuthV3' }
+        config.stub(:openstack_auth_type) { nil }
 
         stub_request(:post, 'http://keystoneAuthV3/auth/tokens')
           .with(
@@ -206,6 +213,7 @@ describe VagrantPlugins::Openstack::KeystoneClient do
         config.stub(:project_domain_name) { 'dummy' }
         config.stub(:identity_api_version) { '3' }
         config.stub(:openstack_auth_url) { 'http://keystoneAuthV3' }
+        config.stub(:openstack_auth_type) { nil }
 
         stub_request(:post, 'http://keystoneAuthV3/auth/tokens')
           .with(
@@ -223,6 +231,54 @@ describe VagrantPlugins::Openstack::KeystoneClient do
             headers: keystone_response_headers_v3)
 
         expect { @keystone_client.authenticate(env) }.to raise_error(Errors::AuthenticationFailed)
+      end
+    end
+
+    context 'with good application credentials' do
+      it 'store token and tenant id' do
+        config.stub(:identity_api_version) { '3' }
+        config.stub(:openstack_auth_url) { 'http://keystoneAuthV3' }
+        config.stub(:openstack_auth_type) { 'v3applicationcredential' }
+
+        stub_request(:post, 'http://keystoneAuthV3/auth/tokens')
+          .with(
+            body: keystone_request_body_app_cred,
+            headers: keystone_request_headers)
+          .to_return(
+            status: 200,
+            body: keystone_response_body_v3,
+            headers: keystone_response_headers_v3)
+
+        @keystone_client.authenticate(env)
+
+        session.token.should eq('0123456789')
+        session.project_id.should eq('012345678910')
+      end
+    end
+
+    context 'with wrong application credentials' do
+      it 'raise an unauthorized error ' do
+        config.stub(:identity_api_version) { '3' }
+        config.stub(:openstack_auth_url) { 'http://keystoneAuthV3' }
+        config.stub(:openstack_auth_type) { nil }
+        config.stub(:openstack_auth_type) { 'v3applicationcredential' }
+
+        stub_request(:post, 'http://keystoneAuthV3/auth/tokens')
+          .with(
+            body: keystone_request_body_app_cred,
+            headers: keystone_request_headers)
+          .to_return(
+            status: 404,
+            body: '{
+                "error": {
+                  "message": "Could not find Application Credential: dummy",
+                  "code": 404,
+                  "title": "Not Found"
+               }
+              }',
+            headers: keystone_response_headers_v3)
+
+        expect { @keystone_client.authenticate(env) }.to raise_error(Errors::BadAuthenticationEndpoint)
       end
     end
   end

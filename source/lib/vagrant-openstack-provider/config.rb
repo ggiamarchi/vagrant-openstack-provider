@@ -9,6 +9,10 @@ module VagrantPlugins
       #
       attr_accessor :password
 
+      attr_accessor :app_cred_id
+      attr_accessor :app_cred_secret
+      attr_accessor :openstack_auth_type
+
       # The compute service url to access Openstack. If nil, it will read from hypermedia catalog form REST API
       #
       attr_accessor :openstack_compute_url
@@ -264,6 +268,9 @@ module VagrantPlugins
       attr_accessor :ssl_verify_peer
 
       def initialize
+        @app_cred_id = UNSET_VALUE
+        @app_cred_secret = UNSET_VALUE
+        @openstack_auth_type = UNSET_VALUE
         @password = UNSET_VALUE
         @openstack_compute_url = UNSET_VALUE
         @openstack_network_url = UNSET_VALUE
@@ -355,6 +362,9 @@ module VagrantPlugins
 
       # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
       def finalize!
+        @app_cred_id = nil if @app_cred_id == UNSET_VALUE
+        @app_cred_secret = nil if @app_cred_secret == UNSET_VALUE
+        @openstack_auth_type = nil if @openstack_auth_type == UNSET_VALUE
         @password = nil if @password == UNSET_VALUE
         @openstack_compute_url = nil if @openstack_compute_url == UNSET_VALUE
         @openstack_network_url = nil if @openstack_network_url == UNSET_VALUE
@@ -440,10 +450,9 @@ module VagrantPlugins
       def validate(machine)
         errors = _detected_errors
 
-        errors << I18n.t('vagrant_openstack.config.password_required') if @password.nil? || @password.empty?
-        errors << I18n.t('vagrant_openstack.config.username_required') if @username.nil? || @username.empty?
         errors << I18n.t('vagrant_openstack.config.invalid_api_version') unless  %w(2 3).include?(@identity_api_version)
 
+        validate_auth_type(errors)
         validate_api_version(errors)
         validate_ssh_username(machine, errors)
         validate_stack_config(errors)
@@ -473,12 +482,22 @@ module VagrantPlugins
 
       private
 
+      def validate_auth_type(errors)
+        if @openstack_auth_type == 'v3applicationcredential'
+          errors << I18n.t('vagrant_openstack.config.app_cred_id_required') if @app_cred_id.nil? || @app_cred_id.empty?
+          errors << I18n.t('vagrant_openstack.config.app_cred_secret_required') if  @app_cred_secret.nil? || @app_cred_secret.empty?
+        elsif @openstack_auth_type.nil? || @openstack_auth_type.empty?
+          errors << I18n.t('vagrant_openstack.config.password_required') if  @password.nil? || @password.empty?
+          errors << I18n.t('vagrant_openstack.config.username_required') if @username.nil? || @username.empty?
+        end
+      end
+
       def validate_api_version(errors)
         if @identity_api_version == '2'
           errors << I18n.t('vagrant_openstack.config.tenant_name_required') if @tenant_name.nil? || @tenant_name.empty?
           errors << I18n.t('vagrant_openstack.config.invalid_endpoint_type') unless  %w(publicURL adminURL internalURL).include?(@endpoint_type)
         elsif @identity_api_version == '3'
-          if @domain_name == UNSET_VALUE || @domain_name.nil? || @domain_name.empty?
+          if @openstack_auth_type != 'v3applicationcredential' && (@domain_name == UNSET_VALUE || @domain_name.nil? || @domain_name.empty?)
             if (@user_domain_name.nil? || @user_domain_name.empty?) && (@project_domain_name_name.nil? || @project_domain_name.empty?)
               errors << I18n.t('vagrant_openstack.config.domain_required')
             elsif @user_domain_name.nil? || @user_domain_name.empty?
@@ -486,9 +505,9 @@ module VagrantPlugins
             elsif @project_domain_name.nil? || @project_domain_name.empty?
               errors << I18n.t('vagrant_openstack.config.project_domain_required')
             end
+            errors << I18n.t('vagrant_openstack.config.project_name_required') if @project_name.nil? || @project_name.empty?
+            errors << I18n.t('vagrant_openstack.config.invalid_interface_type') unless  %w(public admin internal).include?(@interface_type)
           end
-          errors << I18n.t('vagrant_openstack.config.project_name_required') if @project_name.nil? || @project_name.empty?
-          errors << I18n.t('vagrant_openstack.config.invalid_interface_type') unless  %w(public admin internal).include?(@interface_type)
         end
       end
 

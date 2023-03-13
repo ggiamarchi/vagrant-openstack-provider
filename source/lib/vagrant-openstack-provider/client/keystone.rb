@@ -37,7 +37,9 @@ module VagrantPlugins
         if config.identity_api_version == '2'
           post_body[:auth][:passwordCredentials][:password] = config.password
         elsif config.identity_api_version == '3'
-          post_body[:auth][:identity][:password][:user][:password] = config.password
+          if config.openstack_auth_type != 'v3applicationcredential'
+            post_body[:auth][:identity][:password][:user][:password] = config.password
+          end
         end
 
         authentication = RestUtils.post(env, auth_url, post_body.to_json, headers) do |response|
@@ -87,29 +89,46 @@ module VagrantPlugins
       end
 
       def get_body_3(config)
-        {
-          auth:
-          {
-            identity: {
-              methods: ['password'],
-              password: {
-                user: {
-                  name: config.username,
-                  domain: {
-                    name: config.user_domain_name
-                  },
-                  password: '****'
+        body = {}
+        if config.openstack_auth_type != 'v3applicationcredential'
+          body = {
+            auth:
+            {
+              identity: {
+                methods: ['password'],
+                password: {
+                  user: {
+                    name: config.username,
+                    domain: {
+                      name: config.user_domain_name
+                    },
+                    password: '****'
+                  }
                 }
-              }
-            },
-            scope: {
-              project: {
-                name: config.project_name,
-                domain: { name: config.project_domain_name }
+              },
+              scope: {
+                project: {
+                  name: config.project_name,
+                  domain: { name: config.project_domain_name }
+                }
               }
             }
           }
-        }
+        else
+          body = {
+            auth:
+            {
+              identity: {
+                methods: ['application_credential'],
+                application_credential: {
+                  id: config.app_cred_id,
+                  secret: config.app_cred_secret
+                }
+              }
+            }
+          }
+        end
+        body
       end
 
       def get_auth_url_3(env)
