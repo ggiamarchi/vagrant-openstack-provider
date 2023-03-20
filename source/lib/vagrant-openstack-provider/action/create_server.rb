@@ -49,6 +49,8 @@ module VagrantPlugins
           # Store the ID right away so we can track it
           env[:machine].id = server_id
 
+          env[:ui].info(" -- ID              : #{server_id}")
+
           waiting_for_server_to_be_built(env, server_id)
           @@mutex.synchronize do
             assign_floating_ip(env, server_id)
