@@ -20,6 +20,7 @@ module VagrantPlugins
         stack = {}.tap do |s|
           s['stack_name'] = options[:name] if options[:name]
           s['template'] = options[:template]
+          s['environment'] = options[:environment]
         end
         stack_res = post(env, "#{@session.endpoints[:orchestration]}/stacks", stack.to_json)
         JSON.parse(stack_res)['stack']['id']

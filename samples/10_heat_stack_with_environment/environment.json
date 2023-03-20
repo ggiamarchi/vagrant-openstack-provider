@@ -1,0 +1,6 @@
+{
+    "parameters": {
+        "external_network_id": "ext-net",
+        "network_name": "my-great-network"
+    }
+}

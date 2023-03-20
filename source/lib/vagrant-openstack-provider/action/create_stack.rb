@@ -3,6 +3,7 @@ require 'socket'
 require 'timeout'
 require 'sshkey'
 require 'yaml'
+require 'json'
 
 require 'vagrant-openstack-provider/config_resolver'
 require 'vagrant-openstack-provider/utils'
@@ -36,10 +37,12 @@ module VagrantPlugins
             env[:ui].info(I18n.t('vagrant_openstack.create_stack'))
             env[:ui].info(" -- Stack Name : #{stack[:name]}")
             env[:ui].info(" -- Template   : #{stack[:template]}")
+            env[:ui].info(" -- Environment   : #{stack[:environment]}")
 
             create_opts = {
               name: stack[:name],
-              template: YAML.load_file(stack[:template])
+              template: YAML.load_file(stack[:template]),
+              environment: stack[:environment] ? JSON.parse(File.read(stack[:environment])) : nil
             }
 
             stack_id = heat.create_stack(env, create_opts)

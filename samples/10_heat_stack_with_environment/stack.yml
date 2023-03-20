@@ -1,0 +1,57 @@
+heat_template_version: 2013-05-23
+
+description: >
+    Create a minimal infrastructure to spawn an instance
+
+parameters:
+
+  external_network_id:
+    type: string
+    label: External network id
+    description: External network to connect the router
+    default: 5cccfde8-ddae-4feb-9a97-ca6532d1577f
+  network_name:
+    type: string
+    label: Network name
+    description: Network name
+    default: heat-net
+
+resources:
+
+  security_group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: sg
+      description: Add security group rules for server
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          direction: ingress
+        - remote_ip_prefix: 0.0.0.0/0
+          direction: egress
+
+  network:
+    type: OS::Neutron::Net
+    properties:
+      name: { get_param: network_name }
+  subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: network }
+      cidr: 10.0.0.0/24
+      allocation_pools:
+        - { start: 10.0.0.100, end: 10.0.0.250 }
+
+  router:
+    type: OS::Neutron::Router
+    properties:
+      name: router
+  router-gateway:
+    type: OS::Neutron::RouterGateway
+    properties:
+      router_id: { get_resource: router }
+      network_id: { get_param: external_network_id }
+  router-dataplane-int:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router }
+      subnet_id: { get_resource: subnet }

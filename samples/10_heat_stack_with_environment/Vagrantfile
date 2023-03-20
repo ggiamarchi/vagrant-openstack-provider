@@ -1,0 +1,27 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure('2') do |config|
+
+  config.vm.provider :openstack do |os, ov|
+    os.openstack_auth_url    = ENV['OS_AUTH_URL']
+    os.tenant_name           = ENV['OS_TENANT_NAME']
+    os.username              = ENV['OS_USERNAME']
+    os.password              = ENV['OS_PASSWORD']
+    os.floating_ip_pool      = ENV['OS_FLOATING_IP_POOL']
+    os.flavor                = ENV['OS_FLAVOR']
+    os.image                 = ENV['OS_IMAGE']
+    os.security_groups       = ['sg']
+    os.networks             << 'heat-net'
+    os.stacks               << {name: 'vagrant', template: "#{File.dirname(__FILE__)}/stack.yml", environment: "#{File.dirname(__FILE__)}/environment.json" }
+
+    ov.nfs.functional = false
+  end
+
+  config.vm.define 'server-1' do |s|
+    s.vm.provider :openstack do |os, override|
+      os.server_name = '10_heat_stack_with_environment'
+      override.ssh.username = ENV['OS_SSH_USERNAME']
+    end
+  end
+end
